@@ -1,0 +1,50 @@
+#!/usr/bin/env node
+
+const program = require('commander');
+const vc = require('..');
+
+function inc(v, total) {
+  return total + 1;
+}
+
+program
+  .version(require('../package.json').version)
+  .option('-v, --verbose', 'Increase verbosity', inc, 0);
+
+program
+  .command('issue')
+  .alias('i')
+  .option('-i, --issuer <issuer>', 'The URL for the issuer')
+  .option('-p, --public-key <public-key>', 'The public key file.')
+  .option('-o, --owner <owner>', 'The key owner URL.')
+  .option('-r, --private-key <private-key>', 'The private key file.')
+  .action(async function(cmd) {
+    try {
+      if(arguments.length > 1) {
+        throw new Error('Too many arguments.');
+      }
+      if(!cmd.issuer) { throw new Error('issuer required') }
+      if(!cmd.publicKey) { throw new Error('public key required') }
+      if(!cmd.owner) { throw new Error('owner required') }
+      if(!cmd.privateKey) { throw new Error('private key required') }
+      await vc.issue({
+        issuer: cmd.issuer,
+        publicKey: cmd.publicKey,
+        owner: cmd.owner,
+        privatekey: cmd.privateKey,
+      });
+    } catch(e) {
+      console.error('Error:', e);
+      process.exit(1);
+    }
+  });
+
+program
+  .command('verify')
+  .alias('v')
+  .action((cmd, options) => {
+    console.error('Error: verify not implemented');
+    process.exit(1);
+  });
+
+program.parse(process.argv);
