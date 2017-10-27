@@ -1,0 +1,8 @@
+#!/bin/sh
+ROOT_DIR=$(dirname $0)/..
+if [ -e $ROOT_DIR/test-suites/vc-test-suite ]; then
+  TEST_SUITE_DIR=$ROOT_DIR/test-suites/vc-test-suite
+else
+  TEST_SUITE_DIR=$ROOT_DIR/../vc-test-suite
+fi
+$TEST_SUITE_DIR/bin/vc-driver -i $ROOT_DIR/bin/vc-js-issuer -v $ROOT_DIR/bin/vc-js-verifier
