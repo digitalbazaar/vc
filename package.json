@@ -34,9 +34,13 @@
   ],
   "dependencies": {
     "commander": "^2.8.0",
-    "jsonld": "^0.4.12",
-    "jsonld-signatures": "^1.2.1",
-    "semver": "^5.4.1"
+    "debug": "^3.1.0",
+    "fs-extra": "^4.0.2",
+    "get-stdin": "^5.0.1",
+    "jsonld": "^0.5.0",
+    "jsonld-signatures": "github:digitalbazaar/jsonld-signatures#reorganize",
+    "semver": "^5.4.1",
+    "supports-color": "^5.0.0"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",

@@ -1,10 +1,45 @@
 #!/usr/bin/env node
 
+const fs = require('fs-extra');
+const getStdin = require('get-stdin');
 const program = require('commander');
 const vc = require('..');
 
-function inc(v, total) {
+// debuggers
+const loaderDebug = require('debug')('vc:loader');
+
+function inc(value, total) {
   return total + 1;
+}
+
+if(process.env.JSONLD_LOADER_MAP) {
+  const map = {};
+  const cache = {};
+  const oldLoader = vc.documentLoader;
+  process.env.JSONLD_LOADER_MAP
+    .split(',')
+    .map(v => v.split('='))
+    .forEach(v => map[v[0]] = v[1]);
+  loaderDebug('map: %O', map);
+  vc.documentLoader = async (url) => {
+    if(url in cache) {
+      // already loaded
+      loaderDebug('from cache: %s', url);
+    } else if(url in map) {
+      // load from file
+      loaderDebug('from file: %s', url);
+      cache[url] = {
+        contextUrl: null,
+        documentUrl: url,
+        document: JSON.parse(await fs.readFile(map[url]))
+      };
+    } else {
+      // load with default loader
+      loaderDebug('default: %s', url);
+      cache[url] = await oldLoader(url);
+    }
+    return cache[url];
+  };
 }
 
 program
@@ -14,37 +49,82 @@ program
 program
   .command('issue')
   .alias('i')
-  .option('-i, --issuer <issuer>', 'The URL for the issuer')
-  .option('-p, --public-key <public-key>', 'The public key file.')
-  .option('-o, --owner <owner>', 'The key owner URL.')
-  .option('-r, --private-key <private-key>', 'The private key file.')
+  .description('issue a credential')
+  .option('-i, --issuer <issuer>', 'URL for the issuer public key.')
+  .option('-r, --private-key <private-key>', 'Private key PEM file.')
+  .option('-d, --date <date>', 'Signature date [now].', new Date())
+  .option('-D, --domain <domain>', 'Signature domain [none].')
+  .option('-n, --nonce <domain>', 'Signature nonce [none].')
+  .option('-a, --algorithm <algorithm>',
+    'Signature algorithm [LinkedDataSignature2015].')
   .action(async function(cmd) {
     try {
       if(arguments.length > 1) {
         throw new Error('Too many arguments.');
       }
       if(!cmd.issuer) { throw new Error('issuer required') }
-      if(!cmd.publicKey) { throw new Error('public key required') }
-      if(!cmd.owner) { throw new Error('owner required') }
+      //if(!cmd.publicKey) { throw new Error('public key required') }
+      //if(!cmd.owner) { throw new Error('owner required') }
       if(!cmd.privateKey) { throw new Error('private key required') }
-      await vc.issue({
+
+      const result = await vc.issue({
+        credential: JSON.parse(await getStdin()),
         issuer: cmd.issuer,
-        publicKey: cmd.publicKey,
-        owner: cmd.owner,
-        privatekey: cmd.privateKey,
+        //publicKey: cmd.publicKey,
+        //owner: cmd.owner,
+        privateKeyPem: String(await fs.readFile(cmd.privateKey))
       });
+      console.log(JSON.stringify(result, null, 2));
     } catch(e) {
-      console.error('Error:', e);
+      console.error('Error:', JSON.stringify(e, null, 2), e);
       process.exit(1);
     }
+  })
+  .on('--help', () => {
+    console.log();
+    console.log('  Examples: ');
+    console.log();
+    console.log('    $ vc-js issue ... < cred.jsonld');
+    console.log();
   });
 
 program
   .command('verify')
   .alias('v')
-  .action((cmd, options) => {
-    console.error('Error: verify not implemented');
-    process.exit(1);
+  .description('verify a credential')
+  .description('issue a credential')
+  .option('-i, --issuer <issuer>', 'The URL for the issuer public key.')
+  .option('-p, --public-key <public-key>', 'The public key PEM file.')
+  //.option('-o, --owner <owner>', 'The key owner URL.')
+  //.option('-r, --private-key <private-key>', 'The private key file.')
+  .action(async function(cmd, options) {
+    try {
+      const result = await vc.verify({
+        credential: JSON.parse(await getStdin()),
+        issuer: cmd.issuer,
+        //publicKey: cmd.publicKey,
+        //owner: cmd.owner,
+        publicKeyPem: String(await fs.readFile(cmd.publicKey))
+      });
+      if(result.verified === false) {
+        // result can include raw Error
+        //console.log(JSON.stringify(result, null, 2));
+        console.log(result);
+        process.exit(1);
+      }
+    } catch(e) {
+      console.error('Error:', JSON.stringify(e, null, 2), e);
+      process.exit(1);
+    }
+    //console.error('Error: verify not implemented');
+    //process.exit(1);
+  })
+  .on('--help', () => {
+    console.log();
+    console.log('  Examples: ');
+    console.log();
+    console.log('    $ vc-js verify ... < signed-cred.jsonld');
+    console.log();
   });
 
 program.parse(process.argv);
