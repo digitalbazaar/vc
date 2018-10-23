@@ -37,8 +37,8 @@
     "debug": "^3.1.0",
     "fs-extra": "^4.0.2",
     "get-stdin": "^5.0.1",
-    "jsonld": "^0.5.0",
-    "jsonld-signatures": "github:digitalbazaar/jsonld-signatures#reorganize",
+    "jsonld": "^1.0",
+    "jsonld-signatures": "^2.3",
     "semver": "^5.4.1",
     "supports-color": "^5.0.0"
   },
@@ -56,7 +56,7 @@
     "webpack-merge": "^4.1.0"
   },
   "engines": {
-    "node": ">=6"
+    "node": ">=8"
   },
   "keywords": [
     "JSON",
@@ -68,10 +68,10 @@
     "Credential"
   ],
   "scripts": {
-    "prepublish": "npm run build",
-    "build": "npm run build-webpack && npm run build-node6",
-    "build-webpack": "webpack",
-    "build-node6": "babel --no-babelrc --out-dir dist/node6 --presets=node6-es6 lib/*.js",
+    "no-prepublish": "npm run build",
+    "no-build": "npm run build-webpack && npm run build-node6",
+    "no-build-webpack": "webpack",
+    "no-build-node6": "babel --no-babelrc --out-dir dist/node6 --presets=node6-es6 lib/*.js",
     "fetch-test-suites": "npm run fetch-vc-test-suite",
     "fetch-vc-test-suite": "if [ ! -e test-suites/vc-test-suite ]; then git clone --depth 1 https://github.com/digitalbazaar/vc-test-suite.git test-suites/vc-test-suite; fi",
     "test": "bin/vc-test"
