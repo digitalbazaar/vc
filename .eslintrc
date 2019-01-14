@@ -1,0 +1,9 @@
+{
+  "env": {
+    "amd": true,
+    "browser": true
+  },
+  "rules": {
+    "indent": ["error", 2, {"outerIIFEBody": 0}]
+  }
+}
