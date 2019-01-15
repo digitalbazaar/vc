@@ -38,7 +38,7 @@
     "fs-extra": "^4.0.2",
     "get-stdin": "^5.0.1",
     "jsonld": "^1.0",
-    "jsonld-signatures": "^2.3",
+    "jsonld-signatures": "digitalbazaar/jsonld-signatures#use-crypto-ld",
     "semver": "^5.4.1",
     "supports-color": "^5.0.0"
   },
@@ -51,6 +51,9 @@
     "browserify": "^14.4.0",
     "chai": "^4.1.2",
     "core-js": "^2.5.1",
+    "crypto-ld": "digitalbazaar/crypto-ld#signer",
+    "did-veres-one": "github:veres-one/did-veres-one#targetNodePlus",
+    "mocha": "^5.2.0",
     "regenerator-runtime": "^0.11.0",
     "webpack": "^3.7.1",
     "webpack-merge": "^4.1.0"
@@ -74,7 +77,8 @@
     "no-build-node6": "babel --no-babelrc --out-dir dist/node6 --presets=node6-es6 lib/*.js",
     "fetch-test-suites": "npm run fetch-vc-test-suite",
     "fetch-vc-test-suite": "if [ ! -e test-suites/vc-test-suite ]; then git clone --depth 1 https://github.com/digitalbazaar/vc-test-suite.git test-suites/vc-test-suite; fi",
-    "test": "bin/vc-test"
+    "test": "bin/vc-test",
+    "mocha": "mocha ./tests/*.spec.js --opts ./tests/mocha.opts"
   },
   "browser": {
     "lib/index.js": "./lib/vc.js"
