@@ -44,7 +44,7 @@ describe('verify API', () => {
       documentLoader,
       suite: new Ed25519Signature2018({key: authenticationKey}),
       purpose: new AuthenticationProofPurpose({
-        challenge: 'foo'
+        challenge: 'challengeString'
       })
     });
     console.log('CREDENTIAL', JSON.stringify(credential, null, 2));
