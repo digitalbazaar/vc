@@ -5,6 +5,7 @@ const {Ed25519KeyPair} = require('crypto-ld');
 const jsigs = require('jsonld-signatures');
 const jsonld = require('jsonld');
 const mockData = require('./mock.data');
+const uuid = require('uuid/v4');
 const vc = require('..');
 chai.should();
 
@@ -33,28 +34,31 @@ const contextLoader = async url => {
 };
 
 describe('verify API', () => {
-  it('verifies a valid credential', async () => {
-    const mockCredential = jsonld.clone(mockData.credentials.alpha);
-    const {authenticationKey, did, mockDoc, capabilityInvocationKey} =
-      await _generateDid();
-    const {Ed25519Signature2018} = jsigs.suites;
-    const {AuthenticationProofPurpose} = jsigs.purposes;
-    const documentLoader = await _createDidDocumentLoader({record: mockDoc});
-    const credential = await jsigs.sign(mockCredential, {
-      // FIXME: `sec` terms are not in the vc-v1 context, should they be?
-      compactProof: true,
+  it('verifies a valid presentation', async () => {
+    const challenge = uuid();
+    const domain = uuid();
+    const {presentation, documentLoader} = await _generatePresentation(
+      {challenge, domain});
+    console.log('PPPPPPPPPPP', JSON.stringify(presentation, null, 2));
+    const result = await vc.verifyPresentation({
+      challenge,
       documentLoader,
-      suite: new Ed25519Signature2018({key: authenticationKey}),
-      purpose: new AuthenticationProofPurpose({
-        challenge: 'challengeString'
-      })
+      domain,
+      presentation,
     });
-    console.log('CREDENTIAL', JSON.stringify(credential, null, 2));
+    console.log('RESULT', JSON.stringify(result, null, 2));
+    result.verified.should.be.a('boolean');
+    result.verified.should.be.true;
+  });
+  it('verifies a valid credential', async () => {
+    const {credential, documentLoader} = await _generateCredential();
+    // console.log('CREDENTIAL', JSON.stringify(credential, null, 2));
+
     const result = await vc.verify({
       credential,
       documentLoader
     });
-    console.log('RESULT', JSON.stringify(result, null, 2));
+    // console.log('RESULT', JSON.stringify(result, null, 2));
     result.verified.should.be.a('boolean');
     result.verified.should.be.true;
   });
@@ -63,6 +67,38 @@ describe('verify API', () => {
 function _generateKeyId({did, key}) {
   // `did` + multibase base58 (0x7a / z) encoding + key fingerprint
   return `${did}#z${key.fingerprint()}`;
+}
+
+async function _generateCredential() {
+  const mockCredential = jsonld.clone(mockData.credentials.alpha);
+  const {authenticationKey, documentLoader} = await _generateDid();
+  const {Ed25519Signature2018} = jsigs.suites;
+  const {AuthenticationProofPurpose} = jsigs.purposes;
+  const credential = await jsigs.sign(mockCredential, {
+    compactProof: false,
+    documentLoader,
+    suite: new Ed25519Signature2018({key: authenticationKey}),
+    purpose: new AuthenticationProofPurpose({
+      challenge: 'challengeString'
+    })
+  });
+  return {credential, documentLoader};
+}
+
+async function _generatePresentation({challenge, domain}) {
+  const mockPresentation = jsonld.clone(mockData.presentations.alpha);
+  const {authenticationKey, documentLoader: dlp} = await _generateDid();
+  const {Ed25519Signature2018} = jsigs.suites;
+  const {AuthenticationProofPurpose} = jsigs.purposes;
+  const {credential, documentLoader: dlc} = await _generateCredential();
+  mockPresentation.verifiableCredential.push(credential);
+  const presentation = await jsigs.sign(mockPresentation, {
+    compactProof: false,
+    documentLoader: dlp,
+    suite: new Ed25519Signature2018({key: authenticationKey}),
+    purpose: new AuthenticationProofPurpose({challenge, domain})
+  });
+  return {presentation, documentLoader: dlp};
 }
 
 async function _generateDid() {
@@ -93,7 +129,10 @@ async function _generateDid() {
     controller: authenticationKey.controller,
     publicKeyBase58: authenticationKey.publicKeyBase58
   };
-  return {authenticationKey, did, mockDoc, capabilityInvocationKey};
+  const documentLoader = await _createDidDocumentLoader({record: mockDoc});
+  return {
+    authenticationKey, did, documentLoader, mockDoc, capabilityInvocationKey
+  };
 }
 
 // delimiters for a DID URL
@@ -103,6 +142,7 @@ const splitRegex = /[;|\/|\?|#]/;
 // the signatures were valid at the time of signing.
 async function _createDidDocumentLoader({record}) {
   return async function(url) {
+    console.log('%%%%%%%%%%%%', url);
     if(!url.startsWith('did:')) {
       return contextLoader(url);
     }
