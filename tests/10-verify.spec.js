@@ -1,64 +1,62 @@
 const chai = require('chai');
 const constants = require('./constants');
-const {documentLoader: v1dl} = require('did-veres-one');
+const {documentLoader: v1DocumentLoader} = require('did-veres-one');
 const {Ed25519KeyPair} = require('crypto-ld');
 const jsigs = require('jsonld-signatures');
 const jsonld = require('jsonld');
 const mockData = require('./mock.data');
 const uuid = require('uuid/v4');
 const vc = require('..');
+const MultiLoader = require('./MultiLoader');
 chai.should();
 
-const contexts = new Map();
-contexts.set(
-  'https://w3id.org/credentials/v1',
-  require('./contexts/credentials-v1.jsonld'));
-
-const contextLoader = async url => {
-  let document;
-  try {
-    ({document} = await v1dl(url));
-  } catch(e) {
-    if(contexts.has(url)) {
-      document = jsonld.clone(contexts.get(url));
+const testContextLoader = () => {
+  const contexts = new Map([[
+    constants.CREDENTIALS_CONTEXT_URL,
+    require('./contexts/credentials-v1.jsonld')
+  ]]);
+  return async url => {
+    if(!contexts.has(url)) {
+      throw new Error('NotFoundError');
     }
-  }
-  if(!document) {
-    throw new Error('NotFoundError');
-  }
-  return {
-    contextUrl: null,
-    document,
-    documentUrl: url
+    return {
+      contextUrl: null,
+      document: jsonld.clone(contexts.get(url)),
+      documentUrl: url
+    };
   };
 };
+
+// documents are added to this documentLoader incrementally
+const testLoader = new MultiLoader({
+  documentLoader: [
+    // CREDENTIALS_CONTEXT_URL
+    testContextLoader(),
+    // DID_CONTEXT_URL and VERES_ONE_CONTEXT_URL
+    v1DocumentLoader
+  ]
+});
 
 describe('verify API', () => {
   it('verifies a valid presentation', async () => {
     const challenge = uuid();
     const domain = uuid();
-    const {presentation, documentLoader} = await _generatePresentation(
-      {challenge, domain});
-    console.log('PPPPPPPPPPP', JSON.stringify(presentation, null, 2));
+    const {presentation} = await _generatePresentation({challenge, domain});
     const result = await vc.verifyPresentation({
       challenge,
-      documentLoader,
+      documentLoader: testLoader.documentLoader.bind(testLoader),
       domain,
       presentation,
     });
-    console.log('RESULT', JSON.stringify(result, null, 2));
     result.verified.should.be.a('boolean');
     result.verified.should.be.true;
   });
   it('verifies a valid credential', async () => {
-    const {credential, documentLoader} = await _generateCredential();
-    // console.log('CREDENTIAL', JSON.stringify(credential, null, 2));
-
+    const {credential} = await _generateCredential();
     const result = await vc.verify({
       credential,
-      documentLoader
+      documentLoader: testLoader.documentLoader.bind(testLoader)
     });
-    // console.log('RESULT', JSON.stringify(result, null, 2));
     result.verified.should.be.a('boolean');
     result.verified.should.be.true;
   });
@@ -74,9 +72,10 @@ async function _generateCredential() {
   const {authenticationKey, documentLoader} = await _generateDid();
   const {Ed25519Signature2018} = jsigs.suites;
   const {AuthenticationProofPurpose} = jsigs.purposes;
+  testLoader.addLoader(documentLoader);
   const credential = await jsigs.sign(mockCredential, {
     compactProof: false,
-    documentLoader,
+    documentLoader: testLoader.documentLoader.bind(testLoader),
     suite: new Ed25519Signature2018({key: authenticationKey}),
     purpose: new AuthenticationProofPurpose({
       challenge: 'challengeString'
@@ -88,17 +87,19 @@ async function _generateCredential() {
 async function _generatePresentation({challenge, domain}) {
   const mockPresentation = jsonld.clone(mockData.presentations.alpha);
   const {authenticationKey, documentLoader: dlp} = await _generateDid();
+  testLoader.addLoader(dlp);
   const {Ed25519Signature2018} = jsigs.suites;
   const {AuthenticationProofPurpose} = jsigs.purposes;
   const {credential, documentLoader: dlc} = await _generateCredential();
+  testLoader.addLoader(dlc);
   mockPresentation.verifiableCredential.push(credential);
   const presentation = await jsigs.sign(mockPresentation, {
     compactProof: false,
-    documentLoader: dlp,
+    documentLoader: testLoader.documentLoader.bind(testLoader),
     suite: new Ed25519Signature2018({key: authenticationKey}),
     purpose: new AuthenticationProofPurpose({challenge, domain})
   });
-  return {presentation, documentLoader: dlp};
+  return {presentation};
 }
 
 async function _generateDid() {
@@ -142,11 +143,13 @@ const splitRegex = /[;|\/|\?|#]/;
 // the signatures were valid at the time of signing.
 async function _createDidDocumentLoader({record}) {
   return async function(url) {
-    console.log('%%%%%%%%%%%%', url);
     if(!url.startsWith('did:')) {
-      return contextLoader(url);
+      throw new Error('NotFoundError');
     }
     const [did] = url.split(splitRegex);
+    if(did !== record.id) {
+      throw new Error('NotFoundError');
+    }
     const didDocument = jsonld.util.clone(record);
     if(!url.includes('#')) {
       return {
@@ -167,7 +170,7 @@ async function _createDidDocumentLoader({record}) {
 
 async function _pluckDidNode(did, target, didDocument) {
   // flatten to isolate target
-  jsonld.documentLoader = contextLoader;
+  jsonld.documentLoader = testLoader.documentLoader.bind(testLoader);
   const flattened = await jsonld.flatten(didDocument);
   // filter out non-DID nodes and find target
   let found = false;
