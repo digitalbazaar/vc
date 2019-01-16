@@ -55,6 +55,7 @@
     "did-veres-one": "github:veres-one/did-veres-one#targetNodePlus",
     "mocha": "^5.2.0",
     "regenerator-runtime": "^0.11.0",
+    "uuid": "^3.3.2",
     "webpack": "^3.7.1",
     "webpack-merge": "^4.1.0"
   },

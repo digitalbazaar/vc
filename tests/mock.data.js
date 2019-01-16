@@ -12,7 +12,7 @@ const credentials = mock.credentials = {};
 
 credentials.alpha = {
   "@context": [
-    "https://w3id.org/credentials/v1", {
+    constants.CREDENTIALS_CONTEXT_URL, {
       "ex1": "https://example.com/examples/v1",
       "AlumniCredential": "ex1:AlumniCredential",
       "alumniOf": "ex1:alumniOf"
@@ -24,6 +24,14 @@ credentials.alpha = {
     "id": "did:example:ebfeb1f712ebc6f1c276e12ec21",
     "alumniOf": "Example University"
   }
+};
+
+const presentations = mock.presentations = {};
+
+presentations.alpha = {
+  "@context": constants.CREDENTIALS_CONTEXT_URL,
+  "type": ["VerifiablePresentation"],
+  "verifiableCredential": [],
 };
 
 const privateDidDocuments = mock.privateDidDocuments = {};
