@@ -9,7 +9,9 @@ const vc = require('..');
 chai.should();
 
 const contexts = new Map();
-contexts.set('https://w3id.org/vc/v1', require('./contexts/vc-v1.jsonld'));
+contexts.set(
+  'https://w3id.org/credentials/v1',
+  require('./contexts/credentials-v1.jsonld'));
 
 const contextLoader = async url => {
   let document;

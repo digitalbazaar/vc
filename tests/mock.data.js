@@ -11,14 +11,18 @@ const didContexts = [
 const credentials = mock.credentials = {};
 
 credentials.alpha = {
-  "@context": "https://w3id.org/vc/v1",
-  "id": "https://dmv.example.gov/credentials/3732",
-  "type": ["Credential", "ProofOfAgeCredential"],
-  "issuer": "https://dmv.example.gov/issuers/14",
-  "issued": "2017-01-01T19:13:24Z",
-  "claim": {
+  "@context": [
+    "https://w3id.org/credentials/v1", {
+      "ex1": "https://example.com/examples/v1",
+      "AlumniCredential": "ex1:AlumniCredential",
+      "alumniOf": "ex1:alumniOf"
+    }
+  ],
+  "id": "http://example.edu/credentials/58473",
+  "type": ["VerifiableCredential", "AlumniCredential"],
+  "credentialSubject": {
     "id": "did:example:ebfeb1f712ebc6f1c276e12ec21",
-    "ageOver": 21
+    "alumniOf": "Example University"
   }
 };
 
