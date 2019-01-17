@@ -38,7 +38,7 @@
     "fs-extra": "^4.0.2",
     "get-stdin": "^5.0.1",
     "jsonld": "^1.0",
-    "jsonld-signatures": "digitalbazaar/jsonld-signatures#use-crypto-ld",
+    "jsonld-signatures": "^3.0.0",
     "semver": "^5.4.1",
     "supports-color": "^5.0.0"
   },
