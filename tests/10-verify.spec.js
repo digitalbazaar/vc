@@ -11,6 +11,7 @@ const MultiLoader = require('./MultiLoader');
 chai.should();
 
 const testContextLoader = () => {
+  // FIXME: used credentials-context module when available
   const contexts = new Map([[
     constants.CREDENTIALS_CONTEXT_URL,
     require('./contexts/credentials-v1.jsonld')
