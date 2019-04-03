@@ -38,6 +38,10 @@ const testLoader = new MultiLoader({
   ]
 });
 
+describe('issue API', () => {
+
+});
+
 describe('verify API', () => {
   it('verifies a valid presentation', async () => {
     const challenge = uuid();
