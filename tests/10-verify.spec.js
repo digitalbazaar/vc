@@ -1,48 +1,76 @@
 const chai = require('chai');
 const constants = require('./constants');
-const {documentLoader: v1DocumentLoader} = require('did-veres-one');
+// const {documentLoader: v1DocumentLoader} = require('did-veres-one');
 const {Ed25519KeyPair} = require('crypto-ld');
 const jsigs = require('jsonld-signatures');
 const jsonld = require('jsonld');
 const mockData = require('./mock.data');
 const uuid = require('uuid/v4');
 const vc = require('..');
-const MultiLoader = require('./MultiLoader');
+// const MultiLoader = require('./MultiLoader');
 chai.should();
 
-const testContextLoader = () => {
-  // FIXME: used credentials-context module when available
-  const contexts = new Map([[
-    constants.CREDENTIALS_CONTEXT_URL,
-    require('./contexts/credentials-v1.jsonld')
-  ]]);
-  return async url => {
-    if(!contexts.has(url)) {
-      throw new Error('NotFoundError');
+// const testContextLoader = () => {
+//   // FIXME: used credentials-context module when available
+//   const contexts = new Map([[
+//     constants.CREDENTIALS_CONTEXT_URL,
+//     require('./contexts/credentials-v1.jsonld')
+//   ]]);
+//   return async url => {
+//     if(!contexts.has(url)) {
+//       throw new Error('NotFoundError');
+//     }
+//     return {
+//       contextUrl: null,
+//       document: jsonld.clone(contexts.get(url)),
+//       documentUrl: url
+//     };
+//   };
+// };
+//
+// // documents are added to this documentLoader incrementally
+// const testLoader = new MultiLoader({
+//   documentLoader: [
+//     // CREDENTIALS_CONTEXT_URL
+//     testContextLoader(),
+//     // DID_CONTEXT_URL and VERES_ONE_CONTEXT_URL
+//     v1DocumentLoader
+//   ]
+// });
+let suite, keyPair;
+
+const credential = {
+  "@context": [
+    "https://www.w3.org/2018/credentials/v1",
+    "https://www.w3.org/2018/credentials/examples/v1"
+  ],
+  "id": "http://example.edu/credentials/3732",
+  "type": ["VerifiableCredential", "UniversityDegreeCredential"],
+  "credentialSubject": {
+    "@id": "did:example:ebfeb1f712ebc6f1c276e12ec21",
+    "degree": {
+      "type": "BachelorDegree",
+      "name": "Bachelor of Science in Mechanical Engineering"
     }
-    return {
-      contextUrl: null,
-      document: jsonld.clone(contexts.get(url)),
-      documentUrl: url
-    };
-  };
+  }
 };
 
-// documents are added to this documentLoader incrementally
-const testLoader = new MultiLoader({
-  documentLoader: [
-    // CREDENTIALS_CONTEXT_URL
-    testContextLoader(),
-    // DID_CONTEXT_URL and VERES_ONE_CONTEXT_URL
-    v1DocumentLoader
-  ]
+before(async () => {
+  keyPair = await Ed25519KeyPair.generate();
+  suite = new jsigs.suites.Ed25519Signature2018({
+    verificationMethod: keyPair.publicKey.id,
+    key: keyPair
+  })
 });
 
 describe('issue API', () => {
-
+  it('should issue', async () => {
+    const result = await vc.issue({credential, suite});
+    console.log(JSON.stringify(result, null, 2))
+  });
 });
 
-describe('verify API', () => {
+describe.skip('verify API', () => {
   it('verifies a valid presentation', async () => {
     const challenge = uuid();
     const domain = uuid();

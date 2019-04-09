@@ -67,7 +67,14 @@ To issue a Verifiable Credential, you need the following:
 ```js
 const vc = require('vc-js');
 
-vc.issue({ credential, documentLoader })
+// generate a publicKey / privateKeyBase58
+
+const suite = new Ed25519Signature2018({
+  verificationMethod: publicKey.id,
+  key: new Ed25519KeyPair({privateKeyBase58})
+})
+
+vc.issue({ credential, suite })
     .then(issuedVc => console.log)
     .catch(console.error)
 ```
@@ -77,7 +84,17 @@ vc.issue({ credential, documentLoader })
 ```js
 const vc = require('vc-js');
 
-vc.verify({ credential, documentLoader })
+vc.verify({ credential, suite })
+    .then(result => console.log)
+    .catch(console.error)
+```
+
+### `verifyPresentation()`
+
+```js
+const vc = require('vc-js');
+
+vc.verifyPresentation({ presentation, suite })
     .then(result => console.log)
     .catch(console.error)
 ```
