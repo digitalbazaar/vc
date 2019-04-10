@@ -37,23 +37,28 @@ chai.should();
 //     v1DocumentLoader
 //   ]
 // });
-let suite, keyPair;
+let suite, keyPair, verifiedCredential;
 
 const credential = {
   "@context": [
     "https://www.w3.org/2018/credentials/v1",
     "https://www.w3.org/2018/credentials/examples/v1"
   ],
-  "id": "http://example.edu/credentials/3732",
-  "type": ["VerifiableCredential", "UniversityDegreeCredential"],
+  "id": "http://example.edu/credentials/1872",
+  "type": ["VerifiableCredential", "AlumniCredential"],
+  "issuer": "https://example.edu/issuers/565049",
+  "issuanceDate": "2010-01-01T19:73:24Z",
   "credentialSubject": {
-    "@id": "did:example:ebfeb1f712ebc6f1c276e12ec21",
-    "degree": {
-      "type": "BachelorDegree",
-      "name": "Bachelor of Science in Mechanical Engineering"
-    }
+    "id": "did:example:ebfeb1f712ebc6f1c276e12ec21",
+    "alumniOf": "<span lang='en'>Example University</span>"
+  },
+  "proof": {
+    "type": "RsaSignature2018",
+    "created": "2017-06-18T21:19:10Z",
+    "creator": "https://example.edu/issuers/keys/1",
+    "jws": "eyJhbGciOiJSUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..TCYt5XsITJX1CxPCT8yAV-TVkIEq_PbChOMqsLfRoPsnsgw5WEuts01mq-pQy7UJiN5mgRxD-WUcX16dUEMGlv50aqzpqh4Qktb3rk-BuQy72IFLOqV0G_zS245-kronKb78cPN25DGlcTwLtjPAYuNzVBAh4vGHSrQyHUdBBPM"
   }
-};
+}
 
 before(async () => {
   keyPair = await Ed25519KeyPair.generate();
@@ -63,10 +68,20 @@ before(async () => {
   })
 });
 
-describe('issue API', () => {
-  it('should issue', async () => {
-    const result = await vc.issue({credential, suite});
-    console.log(JSON.stringify(result, null, 2))
+describe('issue()', () => {
+  it('should issue a verifiable credential with proof', async () => {
+    verifiedCredential = await vc.issue({credential, suite});
+    verifiedCredential.proof.should.exist;
+    console.log(JSON.stringify(verifiedCredential, null, 2));
+  });
+});
+
+describe('verify()', () => {
+  it('should verify a vc', async () => {
+    const result = await vc.verify({credential: verifiedCredential, suite});
+    console.log(JSON.stringify(result, null, 2));
+    result.verified.should.be.true;
+    result.error.to.not.exist;
   });
 });
 
