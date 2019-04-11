@@ -53,6 +53,7 @@ const assertionController  = {
   '@context': 'https://w3id.org/security/v2',
   id: 'https://example.com/i/carol',
   assertionMethod: [
+    // actual key is going to be added in the before() block below
   ]
 };
 
@@ -74,19 +75,21 @@ const credential = {
 }
 
 before(async () => {
-  keyPair = await Ed25519KeyPair.generate();
-  keyPair.id = 'https://example.edu/issuers/keys/1';
-  keyPair.controller = 'https://example.com/i/carol';
-  contexts['https://example.com/i/carol'] = assertionController;
+  // Set up the key that will be signing and verifying
+  keyPair = await Ed25519KeyPair.generate({
+    id: 'https://example.edu/issuers/keys/1',
+    controller: 'https://example.com/i/carol'
+  });
 
+  // Register the controller document and the key document with documentLoader
+  contexts['https://example.com/i/carol'] = assertionController;
   contexts['https://example.edu/issuers/keys/1'] = keyPair.publicNode();
 
-  assertionController.assertionMethod.push(
-    keyPair.publicNode()
-  );
+  // Add the key to the Controller doc (authorizes its use for assertion)
+  assertionController.assertionMethod.push(keyPair.id);
 
+  // Set up the signature suite, using the generated key
   suite = new jsigs.suites.Ed25519Signature2018({
-    creator: 'https://example.edu/issuers/keys/1',
     verificationMethod: 'https://example.edu/issuers/keys/1',
     key: keyPair
   })
@@ -102,6 +105,7 @@ describe('issue()', () => {
 describe('verify()', () => {
   it('should verify a vc', async () => {
     const result = await vc.verify({credential: verifiedCredential, suite, documentLoader});
+    // console.log(JSON.stringify(result, null, 2))
     result.verified.should.be.true;
     expect(result.error).to.not.exist;
   });
