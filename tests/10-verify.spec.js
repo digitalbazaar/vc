@@ -1,10 +1,8 @@
 const chai = require('chai');
-const constants = require('./constants');
-// const {documentLoader: v1DocumentLoader} = require('did-veres-one');
+const {expect} = chai;
 const {Ed25519KeyPair} = require('crypto-ld');
 const jsigs = require('jsonld-signatures');
 const jsonld = require('jsonld');
-const mockData = require('./mock.data');
 const uuid = require('uuid/v4');
 const vc = require('..');
 // const MultiLoader = require('./MultiLoader');
@@ -37,6 +35,27 @@ chai.should();
 //     v1DocumentLoader
 //   ]
 // });
+const contexts = require('../lib/contexts');
+
+async function documentLoader(url) {
+  const context = contexts[url];
+  if(context) {
+    return {
+      contextUrl: null,
+      documentUrl: url,
+      document: context
+    };
+  }
+  throw new Error(`${url} is not an authorized supported context url.`)
+}
+
+const assertionController  = {
+  '@context': 'https://w3id.org/security/v2',
+  id: 'https://example.com/i/carol',
+  assertionMethod: [
+  ]
+};
+
 let suite, keyPair, verifiedCredential;
 
 const credential = {
@@ -51,19 +70,24 @@ const credential = {
   "credentialSubject": {
     "id": "did:example:ebfeb1f712ebc6f1c276e12ec21",
     "alumniOf": "<span lang='en'>Example University</span>"
-  },
-  "proof": {
-    "type": "RsaSignature2018",
-    "created": "2017-06-18T21:19:10Z",
-    "creator": "https://example.edu/issuers/keys/1",
-    "jws": "eyJhbGciOiJSUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..TCYt5XsITJX1CxPCT8yAV-TVkIEq_PbChOMqsLfRoPsnsgw5WEuts01mq-pQy7UJiN5mgRxD-WUcX16dUEMGlv50aqzpqh4Qktb3rk-BuQy72IFLOqV0G_zS245-kronKb78cPN25DGlcTwLtjPAYuNzVBAh4vGHSrQyHUdBBPM"
   }
 }
 
 before(async () => {
   keyPair = await Ed25519KeyPair.generate();
+  keyPair.id = 'https://example.edu/issuers/keys/1';
+  keyPair.controller = 'https://example.com/i/carol';
+  contexts['https://example.com/i/carol'] = assertionController;
+
+  contexts['https://example.edu/issuers/keys/1'] = keyPair.publicNode();
+
+  assertionController.assertionMethod.push(
+    keyPair.publicNode()
+  );
+
   suite = new jsigs.suites.Ed25519Signature2018({
-    verificationMethod: keyPair.publicKey.id,
+    creator: 'https://example.edu/issuers/keys/1',
+    verificationMethod: 'https://example.edu/issuers/keys/1',
     key: keyPair
   })
 });
@@ -72,16 +96,14 @@ describe('issue()', () => {
   it('should issue a verifiable credential with proof', async () => {
     verifiedCredential = await vc.issue({credential, suite});
     verifiedCredential.proof.should.exist;
-    console.log(JSON.stringify(verifiedCredential, null, 2));
   });
 });
 
 describe('verify()', () => {
   it('should verify a vc', async () => {
-    const result = await vc.verify({credential: verifiedCredential, suite});
-    console.log(JSON.stringify(result, null, 2));
+    const result = await vc.verify({credential: verifiedCredential, suite, documentLoader});
     result.verified.should.be.true;
-    result.error.to.not.exist;
+    expect(result.error).to.not.exist;
   });
 });
 
