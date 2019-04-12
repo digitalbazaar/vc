@@ -90,7 +90,6 @@ program
     console.log();
   });
 
-
 const testKey = {
   'id': 'https://example.edu/issuers/keys/1',
   'type': 'Ed25519VerificationKey2018',
