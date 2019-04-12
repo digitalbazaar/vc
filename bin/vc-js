@@ -4,6 +4,8 @@ const fs = require('fs-extra');
 const getStdin = require('get-stdin');
 const program = require('commander');
 const vc = require('../lib/');
+const jsigs = require('jsonld-signatures');
+const {Ed25519KeyPair} = require('crypto-ld');
 
 // debuggers
 const loaderDebug = require('debug')('vc:loader');
@@ -42,9 +44,9 @@ if(process.env.JSONLD_LOADER_MAP) {
   };
 }
 
-program
-  .version(require('../package.json').version)
-  .option('-v, --verbose', 'Increase verbosity', inc, 0);
+// program
+//   .version(require('../package.json').version)
+//   .option('-v, --verbose', 'Increase verbosity', inc, 0);
 
 program
   .command('issue')
@@ -57,7 +59,7 @@ program
   .option('-n, --nonce <domain>', 'Signature nonce [none].')
   .option('-a, --algorithm <algorithm>',
     'Signature algorithm [Ed25519Signature2018].')
-  .action(async function(cmd) {
+  .action(async cmd => {
     try {
       if(arguments.length > 1) {
         throw new Error('Too many arguments.');
@@ -85,6 +87,72 @@ program
     console.log('  Examples: ');
     console.log();
     console.log('    $ vc-js issue ... < cred.jsonld');
+    console.log();
+  });
+
+
+const testKey = {
+  'id': 'https://example.edu/issuers/keys/1',
+  'type': 'Ed25519VerificationKey2018',
+  'controller': 'https://example.edu/issuers/14',
+  'publicKeyBase58': 'AoncetDEamr1hreoMiLocvQvCLEu5i5FuQ232zdqie7g',
+  'privateKeyBase58': '53KBp86VkzDKthrZdQCKv4UaAWd74DWCqgbmYmXuLytgbU7pFghAWs23Tdd9iacMLZtkvwdo5vCvDQ8vj24HdJYv'
+};
+const testKeyPair = new Ed25519KeyPair(testKey);
+
+const assertionController  = {
+  '@context': 'https://w3id.org/security/v2',
+  id: 'https://example.edu/issuers/14',
+  assertionMethod: [ testKey.id ]
+};
+
+const testContext = require('../lib/contexts');
+testContext['https://example.edu/issuers/14'] = assertionController;
+testContext['https://example.edu/issuers/keys/1'] = testKeyPair.publicNode();
+testContext['https://example.org/examples/degree.json'] = {}
+
+async function testDocumentLoader(url) {
+  const context = testContext[url];
+  if(context) {
+    return {
+      contextUrl: null,
+      documentUrl: url,
+      document: context
+    };
+  }
+  throw new Error(`${url} is not an authorized supported context url.`)
+}
+
+const testSuite = new jsigs.suites.Ed25519Signature2018({
+  verificationMethod: testKey.id,
+  key: testKeyPair
+})
+
+program
+  .command('test-issue')
+  .alias('ti')
+  .description('issue a credential with test key')
+  .action(async cmd => {
+    try {
+      const input = await getStdin();
+      const credential =  JSON.parse(input);
+
+      const result = await vc.issue({
+        credential,
+        suite: testSuite,
+        documentLoader: testDocumentLoader
+      });
+      console.log(JSON.stringify(result, null, 2));
+    } catch(e) {
+      console.error('Error:', JSON.stringify(e, null, 2), e);
+      process.exit(1);
+    }
+  })
+  .on('--help', () => {
+    console.log();
+    console.log('Used for test suites.  Examples: ');
+    console.log();
+    console.log('    $ vc-js test-issue < cred.jsonld');
     console.log();
   });
 
