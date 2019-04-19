@@ -67,7 +67,7 @@ To issue a Verifiable Credential, you need the following:
 ```js
 const vc = require('vc-js');
 
-// generate a publicKey / privateKeyBase58
+// generate a publicKey / privateKeyBase58 (not shown here)
 
 const suite = new Ed25519Signature2018({
   verificationMethod: publicKey.id,
