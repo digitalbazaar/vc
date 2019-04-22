@@ -17,7 +17,7 @@ module.exports = function(config) {
     ],
 
     // list of files to exclude
-    exclude: [],
+    exclude: ['bin/*'],
     preprocessors: {
       'tests/*.js': ['webpack', 'babel', 'sourcemap']
     },
@@ -31,6 +31,7 @@ module.exports = function(config) {
           {
             test: /\.js$/,
             exclude: [
+              /bin/,
               /node_modules\/(?!jsonld|crypto-ld)/
             ],
             use: {
