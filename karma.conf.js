@@ -1,6 +1,9 @@
 /*
  * Copyright (c) 2019 Digital Bazaar, Inc. All rights reserved.
  */
+const webpack = require('webpack');
+const path = require('path');
+
 module.exports = function(config) {
 
   config.set({
@@ -24,7 +27,7 @@ module.exports = function(config) {
 
     webpack: {
       //mode: 'production',
-      //mode: 'development',
+      mode: 'development',
       devtool: 'inline-source-map',
       module: {
         rules: [
@@ -50,12 +53,19 @@ module.exports = function(config) {
       },
       node: {
         Buffer: false,
-        process: true,
-        crypto: true,
+        process: false,
+        crypto: false, // this is so bitcore does not error in webpack bundle step
         setImmediate: false
+      },
+      resolve: {
+        alias: {
+          crypto: path.resolve(__dirname, 'tests/mocks/crypto')
+        }
+      },
+      externals: {
+        'bitcore-message': '\'bitcore-message\''
       }
     },
-
     // test results reporter to use
     // possible values: 'dots', 'progress'
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
