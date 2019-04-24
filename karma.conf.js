@@ -54,13 +54,8 @@ module.exports = function(config) {
       node: {
         Buffer: false,
         process: false,
-        crypto: false, // this is so bitcore does not error in webpack bundle step
+        crypto: false,
         setImmediate: false
-      },
-      resolve: {
-        alias: {
-          crypto: path.resolve(__dirname, 'tests/mocks/crypto')
-        }
       },
       externals: {
         'bitcore-message': '\'bitcore-message\''
