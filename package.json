@@ -54,7 +54,6 @@
     "chai": "^4.1.2",
     "core-js": "^3.0.1",
     "crypto-ld": "^3.0.0",
-    "did-veres-one": "^4.0.0",
     "mocha": "^6.1.2",
     "regenerator-runtime": "^0.13.1",
     "uuid": "^3.3.2",
