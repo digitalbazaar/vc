@@ -22,7 +22,7 @@ module.exports = function(config) {
     // list of files to exclude
     exclude: ['bin/*'],
     preprocessors: {
-      'tests/*.js': ['webpack', 'babel', 'sourcemap']
+      'tests/*.js': ['webpack', 'sourcemap']
     },
 
     webpack: {
