@@ -31,7 +31,8 @@
     "dist/*.js",
     "dist/*.js.map",
     "dist/node6/**/*.js",
-    "lib/*.js"
+    "lib/*.js",
+    "lib/contexts/*.js"
   ],
   "dependencies": {
     "commander": "^2.8.0",
