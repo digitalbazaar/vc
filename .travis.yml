@@ -1,0 +1,20 @@
+language: node_js
+node_js:
+  - "8"
+  - "10"
+  # re-enable when pre-built sodium-native is available
+  #- "12"
+sudo: false
+script:
+  - if [ "x$KARMA" = "x" ]; then npm run mocha; fi
+  - if [ "x$KARMA" != "x" ]; then npm run karma; fi
+# only run karma tests for one node version
+matrix:
+  include:
+  - name: "Browser Unit Tests"
+    node_js: "10"
+    env: KARMA=true
+notifications:
+  email:
+    on_success: change
+    on_failure: change
