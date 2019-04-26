@@ -1,79 +1,50 @@
 const chai = require('chai');
-const {expect} = chai;
+const constants = require('./constants');
 const {Ed25519KeyPair} = require('crypto-ld');
 const jsigs = require('jsonld-signatures');
 const jsonld = require('jsonld');
+const mockData = require('./mock.data');
 const uuid = require('uuid/v4');
 const vc = require('..');
-// const MultiLoader = require('./MultiLoader');
-const should = chai.should();
+const MultiLoader = require('./MultiLoader');
+const realContexts = require('../lib/contexts');
+const invalidContexts = require('./contexts');
+const credential = require('./mocks/credential');
+const assertionController = require('./mocks/assertionController');
 
-// const testContextLoader = () => {
-//   // FIXME: used credentials-context module when available
-//   const contexts = new Map([[
-//     constants.CREDENTIALS_CONTEXT_URL,
-//     require('./contexts/credentials-v1.jsonld')
-//   ]]);
-//   return async url => {
-//     if(!contexts.has(url)) {
-//       throw new Error('NotFoundError');
-//     }
-//     return {
-//       contextUrl: null,
-//       document: jsonld.clone(contexts.get(url)),
-//       documentUrl: url
-//     };
-//   };
-// };
-//
-// // documents are added to this documentLoader incrementally
-// const testLoader = new MultiLoader({
-//   documentLoader: [
-//     // CREDENTIALS_CONTEXT_URL
-//     testContextLoader(),
-//     // DID_CONTEXT_URL and VERES_ONE_CONTEXT_URL
-//     v1DocumentLoader
-//   ]
-// });
+chai.should();
+const {expect} = chai;
 
-const contexts = require('../lib/contexts');
+const contexts = Object.assign({}, realContexts);
 
-async function documentLoader(url) {
-  const context = contexts[url];
-  if(context) {
+const testContextLoader = () => {
+  // FIXME: used credentials-context module when available
+  for(const key in invalidContexts) {
+    const {url, value} = invalidContexts[key];
+    contexts[url] = value;
+  }
+  return async url => {
+    if(!contexts[url]) {
+      throw new Error('NotFoundError');
+    }
     return {
       contextUrl: null,
-      documentUrl: url,
-      document: context
+      document: jsonld.clone(contexts[url]),
+      documentUrl: url
     };
-  }
-  throw new Error(`${url} is not an authorized supported context url.`);
-}
-
-const assertionController = {
-  '@context': 'https://w3id.org/security/v2',
-  id: 'https://example.edu/issuers/565049',
-  assertionMethod: [
-    // actual key is going to be added in the before() block below
-  ]
+  };
 };
+
+// documents are added to this documentLoader incrementally
+const testLoader = new MultiLoader({
+  documentLoader: [
+    // CREDENTIALS_CONTEXT_URL
+    testContextLoader(),
+  ]
+});
 
 let suite, keyPair, verifiableCredential;
-
-const credential = {
-  "@context": [
-    "https://www.w3.org/2018/credentials/v1",
-    "https://www.w3.org/2018/credentials/examples/v1"
-  ],
-  "id": "http://example.edu/credentials/1872",
-  "type": ["VerifiableCredential", "AlumniCredential"],
-  "issuer": "https://example.edu/issuers/565049",
-  "issuanceDate": "2010-01-01T19:23:24Z",
-  "credentialSubject": {
-    "id": "did:example:ebfeb1f712ebc6f1c276e12ec21",
-    "alumniOf": "<span lang='en'>Example University</span>"
-  }
-};
+const documentLoader = testLoader.documentLoader.bind(testLoader);
 
 before(async () => {
   // Set up the key that will be signing and verifying
@@ -81,7 +52,6 @@ before(async () => {
     id: 'https://example.edu/issuers/keys/1',
     controller: 'https://example.com/i/carol'
   });
-
   // Register the controller document and the key document with documentLoader
   contexts['https://example.com/i/carol'] = assertionController;
   contexts['https://example.edu/issuers/keys/1'] = keyPair.publicNode();
@@ -96,7 +66,7 @@ before(async () => {
   });
 });
 
-describe('issue()', () => {
+describe('vc.issue()', () => {
   it('should issue a verifiable credential with proof', async () => {
     verifiableCredential = await vc.issue({
       credential,
@@ -131,7 +101,7 @@ describe('issue()', () => {
   })
 });
 
-describe('verify()', () => {
+describe('vc.verify()', () => {
   it('should verify a vc', async () => {
     const result = await vc.verify({
       credential: verifiableCredential,
@@ -172,24 +142,118 @@ describe.skip('verify API', () => {
   it('verifies a valid presentation', async () => {
     const challenge = uuid();
     const domain = uuid();
-    const {presentation} = await _generatePresentation({challenge, domain});
+    const {AuthenticationProofPurpose} = jsigs.purposes;
+    const {presentation, suite} = await _generatePresentation(
+      {challenge, domain});
     const result = await vc.verifyPresentation({
       challenge,
-      documentLoader: testLoader.documentLoader.bind(testLoader),
+      suite,
+      documentLoader,
+      purpose: new AuthenticationProofPurpose({challenge, domain}),
       domain,
-      presentation,
+      presentation
+    });
+    result.presentationResult.verified.should.be.a('boolean');
+    result.presentationResult.verified.should.be.true;
+    result.verified.should.be.a('boolean');
+    result.verified.should.be.true;
+  });
+  it.skip('verifies a valid credential', async () => {
+    const {credential, suite} = await _generateCredential();
+    const result = await vc.verify({
+      suite,
+      credential,
+      documentLoader
     });
     result.verified.should.be.a('boolean');
     result.verified.should.be.true;
   });
-  it('verifies a valid credential', async () => {
-    const {credential} = await _generateCredential();
-    const result = await vc.verify({
-      credential,
-      documentLoader: testLoader.documentLoader.bind(testLoader)
+
+  describe('negative tests', async () => {
+    it('fails to verify if a context is null', async () => {
+      const {credential, suite} = await _generateCredential();
+      credential['@context'].push(invalidContexts.nullDoc.url);
+      const result = await vc.verify({
+        suite,
+        credential,
+        documentLoader
+      });
+      result.verified.should.be.a('boolean');
+      result.verified.should.be.false;
+      result.error.name.should.contain('jsonld.InvalidUrl');
     });
-    result.verified.should.be.a('boolean');
-    result.verified.should.be.true;
+    it('fails to verify if a context contains an invalid id', async () => {
+      const {credential, suite} = await _generateCredential();
+      credential['@context'].push(invalidContexts.invalidId.url);
+      const result = await vc.verify({
+        suite,
+        credential,
+        documentLoader
+      });
+      result.verified.should.be.a('boolean');
+      result.verified.should.be.false;
+      result.error.name.should.contain('jsonld.SyntaxError');
+    });
+    it('fails to verify if a context has a null version', async () => {
+      const {credential, suite} = await _generateCredential();
+      credential['@context'].push(invalidContexts.nullVersion.url);
+      const result = await vc.verify({
+        suite,
+        credential,
+        documentLoader
+      });
+      result.verified.should.be.a('boolean');
+      result.verified.should.be.false;
+      result.error.name.should.contain('jsonld.UnsupportedVersion');
+    });
+    it('fails to verify if a context has a null @id', async () => {
+      const {credential, suite} = await _generateCredential();
+      credential['@context'].push(invalidContexts.nullId.url);
+      const result = await vc.verify({
+        suite,
+        credential,
+        documentLoader
+      });
+      result.verified.should.be.a('boolean');
+      result.verified.should.be.false;
+      result.error.name.should.contain('jsonld.SyntaxError');
+    });
+    it('fails to verify if a context has a null @type', async () => {
+      const {credential, suite} = await _generateCredential();
+      credential['@context'].push(invalidContexts.nullType.url);
+      const result = await vc.verify({
+        suite,
+        credential,
+        documentLoader
+      });
+      result.verified.should.be.a('boolean');
+      result.verified.should.be.false;
+      result.error.name.should.contain('jsonld.SyntaxError');
+    });
+    it('fails to verify if a context links to a missing doc', async () => {
+      const {credential, suite} = await _generateCredential();
+      credential['@context'].push('https://fsad.digitalbazaar.com');
+      const result = await vc.verify({
+        suite,
+        credential,
+        documentLoader
+      });
+      result.verified.should.be.a('boolean');
+      result.verified.should.be.false;
+      result.error.name.should.contain('jsonld.InvalidUrl');
+    });
+    it('fails to verify if a context has an invalid url', async () => {
+      const {credential, suite} = await _generateCredential();
+      credential['@context'].push('htps://fsad.digitalbazaar.');
+      const result = await vc.verify({
+        suite,
+        credential,
+        documentLoader
+      });
+      result.verified.should.be.a('boolean');
+      result.verified.should.be.false;
+      result.error.name.should.contain('jsonld.InvalidUrl');
+    });
   });
 });
 
@@ -204,15 +268,16 @@ async function _generateCredential() {
   const {Ed25519Signature2018} = jsigs.suites;
   const {AuthenticationProofPurpose} = jsigs.purposes;
   testLoader.addLoader(documentLoader);
+  const suite = new Ed25519Signature2018({key: authenticationKey});
   const credential = await jsigs.sign(mockCredential, {
     compactProof: false,
     documentLoader: testLoader.documentLoader.bind(testLoader),
-    suite: new Ed25519Signature2018({key: authenticationKey}),
+    suite,
     purpose: new AuthenticationProofPurpose({
       challenge: 'challengeString'
     })
   });
-  return {credential, documentLoader};
+  return {credential, documentLoader, suite};
 }
 
 async function _generatePresentation({challenge, domain}) {
@@ -224,13 +289,14 @@ async function _generatePresentation({challenge, domain}) {
   const {credential, documentLoader: dlc} = await _generateCredential();
   testLoader.addLoader(dlc);
   mockPresentation.verifiableCredential.push(credential);
+  const suite = new Ed25519Signature2018({key: authenticationKey});
   const presentation = await jsigs.sign(mockPresentation, {
     compactProof: false,
-    documentLoader: testLoader.documentLoader.bind(testLoader),
-    suite: new Ed25519Signature2018({key: authenticationKey}),
+    documentLoader,
+    suite,
     purpose: new AuthenticationProofPurpose({challenge, domain})
   });
-  return {presentation};
+  return {presentation, suite};
 }
 
 async function _generateDid() {
@@ -301,7 +367,7 @@ async function _createDidDocumentLoader({record}) {
 
 async function _pluckDidNode(did, target, didDocument) {
   // flatten to isolate target
-  jsonld.documentLoader = testLoader.documentLoader.bind(testLoader);
+  jsonld.documentLoader = documentLoader;
   const flattened = await jsonld.flatten(didDocument);
   // filter out non-DID nodes and find target
   let found = false;
