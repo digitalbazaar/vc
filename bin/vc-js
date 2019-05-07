@@ -108,7 +108,7 @@ const assertionController  = {
 const testContext = require('../lib/contexts');
 testContext['https://example.edu/issuers/14'] = assertionController;
 testContext['https://example.edu/issuers/keys/1'] = testKeyPair.publicNode();
-testContext['https://example.org/examples/degree.json'] = {}
+testContext['https://example.org/examples/degree.json'] = {};
 
 async function testDocumentLoader(url) {
   const context = testContext[url];
@@ -125,16 +125,16 @@ async function testDocumentLoader(url) {
 const testSuite = new jsigs.suites.Ed25519Signature2018({
   verificationMethod: testKey.id,
   key: testKeyPair
-})
+});
 
 program
   .command('test-issue')
   .alias('ti')
-  .description('issue a credential with test key')
+  .description('issue a verifiable credential with test key')
   .action(async cmd => {
     try {
       const input = await getStdin();
-      const credential =  JSON.parse(input);
+      const credential = JSON.parse(input);
 
       const result = await vc.issue({
         credential,
@@ -154,6 +154,36 @@ program
     console.log('    $ vc-js test-issue < cred.jsonld');
     console.log();
   });
+
+program
+  .command('test-presentation')
+  .alias('tp')
+  .description('issue a verifiable presentation with test key')
+  .action(async cmd => {
+    try {
+      const input = await getStdin();
+      const presentation = JSON.parse(input);
+
+      const result = await vc.createPresentation({
+        presentation,
+        type: 'CredentialManagerPresentation',
+        suite: testSuite,
+        documentLoader: testDocumentLoader
+      });
+      console.log(JSON.stringify(result, null, 2));
+    } catch(e) {
+      console.error('Error:', JSON.stringify(e, null, 2), e);
+      process.exit(1);
+    }
+  })
+  .on('--help', () => {
+    console.log();
+    console.log('Used for test suites.  Examples: ');
+    console.log();
+    console.log('    $ vc-js test-presentation < cred.jsonld');
+    console.log();
+  });
+
 
 program
   .command('verify')
