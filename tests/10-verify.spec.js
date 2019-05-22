@@ -47,10 +47,10 @@ async function documentLoader(url) {
       document: context
     };
   }
-  throw new Error(`${url} is not an authorized supported context url.`)
+  throw new Error(`${url} is not an authorized supported context url.`);
 }
 
-const assertionController  = {
+const assertionController = {
   '@context': 'https://w3id.org/security/v2',
   id: 'https://example.com/i/carol',
   assertionMethod: [
@@ -73,7 +73,7 @@ const credential = {
     "id": "did:example:ebfeb1f712ebc6f1c276e12ec21",
     "alumniOf": "<span lang='en'>Example University</span>"
   }
-}
+};
 
 before(async () => {
   // Set up the key that will be signing and verifying
@@ -93,19 +93,23 @@ before(async () => {
   suite = new jsigs.suites.Ed25519Signature2018({
     verificationMethod: 'https://example.edu/issuers/keys/1',
     key: keyPair
-  })
+  });
 });
 
 describe('issue()', () => {
   it('should issue a verifiable credential with proof', async () => {
     verifiedCredential = await vc.issue({credential, suite});
-    verifiedCredential.proof.should.exist;
+    verifiedCredential.should.exist;
+    verifiedCredential.should.be.an('object');
+    verifiedCredential.should.have.property('proof');
+    verifiedCredential.proof.should.be.an('object');
   });
 });
 
 describe('verify()', () => {
   it('should verify a vc', async () => {
-    const result = await vc.verify({credential: verifiedCredential, suite, documentLoader});
+    const result = await vc.verify(
+      {credential: verifiedCredential, suite, documentLoader});
     // console.log(JSON.stringify(result, null, 2))
     result.verified.should.be.true;
     expect(result.error).to.not.exist;
