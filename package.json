@@ -60,6 +60,9 @@
     "chai": "^4.1.2",
     "core-js": "^3.0.1",
     "crypto-ld": "^3.0.0",
+    "eslint": "^5.16.0",
+    "eslint-config-digitalbazaar": "^2.0.0",
+    "eslint-plugin-jsdoc": "^4.8.3",
     "karma": "^4.1.0",
     "karma-babel-preprocessor": "^8.0.0",
     "karma-chai": "^0.1.0",
@@ -70,11 +73,9 @@
     "karma-webpack": "^3.0.5",
     "mocha": "^6.1.2",
     "regenerator-runtime": "^0.13.1",
-    "eslint": "^5.16.0",
-    "eslint-config-digitalbazaar": "^2.0.0",
-    "eslint-plugin-jsdoc": "^4.8.3",
     "uuid": "^3.3.2",
     "webpack": "^4.29.6",
+    "webpack-cli": "^3.3.2",
     "webpack-merge": "^4.1.0"
   },
   "engines": {
