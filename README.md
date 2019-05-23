@@ -48,7 +48,7 @@ Use on the command line, or see the API section below.
 
 ### Issuing Credentials
 
-To issue a Verifiable Credential, you need the following:
+To issue a verifiable credential, you need the following:
 
 * A URL for the public key
 * A local PEM encoded private key file
@@ -81,7 +81,7 @@ vc.issue({credential, suite})
 
 ### Creating a Verifiable Presentation - `createPresentation()`
 
-To create a Verifiable Presentation out of one or more Verifiable Credentials:
+To create a verifiable presentation out of one or more verifiable credentials:
 
 ```js
 const verifiableCredential = [vc1, vc2];
@@ -98,7 +98,7 @@ vc.createPresentation({verifiableCredential, suite})
 
 ### Verifying - `verify()`
 
-To verify a Verifiable Credential:
+To verify a verifiable credential:
 
 ```js
 vc.verify({credential, suite})
@@ -106,7 +106,7 @@ vc.verify({credential, suite})
   .catch(console.error);
 ```
 
-To verify a Verifiable Presentation:
+To verify a verifiable presentation:
 
 ```js
 vc.verify({presentation, suite})
