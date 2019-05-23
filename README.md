@@ -74,9 +74,9 @@ const suite = new Ed25519Signature2018({
   key: new Ed25519KeyPair({privateKeyBase58})
 });
 
-vc.issue({ credential, suite })
-    .then(issuedVc => console.log)
-    .catch(console.error);
+vc.issue({credential, suite})
+  .then(issuedVc => console.log)
+  .catch(console.error);
 ```
 
 ### Creating a Verifiable Presentation - `createPresentation()`
@@ -84,8 +84,6 @@ vc.issue({ credential, suite })
 To create a Verifiable Presentation out of one or more Verifiable Credentials:
 
 ```js
-const vc = require('vc-js');
-
 const verifiableCredential = [vc1, vc2];
 
 const suite = new Ed25519Signature2018({
@@ -93,9 +91,9 @@ const suite = new Ed25519Signature2018({
   key: new Ed25519KeyPair({privateKeyBase58})
 });
 
-vc.createPresentation({ verifiableCredential, suite })
-    .then(vp => console.log)
-    .catch(console.error);
+vc.createPresentation({verifiableCredential, suite})
+  .then(vp => console.log)
+  .catch(console.error);
 ```
 
 ### Verifying - `verify()`
@@ -103,21 +101,17 @@ vc.createPresentation({ verifiableCredential, suite })
 To verify a Verifiable Credential:
 
 ```js
-const vc = require('vc-js');
-
-vc.verify({ credential, suite })
-    .then(result => console.log)
-    .catch(console.error);
+vc.verify({credential, suite})
+  .then(result => console.log)
+  .catch(console.error);
 ```
 
 To verify a Verifiable Presentation:
 
 ```js
-const vc = require('vc-js');
-
-vc.verify({ presentation, suite })
-    .then(result => console.log)
-    .catch(console.error);
+vc.verify({presentation, suite})
+  .then(result => console.log)
+  .catch(console.error);
 ```
 
 ## Testing
