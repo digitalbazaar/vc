@@ -62,7 +62,7 @@ To issue a Verifiable Credential, you need the following:
 
 ## API
 
-### `issue()`
+### Issuing a Verifiable Credential - `issue()`
 
 ```js
 const vc = require('vc-js');
@@ -72,31 +72,52 @@ const vc = require('vc-js');
 const suite = new Ed25519Signature2018({
   verificationMethod: publicKey.id,
   key: new Ed25519KeyPair({privateKeyBase58})
-})
+});
 
 vc.issue({ credential, suite })
     .then(issuedVc => console.log)
-    .catch(console.error)
+    .catch(console.error);
 ```
 
-### `verify()`
+### Creating a Verifiable Presentation - `createPresentation()`
+
+To create a Verifiable Presentation out of one or more Verifiable Credentials:
+
+```js
+const vc = require('vc-js');
+
+const verifiableCredential = [vc1, vc2];
+
+const suite = new Ed25519Signature2018({
+  verificationMethod: publicKey.id,
+  key: new Ed25519KeyPair({privateKeyBase58})
+})
+
+vc.createPresentation({ verifiableCredential, suite })
+    .then(vp => console.log)
+    .catch(console.error);
+```
+
+### Verifying - `verify()`
+
+To verify a Verifiable Credential:
 
 ```js
 const vc = require('vc-js');
 
 vc.verify({ credential, suite })
     .then(result => console.log)
-    .catch(console.error)
+    .catch(console.error);
 ```
 
-### `verifyPresentation()`
+To verify a Verifiable Presentation:
 
 ```js
 const vc = require('vc-js');
 
-vc.verifyPresentation({ presentation, suite })
+vc.verify({ presentation, suite })
     .then(result => console.log)
-    .catch(console.error)
+    .catch(console.error);
 ```
 
 ## Testing
