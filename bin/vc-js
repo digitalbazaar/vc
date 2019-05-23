@@ -56,7 +56,6 @@ program
   .option('-r, --private-key <private-key>', 'Private key PEM file.')
   .option('-d, --date <date>', 'Signature date [now].', new Date())
   .option('-D, --domain <domain>', 'Signature domain [none].')
-  .option('-c, --challenge <domain>', 'Signature challenge [none].')
   .option('-a, --algorithm <algorithm>',
     'Signature algorithm [Ed25519Signature2018].')
   .action(async cmd => {
