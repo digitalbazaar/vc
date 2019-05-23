@@ -91,7 +91,7 @@ const verifiableCredential = [vc1, vc2];
 const suite = new Ed25519Signature2018({
   verificationMethod: publicKey.id,
   key: new Ed25519KeyPair({privateKeyBase58})
-})
+});
 
 vc.createPresentation({ verifiableCredential, suite })
     .then(vp => console.log)
