@@ -13,7 +13,6 @@ const credential = require('./mocks/credential');
 const assertionController = require('./mocks/assertionController');
 
 chai.should();
-const {expect} = chai;
 
 const contexts = Object.assign({}, realContexts);
 
@@ -88,7 +87,7 @@ describe('vc.issue()', () => {
       await vc.issue({
         credential,
         suite
-      })
+      });
     } catch(e) {
       error = e;
     }
@@ -98,7 +97,7 @@ describe('vc.issue()', () => {
     error.should.be.instanceof(TypeError);
     error.message.should
       .contain('"suite.verificationMethod" property is required.');
-  })
+  });
 });
 
 describe('vc.verify()', () => {
@@ -145,7 +144,7 @@ describe.skip('verify API', () => {
     const {AuthenticationProofPurpose} = jsigs.purposes;
     const {presentation, suite} = await _generatePresentation(
       {challenge, domain});
-    const result = await vc.verifyPresentation({
+    const results = await vc.verifyPresentation({
       challenge,
       suite,
       documentLoader,
@@ -153,106 +152,99 @@ describe.skip('verify API', () => {
       domain,
       presentation
     });
-    result.presentationResult.verified.should.be.a('boolean');
-    result.presentationResult.verified.should.be.true;
-    result.verified.should.be.a('boolean');
-    result.verified.should.be.true;
+    results.presentationResult.verified.should.be.a('boolean');
+    results.presentationResult.verified.should.be.true;
+    results.verified.should.be.a('boolean');
+    results.verified.should.be.true;
   });
   it.skip('verifies a valid credential', async () => {
     const {credential, suite} = await _generateCredential();
-    const result = await vc.verify({
+    const results = await vc.verify({
       suite,
       credential,
       documentLoader
     });
-    result.verified.should.be.a('boolean');
-    result.verified.should.be.true;
+    results.verified.should.be.a('boolean');
+    results.verified.should.be.true;
   });
 
   describe('negative tests', async () => {
     it('fails to verify if a context is null', async () => {
       const {credential, suite} = await _generateCredential();
       credential['@context'].push(invalidContexts.nullDoc.url);
-      const result = await vc.verify({
+      const results = await vc.verify({
         suite,
         credential,
         documentLoader
       });
-      result.verified.should.be.a('boolean');
-      result.verified.should.be.false;
-      result.error.name.should.contain('jsonld.InvalidUrl');
+      results.verified.should.be.a('boolean');
+      results.verified.should.be.false;
     });
     it('fails to verify if a context contains an invalid id', async () => {
       const {credential, suite} = await _generateCredential();
       credential['@context'].push(invalidContexts.invalidId.url);
-      const result = await vc.verify({
+      const results = await vc.verify({
         suite,
         credential,
         documentLoader
       });
-      result.verified.should.be.a('boolean');
-      result.verified.should.be.false;
-      result.error.name.should.contain('jsonld.SyntaxError');
+      results.verified.should.be.a('boolean');
+      results.verified.should.be.false;
     });
     it('fails to verify if a context has a null version', async () => {
       const {credential, suite} = await _generateCredential();
       credential['@context'].push(invalidContexts.nullVersion.url);
-      const result = await vc.verify({
+      const results = await vc.verify({
         suite,
         credential,
         documentLoader
       });
-      result.verified.should.be.a('boolean');
-      result.verified.should.be.false;
-      result.error.name.should.contain('jsonld.UnsupportedVersion');
+      results.verified.should.be.a('boolean');
+      results.verified.should.be.false;
     });
     it('fails to verify if a context has a null @id', async () => {
       const {credential, suite} = await _generateCredential();
       credential['@context'].push(invalidContexts.nullId.url);
-      const result = await vc.verify({
+      const results = await vc.verify({
         suite,
         credential,
         documentLoader
       });
-      result.verified.should.be.a('boolean');
-      result.verified.should.be.false;
-      result.error.name.should.contain('jsonld.SyntaxError');
+      results.verified.should.be.a('boolean');
+      results.verified.should.be.false;
     });
     it('fails to verify if a context has a null @type', async () => {
       const {credential, suite} = await _generateCredential();
       credential['@context'].push(invalidContexts.nullType.url);
-      const result = await vc.verify({
+      const results = await vc.verify({
         suite,
         credential,
         documentLoader
       });
-      result.verified.should.be.a('boolean');
-      result.verified.should.be.false;
-      result.error.name.should.contain('jsonld.SyntaxError');
+      results.verified.should.be.a('boolean');
+      results.verified.should.be.false;
     });
     it('fails to verify if a context links to a missing doc', async () => {
       const {credential, suite} = await _generateCredential();
       credential['@context'].push('https://fsad.digitalbazaar.com');
-      const result = await vc.verify({
+      const results = await vc.verify({
         suite,
         credential,
         documentLoader
       });
-      result.verified.should.be.a('boolean');
-      result.verified.should.be.false;
-      result.error.name.should.contain('jsonld.InvalidUrl');
+      results.verified.should.be.a('boolean');
+      results.verified.should.be.false;
     });
     it('fails to verify if a context has an invalid url', async () => {
       const {credential, suite} = await _generateCredential();
       credential['@context'].push('htps://fsad.digitalbazaar.');
-      const result = await vc.verify({
+      const results = await vc.verify({
         suite,
         credential,
         documentLoader
       });
-      result.verified.should.be.a('boolean');
-      result.verified.should.be.false;
-      result.error.name.should.contain('jsonld.InvalidUrl');
+      results.verified.should.be.a('boolean');
+      results.verified.should.be.false;
     });
   });
 });
