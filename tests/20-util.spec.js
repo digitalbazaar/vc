@@ -3,6 +3,21 @@ const {expect} = require('chai');
 
 describe('unit tests for util.js', function() {
   describe('clone', function() {
+    it('should clone null', function() {
+      const value = null;
+      const result = util.clone(value);
+      expect(result).to.not.be.undefined;
+      expect(result).to.be.null;
+      expect(result).to.equal(value);
+    });
+    it('should clone a undefined', function() {
+      const value = undefined;
+      const result = util.clone(value);
+      expect(result).to.not.be.null;
+      expect(result).to.be.undefined;
+      expect(result).to.equal(value);
+    });
+
     it('should clone a number', function() {
       const value = 5;
       const result = util.clone(value);
@@ -10,6 +25,14 @@ describe('unit tests for util.js', function() {
       expect(result).to.not.be.null;
       expect(result).to.equal(value);
     });
+    it('should clone NaN', function() {
+      const value = NaN;
+      const result = util.clone(value);
+      expect(result).to.not.be.undefined;
+      expect(result).to.not.be.null;
+      expect(isNaN(result)).to.be.true;
+    });
+
     it('should clone a string', function() {
       const value = 'string!';
       const result = util.clone(value);
