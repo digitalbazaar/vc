@@ -10,7 +10,7 @@ const invalidContexts = {
   },
   valid: {
     url: 'https://w3id.org/credentials/v1',
-    value: require('../../lib/contexts/credentials-v1.js')
+    value: require('../../lib/contexts/credentials-v1.json')
   },
   invalidId: {
     url: 'https://invalid-id.org',
