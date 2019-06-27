@@ -116,7 +116,7 @@ describe('verify()', () => {
   });
 });
 
-describe('verifies RFC3999 Dates', function() {
+describe('verifies RFC3339 Dates', function() {
   it('verify a valid date', function() {
     const latest = new Date().toISOString();
     vc.dateRegex.test(latest).should.be.true;
@@ -130,6 +130,11 @@ describe('verifies RFC3999 Dates', function() {
     const invalid = '2017/09/27';
     vc.dateRegex.test(invalid).should.be.false;
   });
+  it('should not verify 2 digit years', function() {
+    const invalid = '17-09-27T22:07:22.563z';
+    vc.dateRegex.test(invalid).should.be.false;
+  });
+
 });
 
 describe.skip('verify API', () => {
