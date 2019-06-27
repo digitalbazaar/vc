@@ -116,6 +116,17 @@ describe('verify()', () => {
   });
 });
 
+describe('verifies RFC3999 Dates', function() {
+  it('verify a valid date', function() {
+    const latest = new Date().toISOString();
+    vc.dateRegex.test(latest).should.be.true;
+  });
+  it('should not verify an invalid date', function() {
+    const invalid = '2017/09/27';
+    vc.dateRegex.test(invalid).should.be.false;
+  });
+});
+
 describe.skip('verify API', () => {
   it('verifies a valid presentation', async () => {
     const challenge = uuid();
