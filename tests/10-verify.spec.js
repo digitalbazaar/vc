@@ -121,6 +121,11 @@ describe('verifies RFC3999 Dates', function() {
     const latest = new Date().toISOString();
     vc.dateRegex.test(latest).should.be.true;
   });
+  it('verify a valid date with lowercase t', function() {
+    const latest = new Date().toISOString().toLowerCase();
+    vc.dateRegex.test(latest).should.be.true;
+  });
+
   it('should not verify an invalid date', function() {
     const invalid = '2017/09/27';
     vc.dateRegex.test(invalid).should.be.false;
