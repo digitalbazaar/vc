@@ -10,7 +10,6 @@
 - [Background](#background)
 - [Install](#install)
 - [Usage](#usage)
-- [API](#api)
 - [Testing](#testing)
 - [Contribute](#contribute)
 - [Commercial Support](#commercial-support)
@@ -18,7 +17,16 @@
 
 ## Security
 
-TBD
+TODO: Add design considerations for choosing key types / cryptographic 
+algorithms for signing your credentials. For now:
+
+* Use **Ed25519**keys if you can
+* Use **EcdsaSepc256k1** keys if you must (for example, if you're developing for 
+  a Bitcoin-based or Ethereum-based ledger) 
+* You _can_ use RSA keys to sign, if your use case requires it.
+
+TODO: Add a brief discussion of where to store the private keys. Point to
+several recommended Wallet or KMS libraries.
 
 ## Background
 
@@ -27,7 +35,7 @@ TBD
 See also (related specs):
 
 * [Verifiable Credentials Data Model](https://w3c.github.io/vc-data-model/)
-* [Linked Data Signatures 1.0](https://w3c-dvcg.github.io/ld-signatures/)
+* [Linked Data Proofs 1.0](https://w3c-dvcg.github.io/ld-proofs/)
 
 ## Install
 
@@ -44,74 +52,96 @@ npm install
 
 ## Usage
 
-Use on the command line, or see the API section below.
+### CLI
 
-### Issuing Credentials
+To use on the command line, see 
+[`vc-js-cli`](https://github.com/digitalbazaar/vc-js-cli).
 
-To issue a verifiable credential, you need the following:
+### Generating Keys and Suites
 
-* A URL for the public key
-* A local PEM encoded private key file
-* The input credential (`cred.json` in the example)
+In order to create or verify Verifiable Credentials, you will most likely need
+cryptographic key material, such as public/private key pairs. (There are other
+advanced use cases, such as biometrics, that do not involve keys directly, but
+those are out of scope for the moment.)
 
-```bash
-./bin/vc-js issue --issuer "https://example.com/keys/1" --private-key example.pem < cred.json
+Which key type to use? See the [Security](#security) section for discussion.
+
+Where to store the private keys? See the [Security](#security) section for 
+discussion.
+
+To generate an **Ed25519** key pair and corresponding signature suite (see 
+[`crypto-ld`](https://github.com/digitalbazaar/crypto-ld/)) docs for advanced
+parameters, such as generating from a deterministic key seed):
+
+```js
+const {Ed25519KeyPair, suites: {Ed25519Signature2018}} = require('jsonld-signatures');
+
+const keyPair = await Ed25519KeyPair.generate();
+keyPair.id = '...'; // See Key IDs section below
+keyPair.controller = '...'; // See Controller Documents section below
+
+const suite = new Ed25519Signature2018({
+  verificationMethod: keyPair.id,
+  key: keyPair
+});
 ```
 
-### Verifying Credentials
+To generate a **Ecdsa** key pair and corresponding suite:
 
-## API
+```js
+const Secp256k1KeyPair = require('secp256k1-key-pair');
+const EcdsaSepc256k1Signature2019 = require('ecdsa-secp256k1-signature-2019');
 
-### Issuing a Verifiable Credential - `issue()`
+const keyPair = await Secp256k1KeyPair.generate();
+keyPair.id = '...'; // See Key IDs section below
+keyPair.controller = '...'; // See Controller Documents section below
+
+const suite = new EcdsaSepc256k1Signature2019({
+  verificationMethod: keyPair.id,
+  key: keyPair
+});
+```
+
+### Key IDs
+
+### Controller Documents
+
+### Issuing a Verifiable Credential
 
 ```js
 const vc = require('vc-js');
 
-// generate a publicKey / privateKeyBase58 (not shown here)
-
-const suite = new Ed25519Signature2018({
-  verificationMethod: publicKey.id,
-  key: new Ed25519KeyPair({privateKeyBase58})
-});
-
-vc.issue({credential, suite})
-  .then(issuedVc => console.log)
-  .catch(console.error);
+const signedVC = await vc.issue({credential, suite});
+console.log(JSON.stringify(signedVC, null, 2));
 ```
 
-### Creating a Verifiable Presentation - `createPresentation()`
+### Creating a Verifiable Presentation
 
 To create a verifiable presentation out of one or more verifiable credentials:
 
 ```js
 const verifiableCredential = [vc1, vc2];
 
-const suite = new Ed25519Signature2018({
-  verificationMethod: publicKey.id,
-  key: new Ed25519KeyPair({privateKeyBase58})
-});
-
-vc.createPresentation({verifiableCredential, suite})
-  .then(vp => console.log)
-  .catch(console.error);
+const vp = await vc.createPresentation({verifiableCredential, suite});
+console.log(JSON.stringify(vp, null, 2));
 ```
 
-### Verifying - `verify()`
+### Verifying a Verifiable Credential
 
 To verify a verifiable credential:
 
 ```js
-vc.verify({credential, suite})
-  .then(result => console.log)
-  .catch(console.error);
+const result = await vc.verify({credential, suite});
+// {valid: true}
 ```
+
+### Verifying a Verifiable Presentation
 
 To verify a verifiable presentation:
 
 ```js
-vc.verify({presentation, suite})
-  .then(result => console.log)
-  .catch(console.error);
+const result = await vc.verify({presentation, suite})
+// {valid: true}
 ```
 
 ## Testing
