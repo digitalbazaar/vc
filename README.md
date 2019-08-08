@@ -20,7 +20,7 @@
 TODO: Add design considerations for choosing key types / cryptographic 
 algorithms for signing your credentials. For now:
 
-* Use **Ed25519**keys if you can
+* Use **Ed25519** keys if you can
 * Use **EcdsaSepc256k1** keys if you must (for example, if you're developing for 
   a Bitcoin-based or Ethereum-based ledger) 
 * You _can_ use RSA keys to sign, if your use case requires it.
@@ -77,8 +77,8 @@ parameters, such as generating from a deterministic key seed):
 const {Ed25519KeyPair, suites: {Ed25519Signature2018}} = require('jsonld-signatures');
 
 const keyPair = await Ed25519KeyPair.generate();
-keyPair.id = '...'; // See Key IDs section below
-keyPair.controller = '...'; // See Controller Documents section below
+keyPair.id = '...'; // See Key ID section below
+keyPair.controller = '...'; // See Controller Document section below
 
 const suite = new Ed25519Signature2018({
   verificationMethod: keyPair.id,
@@ -102,14 +102,47 @@ const suite = new EcdsaSepc256k1Signature2019({
 });
 ```
 
-### Key IDs
+### Key ID
 
-### Controller Documents
+TODO: Add discussion on typical key ID strategies
+
+* `'did:example:123' + '#' + keyPair.fingerprint()` (Ledger DID based)
+* `'did:key:' + keyPair.fingerprint()` ([`did:key` method](https://github.com/digitalbazaar/did-method-key/pull/1/files) based)
+* `https://example.com/publicKey.json`
+* `urn:123`
+
+### Publishing the Public Key
+
+TODO: Explain `documentLoader` / key resolvers, and where to put the public
+key so that the verifier can get to it.
+
+### Controller Document
+
+TODO: Explain controller document
+
+* `did:example:123` (Controller's DID on a ledger)
+* Embedded / `did:key` method
+* `https://example.com/controller.json` (published on the web)
 
 ### Issuing a Verifiable Credential
 
 ```js
 const vc = require('vc-js');
+
+// Sample unsigned credential
+const credential = {
+  "@context": [
+    "https://www.w3.org/2018/credentials/v1",
+    "https://www.w3.org/2018/credentials/examples/v1"
+  ],
+  "id": "https://example.com/credentials/1872",
+  "type": ["VerifiableCredential", "AlumniCredential"],
+  "issuanceDate": "2010-01-01T19:23:24Z",
+  "credentialSubject": {
+    "id": "did:example:ebfeb1f712ebc6f1c276e12ec21",
+    "alumniOf": "Example University"
+  }
+};
 
 const signedVC = await vc.issue({credential, suite});
 console.log(JSON.stringify(signedVC, null, 2));
