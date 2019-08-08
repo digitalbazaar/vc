@@ -116,6 +116,12 @@ TODO: Add discussion on typical key ID strategies
 TODO: Explain `documentLoader` / key resolvers, and where to put the public
 key so that the verifier can get to it.
 
+### Storing the Private Key
+
+See [Security](#section).
+
+Use `await keyPair.export()`
+
 ### Controller Document
 
 TODO: Explain controller document
@@ -123,6 +129,14 @@ TODO: Explain controller document
 * `did:example:123` (Controller's DID on a ledger)
 * Embedded / `did:key` method
 * `https://example.com/controller.json` (published on the web)
+
+```js
+const controllerDoc = {
+  '@context': 'https://w3id.org/security/v2',
+  id: controllerId,
+  assertionMethod: [keyPair.id]
+};
+```
 
 ### Issuing a Verifiable Credential
 
