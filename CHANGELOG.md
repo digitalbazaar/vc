@@ -1,5 +1,10 @@
 # vc-js ChangeLog
 
+## 0.2.0 - 2019-08-07
+
+### Added
+- Export `defaultDocumentLoader` in main vc.js 
+
 ## 0.1.0 - 2019-08-07
 
 ### Added
