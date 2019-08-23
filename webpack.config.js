@@ -3,7 +3,7 @@ module.exports = {
     'vc-js': './lib/index.js'
   },
   externals: {
-    'bitcore-lib': '\'bitcore-lib\''
+    'bitcore-message': '\'bitcore-message\''
   },
   output: {
     filename: '[name].min.js',
