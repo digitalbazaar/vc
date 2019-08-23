@@ -42,6 +42,12 @@
     "jsonld-signatures": "^4.1.2",
     "supports-color": "^6.1.0"
   },
+  "browser": {
+    "bs58": false,
+    "crypto": false,
+    "sodium-native": false,
+    "util": false
+  },
   "devDependencies": {
     "@babel/cli": "^7.4.3",
     "@babel/core": "^7.4.3",
@@ -90,14 +96,11 @@
   ],
   "scripts": {
     "no-prepublish": "npm run build",
-    "no-build": "webpack",
+    "build": "webpack --mode production",
     "fetch-test-suites": "npm run fetch-vc-test-suite",
     "fetch-vc-test-suite": "if [ ! -e test-suites/vc-test-suite ]; then git clone --depth 1 https://github.com/digitalbazaar/vc-test-suite.git test-suites/vc-test-suite; fi",
     "test": "bin/vc-test",
     "mocha": "mocha ./tests/*.spec.js --opts ./tests/mocha.opts --require @babel/polyfill --require @babel/register",
     "karma": "karma start karma.conf.js"
-  },
-  "browser": {
-    "lib/index.js": "./lib/vc.js"
   }
 }
