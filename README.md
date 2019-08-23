@@ -29,7 +29,7 @@ following decisions, constrained by your use case:
 2. What is your [Private Key Storage](#private-key-storage) strategy? 
    (KMS, file system, secure wallet)
 3. Where will you publish your Public Key? (What is your key resolving strategy)
-  - This will influence what you'll use for [Key ID](#key-id)s
+   - This will influence what you'll use for [Key ID](#key-id)s
 4. What is your Controller document strategy? (DID, embedded, web, ...)
 
 ## Background
