@@ -95,8 +95,8 @@
     "Credential"
   ],
   "scripts": {
-    "no-prepublish": "npm run build",
-    "build": "webpack --mode production",
+    "prepublish": "npm run build",
+    "build": "webpack",
     "fetch-test-suites": "npm run fetch-vc-test-suite",
     "fetch-vc-test-suite": "if [ ! -e test-suites/vc-test-suite ]; then git clone --depth 1 https://github.com/digitalbazaar/vc-test-suite.git test-suites/vc-test-suite; fi",
     "test": "bin/vc-test",
