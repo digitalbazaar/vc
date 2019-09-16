@@ -180,11 +180,12 @@ const credential = {
   "credentialSubject": {
     "id": "did:example:ebfeb1f712ebc6f1c276e12ec21",
     "alumniOf": "Example University"
-  }
+  },
+  "issuer": "https://example.edu/issuers/14"
 };
 
-const signedVC = await vc.issue({credential, suite});
-console.log(JSON.stringify(signedVC, null, 2));
+await vc.issue({credential, suite});
+console.log(JSON.stringify(credential, null, 2));
 ```
 
 ### Creating a Verifiable Presentation
@@ -202,10 +203,9 @@ TODO: Add section about `documentLoader`
 To create a verifiable presentation out of one or more verifiable credentials:
 
 ```js
-const verifiableCredential = [vc1, vc2];
-
-const vp = await vc.createPresentation({verifiableCredential, suite});
-console.log(JSON.stringify(vp, null, 2));
+options = { 'verifiableCredential': credential, suite, 'type': 'UniversityDegreeCredential' };
+const presentation = await vc.createPresentation(options);
+console.log(JSON.stringify(presentation, null, 2));
 ```
 
 ### Verifying a Verifiable Credential
@@ -238,7 +238,7 @@ TODO: Add section about `documentLoader`
 To verify a verifiable presentation:
 
 ```js
-const result = await vc.verify({presentation, suite})
+const result = await vc.verify({presentation, suite});
 // {valid: true}
 ```
 
