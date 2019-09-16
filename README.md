@@ -129,7 +129,7 @@ parameters, such as generating from a deterministic key seed):
 const {Ed25519KeyPair, suites: {Ed25519Signature2018}} = require('jsonld-signatures');
 
 const keyPair = await Ed25519KeyPair.generate();
-keyPair.id = 'https://example.edu/issuers/keys/1' // See Key ID section
+keyPair.id = 'https://example.edu/issuers/keys/1'; // See Key ID section
 keyPair.controller = 'https://example.com/i/carol'; // See Controller Document section
 
 const suite = new Ed25519Signature2018({
@@ -145,7 +145,7 @@ const Secp256k1KeyPair = require('secp256k1-key-pair');
 const EcdsaSepc256k1Signature2019 = require('ecdsa-secp256k1-signature-2019');
 
 const keyPair = await Secp256k1KeyPair.generate();
-keyPair.id = 'https://example.edu/issuers/keys/1' // See Key ID section
+keyPair.id = 'https://example.edu/issuers/keys/1'; // See Key ID section
 keyPair.controller = 'https://example.com/i/carol'; // See Controller Document section
 
 const suite = new EcdsaSepc256k1Signature2019({
@@ -203,7 +203,7 @@ TODO: Add section about `documentLoader`
 To create a verifiable presentation out of one or more verifiable credentials:
 
 ```js
-options = { 'verifiableCredential': credential, suite, 'type': 'AlumniCredential' };
+options = {verifiableCredential: credential, suite, type: 'AlumniCredential'};
 const presentation = await vc.createPresentation(options);
 console.log(JSON.stringify(presentation, null, 2));
 ```
