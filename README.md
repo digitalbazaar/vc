@@ -129,8 +129,8 @@ parameters, such as generating from a deterministic key seed):
 const {Ed25519KeyPair, suites: {Ed25519Signature2018}} = require('jsonld-signatures');
 
 const keyPair = await Ed25519KeyPair.generate();
-keyPair.id = '...'; // See Key ID section
-keyPair.controller = '...'; // See Controller Document section
+keyPair.id = 'https://example.edu/issuers/keys/1'; // See Key ID section
+keyPair.controller = 'https://example.com/i/carol'; // See Controller Document section
 
 const suite = new Ed25519Signature2018({
   verificationMethod: keyPair.id,
@@ -145,8 +145,8 @@ const Secp256k1KeyPair = require('secp256k1-key-pair');
 const EcdsaSepc256k1Signature2019 = require('ecdsa-secp256k1-signature-2019');
 
 const keyPair = await Secp256k1KeyPair.generate();
-keyPair.id = '...'; // See Key ID section
-keyPair.controller = '...'; // See Controller Document section
+keyPair.id = 'https://example.edu/issuers/keys/1'; // See Key ID section
+keyPair.controller = 'https://example.com/i/carol'; // See Controller Document section
 
 const suite = new EcdsaSepc256k1Signature2019({
   verificationMethod: keyPair.id,
@@ -176,6 +176,7 @@ const credential = {
   ],
   "id": "https://example.com/credentials/1872",
   "type": ["VerifiableCredential", "AlumniCredential"],
+  "issuer": "https://example.edu/issuers/565049",
   "issuanceDate": "2010-01-01T19:23:24Z",
   "credentialSubject": {
     "id": "did:example:ebfeb1f712ebc6f1c276e12ec21",
@@ -183,7 +184,7 @@ const credential = {
   }
 };
 
-const signedVC = await vc.issue({credential, suite});
+const signedVC = await vc.issue({credential, suite, controller: controllerDoc});
 console.log(JSON.stringify(signedVC, null, 2));
 ```
 
@@ -204,8 +205,12 @@ To create a verifiable presentation out of one or more verifiable credentials:
 ```js
 const verifiableCredential = [vc1, vc2];
 
-const vp = await vc.createPresentation({verifiableCredential, suite});
-console.log(JSON.stringify(vp, null, 2));
+const verifiablePresentation = await vc.createPresentation({
+  type: 'AlumniCredentialPresentation',
+  verifiableCredential, 
+  suite
+});
+console.log(JSON.stringify(verifiablePresentation, null, 2));
 ```
 
 ### Verifying a Verifiable Credential
@@ -238,7 +243,7 @@ TODO: Add section about `documentLoader`
 To verify a verifiable presentation:
 
 ```js
-const result = await vc.verify({presentation, suite})
+const result = await vc.verify({presentation, suite});
 // {valid: true}
 ```
 
