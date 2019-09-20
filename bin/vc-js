@@ -148,6 +148,7 @@ program
       const result = await vc.issue({
         credential,
         suite: testSuite,
+        controller: assertionController,
         documentLoader: testDocumentLoader
       });
       console.log(JSON.stringify(result, null, 2));

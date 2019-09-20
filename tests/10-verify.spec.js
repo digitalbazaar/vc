@@ -6,7 +6,7 @@ const jsonld = require('jsonld');
 const uuid = require('uuid/v4');
 const vc = require('..');
 // const MultiLoader = require('./MultiLoader');
-chai.should();
+const should = chai.should();
 
 // const testContextLoader = () => {
 //   // FIXME: used credentials-context module when available
@@ -98,21 +98,53 @@ before(async () => {
 
 describe('issue()', () => {
   it('should issue a verifiable credential with proof', async () => {
-    verifiedCredential = await vc.issue({credential, suite});
+    verifiedCredential = await vc.issue({
+      credential,
+      suite,
+      controller: assertionController
+    });
     verifiedCredential.should.exist;
     verifiedCredential.should.be.an('object');
     verifiedCredential.should.have.property('proof');
     verifiedCredential.proof.should.be.an('object');
   });
+
+  it('should throw an error on missing verificationMethod', async () => {
+    const suite = new jsigs.suites.Ed25519Signature2018({
+      // Note no key id or verificationMethod passed to suite
+      key: await Ed25519KeyPair.generate()
+    });
+    let error;
+    try {
+      await vc.issue({
+        credential,
+        suite,
+        controller: assertionController
+      })
+    } catch(e) {
+      error = e;
+    }
+
+    should.exist(error,
+      'Should throw error when "verificationMethod" property missing');
+    error.should.be.instanceof(TypeError);
+    error.message.should
+      .contain('"suite.verificationMethod" property is required.');
+  })
 });
 
 describe('verify()', () => {
   it('should verify a vc', async () => {
-    const result = await vc.verify(
-      {credential: verifiedCredential, suite, documentLoader});
-    // console.log(JSON.stringify(result, null, 2))
+    const result = await vc.verify({
+      credential: verifiedCredential,
+      controller: assertionController,
+      suite,
+      documentLoader
+    });
+    if(result.error) {
+      throw result.error;
+    }
     result.verified.should.be.true;
-    expect(result.error).to.not.exist;
   });
 });
 
