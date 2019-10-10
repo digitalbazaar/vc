@@ -60,8 +60,10 @@ algorithms for signing your credentials. For now:
 
 Where to store the private keys?
 
-TODO: Add a brief discussion of where to store the private keys. Point to
-several recommended Wallet or KMS libraries.
+TODO: Add a brief discussion of where to store the private keys.
+It is recommeneded to use a [Key Management Service](https://en.wikipedia.org/wiki/Key_management)
+[bedrock kms](https://github.com/digitalbazaar/bedrock-kms)
+[amazon kms](https://aws.amazon.com/kms/)
 
 Use `await keyPair.export()`
 
