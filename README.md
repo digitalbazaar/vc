@@ -56,20 +56,6 @@ algorithms for signing your credentials. For now:
   a Bitcoin-based or Ethereum-based ledger)
 * You _can_ use RSA keys to sign, if your use case requires it.
 
-#### Private Key Storage
-
-Where to store the private keys?
-
-TODO: Add a brief discussion of where to store the private keys. Point to
-several recommended Wallet or KMS libraries.
-
-Use `await keyPair.export()`
-
-#### Publishing the Public Key
-
-TODO: Explain `documentLoader` / key resolvers, and where to put the public
-key so that the verifier can get to it.
-
 #### Key ID
 
 TODO: Add discussion on typical key ID strategies
@@ -154,6 +140,53 @@ const suite = new EcdsaSepc256k1Signature2019({
 });
 ```
 
+### Custom documentLoader
+
+Pre-requisites:
+
+* You have an existing valid JSON-LD `@context`.
+* Your custom context is resolvable at an address.
+
+```js
+// jsonld-signatures has a secure context loader
+// be requiring this first you ensure security
+// contexts are loaded from jsonld-signatures
+// and not an insecure source.
+const {extendContextLoader} = require('jsonld-signatures');
+const vc = require('vc-js');
+// vc-js exports its own secure documentLoader.
+const {defaultDocumentLoader} = vc;
+// a valid json-ld @context.
+const myCustomContext = require('./myCustomContext');
+
+const documentLoader = extendContextLoader(async url => {
+  if(url === 'did:test:context:foo') {
+    return {
+      contextUrl: null,
+      documentUrl: url,
+      document: myCustomContext
+    };
+  }
+  return defaultDocumentLoader(url);
+});
+
+// you can now use your custom documentLoader
+// with multiple vc methods such as:
+
+const vp = await vc.createPresentation({
+  verifiableCredential,
+  suite,
+  documentLoader
+});
+
+// or
+const signedVC = await vc.issue({credential, suite, documentLoader});
+
+// or
+const result = await vc.verify({credential, suite, documentLoader});
+
+```
+
 ### Issuing a Verifiable Credential
 
 Pre-requisites:
@@ -162,8 +195,6 @@ Pre-requisites:
 * If you're using a custom `@context`, make sure it's resolvable
 * (Recommended) You have a strategy for where to publish your Controller
   Document and Public Key
-
-TODO: Add section about `documentLoader`
 
 ```js
 const vc = require('vc-js');
@@ -198,19 +229,16 @@ Pre-requisites:
 * (Recommended) You have a strategy for where to publish your Controller
   Documents and Public Keys
 
-TODO: Add section about `documentLoader`
-
 To create a verifiable presentation out of one or more verifiable credentials:
 
 ```js
 const verifiableCredential = [vc1, vc2];
-
-const verifiablePresentation = await vc.createPresentation({
-  verifiableCredential,
-  suite
-});
-console.log(JSON.stringify(verifiablePresentation, null, 2));
+const vp = await vc.createPresentation({verifiableCredential, suite});
+console.log(JSON.stringify(vp, null, 2));
 ```
+
+To create a verifiable presentation with a custom `@context` field use a [custom documentLoader](#custom-documentLoader)
+
 
 ### Verifying a Verifiable Credential
 
@@ -220,14 +248,14 @@ Pre-requisites:
 * You're using the correct public key and corresponding suite
 * Your Controller Document is reachable via a `documentLoader`
 
-TODO: Add section about `documentLoader`
-
 To verify a verifiable credential:
 
 ```js
 const result = await vc.verify({credential, suite});
 // {valid: true}
 ```
+
+To verify a verifiable credential with a custom `@context` field use a [custom documentLoader](#custom-documentLoader)
 
 ### Verifying a Verifiable Presentation
 
@@ -236,8 +264,6 @@ Pre-requisites:
 * If you're using a custom `@context`, make sure it's resolvable
 * You're using the correct public keys and corresponding suites
 * Your Controller Documents are reachable via a `documentLoader`
-
-TODO: Add section about `documentLoader`
 
 To verify a verifiable presentation:
 
