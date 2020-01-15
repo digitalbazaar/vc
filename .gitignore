@@ -5,6 +5,7 @@
 .cproject
 .project
 .settings
+.vscode
 TAGS
 coverage
 dist
