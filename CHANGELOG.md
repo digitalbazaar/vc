@@ -6,6 +6,7 @@
 - Update webpack build.
 - Cleanups.
 - Use `credentials-context` package.
+- Update dependencies.
 
 ### Removed
 - **BREAKING**: Node.js v6 support.
