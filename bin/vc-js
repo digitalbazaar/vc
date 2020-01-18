@@ -23,7 +23,7 @@ if(process.env.JSONLD_LOADER_MAP) {
     .map(v => v.split('='))
     .forEach(v => map[v[0]] = v[1]);
   loaderDebug('map: %O', map);
-  vc.documentLoader = async (url) => {
+  vc.documentLoader = async url => {
     if(url in cache) {
       // already loaded
       loaderDebug('from cache: %s', url);
@@ -58,15 +58,23 @@ program
   .option('-D, --domain <domain>', 'Signature domain [none].')
   .option('-a, --algorithm <algorithm>',
     'Signature algorithm [Ed25519Signature2018].')
-  .action(async cmd => {
+  .action(async function(cmd) {
     try {
       if(arguments.length > 1) {
         throw new Error('Too many arguments.');
       }
-      if(!cmd.issuer) { throw new Error('issuer required') }
-      //if(!cmd.publicKey) { throw new Error('public key required') }
-      //if(!cmd.owner) { throw new Error('owner required') }
-      if(!cmd.privateKey) { throw new Error('private key required') }
+      if(!cmd.issuer) {
+        throw new Error('issuer required');
+      }
+      //if(!cmd.publicKey) {
+      //  throw new Error('public key required');
+      //}
+      //if(!cmd.owner) {
+      //  throw new Error('owner required');
+      //}
+      if(!cmd.privateKey) {
+        throw new Error('private key required');
+      }
 
       const result = await vc.issue({
         credential: JSON.parse(await getStdin()),
@@ -90,15 +98,17 @@ program
   });
 
 const testKey = {
-  'id': 'https://example.edu/issuers/keys/1',
-  'type': 'Ed25519VerificationKey2018',
-  'controller': 'https://example.edu/issuers/14',
-  'publicKeyBase58': 'AoncetDEamr1hreoMiLocvQvCLEu5i5FuQ232zdqie7g',
-  'privateKeyBase58': '53KBp86VkzDKthrZdQCKv4UaAWd74DWCqgbmYmXuLytgbU7pFghAWs23Tdd9iacMLZtkvwdo5vCvDQ8vj24HdJYv'
+  id: 'https://example.edu/issuers/keys/1',
+  type: 'Ed25519VerificationKey2018',
+  controller: 'https://example.edu/issuers/14',
+  publicKeyBase58: 'AoncetDEamr1hreoMiLocvQvCLEu5i5FuQ232zdqie7g',
+  privateKeyBase58:
+    '53KBp86VkzDKthrZdQCKv4UaAWd74DWCqgbmYmXuLytg' +
+    'bU7pFghAWs23Tdd9iacMLZtkvwdo5vCvDQ8vj24HdJYv'
 };
 const testKeyPair = new Ed25519KeyPair(testKey);
 
-const assertionController  = {
+const assertionController = {
   '@context': 'https://w3id.org/security/v2',
   id: 'https://example.edu/issuers/14',
   assertionMethod: [ testKey.id ]
@@ -118,7 +128,7 @@ async function testDocumentLoader(url) {
       document: context
     };
   }
-  throw new Error(`${url} is not an authorized supported context url.`)
+  throw new Error(`${url} is not an authorized supported context url.`);
 }
 
 const testSuite = new jsigs.suites.Ed25519Signature2018({
@@ -182,7 +192,6 @@ program
     console.log('    $ vc-js test-presentation < cred.jsonld');
     console.log();
   });
-
 
 program
   .command('verify')

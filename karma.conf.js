@@ -1,11 +1,8 @@
 /*
  * Copyright (c) 2019 Digital Bazaar, Inc. All rights reserved.
  */
-const webpack = require('webpack');
-const path = require('path');
 
 module.exports = function(config) {
-
   config.set({
     // base path that will be used to resolve all patterns (eg. files, exclude)
     basePath: '',
@@ -44,7 +41,7 @@ module.exports = function(config) {
                 plugins: [
                   '@babel/plugin-transform-modules-commonjs',
                   '@babel/plugin-transform-runtime',
-                  "@babel/plugin-proposal-object-rest-spread"
+                  '@babel/plugin-proposal-object-rest-spread'
                 ]
               }
             }
@@ -102,5 +99,5 @@ module.exports = function(config) {
     // if true, Karma captures browsers, runs the tests and exits
     singleRun: true,
 
-  })
-}
+  });
+};
