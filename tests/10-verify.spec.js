@@ -58,7 +58,7 @@ const assertionController = {
   ]
 };
 
-let suite, keyPair, verifiedCredential;
+let suite, keyPair, verifiableCredential;
 
 const credential = {
   "@context": [
@@ -98,15 +98,14 @@ before(async () => {
 
 describe('issue()', () => {
   it('should issue a verifiable credential with proof', async () => {
-    verifiedCredential = await vc.issue({
+    verifiableCredential = await vc.issue({
       credential,
-      suite,
-      controller: assertionController
+      suite
     });
-    verifiedCredential.should.exist;
-    verifiedCredential.should.be.an('object');
-    verifiedCredential.should.have.property('proof');
-    verifiedCredential.proof.should.be.an('object');
+    verifiableCredential.should.exist;
+    verifiableCredential.should.be.an('object');
+    verifiableCredential.should.have.property('proof');
+    verifiableCredential.proof.should.be.an('object');
   });
 
   it('should throw an error on missing verificationMethod', async () => {
@@ -118,8 +117,7 @@ describe('issue()', () => {
     try {
       await vc.issue({
         credential,
-        suite,
-        controller: assertionController
+        suite
       })
     } catch(e) {
       error = e;
@@ -136,7 +134,7 @@ describe('issue()', () => {
 describe('verify()', () => {
   it('should verify a vc', async () => {
     const result = await vc.verify({
-      credential: verifiedCredential,
+      credential: verifiableCredential,
       controller: assertionController,
       suite,
       documentLoader
