@@ -68,7 +68,7 @@ It is recommended to use a [Key Management Service](https://en.wikipedia.org/wik
 
 #### Publishing the Public Key
 
-Public Keys can be stored in your [Key Management Service](https://en.wikipedia.org/wiki/Key_management), as static data on api end points, or even recreated from seeds. Regardless of which method that you use, your public key must be deferenced by a keyResolver so the verifier can use it to verify your credential. Your credential itself must be referenced by documentLoader.
+Public Keys can be stored in your [Key Management Service](https://en.wikipedia.org/wiki/Key_management), as static data on API end points, or even recreated from seeds. Regardless of which method that you use, your public key must be deferenced by a keyResolver so the verifier can use it to verify your credential. Your credential itself must be referenced by documentLoader.
 
 #### Key ID
 
