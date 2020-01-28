@@ -169,46 +169,6 @@ describe('verifies RFC3339 Dates', function() {
 
 });
 
-describe('_extractContext()', () => {
-  it('should', () => {
-    expect(vc._extractContext({}))
-      .to.eql(['https://www.w3.org/2018/credentials/v1']);
-    expect(vc._extractContext([]))
-      .to.eql(['https://www.w3.org/2018/credentials/v1']);
-
-    expect(vc._extractContext({
-        '@context': 'https://www.w3.org/2018/credentials/v1'
-      }))
-      .to.eql(['https://www.w3.org/2018/credentials/v1']);
-
-    expect(vc._extractContext([{
-      '@context': 'https://www.w3.org/2018/credentials/v1'
-    }]))
-      .to.eql(['https://www.w3.org/2018/credentials/v1']);
-
-    expect(vc._extractContext([
-      {
-        '@context': [
-          'https://www.w3.org/2018/credentials/v1',
-          'https://www.w3.org/2018/credentials/examples/v1',
-          'https://www.w3.org/2018/credentials/examples/v1'
-        ]
-      },
-      {
-        '@context': [
-          'https://www.w3.org/2018/credentials/v1',
-          'https://www.w3.org/url3'
-        ]
-      }
-    ]))
-      .to.eql([
-          'https://www.w3.org/2018/credentials/v1',
-          'https://www.w3.org/2018/credentials/examples/v1',
-          'https://www.w3.org/url3'
-      ]);
-  });
-});
-
 describe.skip('verify API', () => {
   it('verifies a valid presentation', async () => {
     const challenge = uuid();

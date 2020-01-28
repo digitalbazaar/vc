@@ -22,11 +22,11 @@ your system will largely depend on your design decisions.
 
 ### Required Design Decisions
 
-As a developer, in order to use this library, you will need to make the 
+As a developer, in order to use this library, you will need to make the
 following decisions, constrained by your use case:
 
 1. [Which key type](#choosing-key-type) and suite to use?
-2. What is your [Private Key Storage](#private-key-storage) strategy? 
+2. What is your [Private Key Storage](#private-key-storage) strategy?
    (KMS, file system, secure wallet)
 3. Where will you publish your Public Key? (What is your key resolving strategy)
    - This will influence what you'll use for [Key ID](#key-id)s
@@ -48,12 +48,12 @@ those are out of scope for the moment.)
 
 Which key type to use?
 
-TODO: Add design considerations for choosing key types / cryptographic 
+TODO: Add design considerations for choosing key types / cryptographic
 algorithms for signing your credentials. For now:
 
 * Use **Ed25519** keys if you can
-* Use **EcdsaSepc256k1** keys if you must (for example, if you're developing for 
-  a Bitcoin-based or Ethereum-based ledger) 
+* Use **EcdsaSepc256k1** keys if you must (for example, if you're developing for
+  a Bitcoin-based or Ethereum-based ledger)
 * You _can_ use RSA keys to sign, if your use case requires it.
 
 #### Private Key Storage
@@ -113,15 +113,15 @@ npm install
 
 ### CLI
 
-To use on the command line, see 
+To use on the command line, see
 [`vc-js-cli`](https://github.com/digitalbazaar/vc-js-cli).
 
 ### Generating Keys and Suites
 
-See [Choosing Key Type](#choosing-key-type) background discussion for 
+See [Choosing Key Type](#choosing-key-type) background discussion for
 explanation.
 
-To generate an **Ed25519** key pair and corresponding signature suite (see 
+To generate an **Ed25519** key pair and corresponding signature suite (see
 [`crypto-ld`](https://github.com/digitalbazaar/crypto-ld/)) docs for advanced
 parameters, such as generating from a deterministic key seed):
 
@@ -160,7 +160,7 @@ Pre-requisites:
 
 * You have a private key (with id and controller) and corresponding suite
 * If you're using a custom `@context`, make sure it's resolvable
-* (Recommended) You have a strategy for where to publish your Controller 
+* (Recommended) You have a strategy for where to publish your Controller
   Document and Public Key
 
 TODO: Add section about `documentLoader`
@@ -192,10 +192,10 @@ console.log(JSON.stringify(signedVC, null, 2));
 
 Pre-requisites:
 
-* You have the requisite private keys (with id and controller) and 
+* You have the requisite private keys (with id and controller) and
   corresponding suites
 * If you're using a custom `@context`, make sure it's resolvable
-* (Recommended) You have a strategy for where to publish your Controller 
+* (Recommended) You have a strategy for where to publish your Controller
   Documents and Public Keys
 
 TODO: Add section about `documentLoader`
@@ -206,8 +206,7 @@ To create a verifiable presentation out of one or more verifiable credentials:
 const verifiableCredential = [vc1, vc2];
 
 const verifiablePresentation = await vc.createPresentation({
-  type: 'AlumniCredentialPresentation',
-  verifiableCredential, 
+  verifiableCredential,
   suite
 });
 console.log(JSON.stringify(verifiablePresentation, null, 2));
@@ -218,7 +217,7 @@ console.log(JSON.stringify(verifiablePresentation, null, 2));
 Pre-requisites:
 
 * If you're using a custom `@context`, make sure it's resolvable
-* You're using the correct public key and corresponding suite 
+* You're using the correct public key and corresponding suite
 * Your Controller Document is reachable via a `documentLoader`
 
 TODO: Add section about `documentLoader`
@@ -235,7 +234,7 @@ const result = await vc.verify({credential, suite});
 Pre-requisites:
 
 * If you're using a custom `@context`, make sure it's resolvable
-* You're using the correct public keys and corresponding suites 
+* You're using the correct public keys and corresponding suites
 * Your Controller Documents are reachable via a `documentLoader`
 
 TODO: Add section about `documentLoader`
