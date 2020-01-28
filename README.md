@@ -56,16 +56,6 @@ algorithms for signing your credentials. For now:
   a Bitcoin-based or Ethereum-based ledger)
 * You _can_ use RSA keys to sign, if your use case requires it.
 
-#### Private Key Storage
-
-Where to store the private keys?
-
-It is recommended to use a [Key Management Service](https://en.wikipedia.org/wiki/Key_management) such as:
-
-- [Bedrock KMS](https://github.com/digitalbazaar/bedrock-kms)
-- [Amazon KMS](https://aws.amazon.com/kms/)
-
-
 #### Publishing the Public Key
 
 Public Keys can be stored in your [Key Management Service](https://en.wikipedia.org/wiki/Key_management), as static data on API end points, or even recreated from seeds. Regardless of which method that you use, your public key must be deferenced by a keyResolver so the verifier can use it to verify your credential. Your credential itself must be referenced by documentLoader.
