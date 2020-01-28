@@ -158,8 +158,8 @@ const suite = new EcdsaSepc256k1Signature2019({
 
 Pre-requisites:
 
-* You have an existing valid JSON-LD `@context` or JSON schema.
-* Your custom context or schema is resolvable at an address.
+* You have an existing valid JSON-LD `@context`.
+* Your custom context is resolvable at an address.
 
 ```js
 const vc = require('vc-js');
