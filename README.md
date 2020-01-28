@@ -63,7 +63,7 @@ Where to store the private keys?
 It is recommended to use a [Key Management Service](https://en.wikipedia.org/wiki/Key_management) such as:
 
 - [bedrock kms](https://github.com/digitalbazaar/bedrock-kms)
-- [amazon kms](https://aws.amazon.com/kms/)
+- [Amazon KMS](https://aws.amazon.com/kms/)
 
 
 #### Publishing the Public Key
