@@ -1,5 +1,7 @@
 # vc-js ChangeLog
 
+## 0.3.0 - 2020-01-28
+
 ### Changed
 - Update docs.
 - Evidence IDs are now optional.
@@ -7,6 +9,7 @@
 - Cleanups.
 - Use `credentials-context` package.
 - Update dependencies.
+- **BREAKING**: Add further checks for controller, suite and assertionMethod
 
 ### Removed
 - **BREAKING**: Node.js v6 support.
