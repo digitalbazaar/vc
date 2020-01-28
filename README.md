@@ -154,9 +154,10 @@ const suite = new EcdsaSepc256k1Signature2019({
 });
 ```
 
-<a name="documentLoader" />
-### Using a custom documentLoader
+### Custom documentLoader
+
 Pre-requisites:
+
 * You have an existing valid json-ld @context or json schema.
 * Your custom context or schema is resolvable at an address.
 
@@ -247,8 +248,7 @@ const vp = await vc.createPresentation({verifiableCredential, suite, type});
 console.log(JSON.stringify(vp, null, 2));
 ```
 
-To create a verifiable presentation with a custom `@context` field used a <a href="documentLoader">custom documentLoader.</a>
-
+To create a verifiable presentation with a custom `@context` field use a [custom documentLoader](#custom-documentLoader)
 
 
 ### Verifying a Verifiable Credential
@@ -266,7 +266,7 @@ const result = await vc.verify({credential, suite});
 // {valid: true}
 ```
 
-To verify a verifiable credential with a custom `@context` field use a <a href="#documentLoader">custom documentLoader.</a>
+To verify a verifiable credential with a custom `@context` field use a [custom documentLoader](#custom-documentLoader)
 
 ### Verifying a Verifiable Presentation
 
