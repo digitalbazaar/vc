@@ -108,14 +108,14 @@ const testKey = {
 };
 const testKeyPair = new Ed25519KeyPair(testKey);
 
-const assertionController = {
+const controller = {
   '@context': 'https://w3id.org/security/v2',
   id: 'https://example.edu/issuers/14',
   assertionMethod: [ testKey.id ]
 };
 
 const testContext = require('../lib/contexts');
-testContext['https://example.edu/issuers/14'] = assertionController;
+testContext['https://example.edu/issuers/14'] = controller;
 testContext['https://example.edu/issuers/keys/1'] = testKeyPair.publicNode();
 testContext['https://example.org/examples/degree.json'] = {};
 
@@ -148,7 +148,6 @@ program
       const result = await vc.issue({
         credential,
         suite: testSuite,
-        controller: assertionController,
         documentLoader: testDocumentLoader
       });
       console.log(JSON.stringify(result, null, 2));

@@ -184,7 +184,7 @@ const credential = {
   }
 };
 
-const signedVC = await vc.issue({credential, suite, controller: controllerDoc});
+const signedVC = await vc.issue({credential, suite});
 console.log(JSON.stringify(signedVC, null, 2));
 ```
 
