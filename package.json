@@ -101,8 +101,8 @@
     "fetch-test-suites": "npm run fetch-vc-test-suite",
     "fetch-vc-test-suite": "if [ ! -e test-suites/vc-test-suite ]; then git clone --depth 1 https://github.com/digitalbazaar/vc-test-suite.git test-suites/vc-test-suite; fi",
     "test": "bin/vc-test",
-    "mocha": "mocha ./tests/*.spec.js --opts ./tests/mocha.opts --require @babel/polyfill --require @babel/register",
-    "karma": "karma start karma.conf.js",
+    "test-node": "mocha ./tests/*.spec.js --opts ./tests/mocha.opts --require @babel/polyfill --require @babel/register",
+    "test-karma": "karma start karma.conf.js",
     "lint": "eslint '*.js' 'lib/**.js' 'tests/**.js' bin/vc-js"
   }
 }
