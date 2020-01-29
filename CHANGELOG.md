@@ -1,5 +1,14 @@
 # vc-js ChangeLog
 
+## 0.4.0 - TBD
+
+### Changed
+- **BREAKING**: For VerifiablePresentations, the async `createPresentation()`
+  API is broken out into two separate calls: a **sync** `createPresentation()`
+  and an async `signPresentation()`.
+- **BREAKING**: Default proof purpose is changed VerifiablePresentations from
+  `assertionMethod` to `authentication`.
+
 ## 0.3.0 - 2020-01-28
 
 ### Changed
