@@ -149,7 +149,7 @@ Pre-requisites:
 
 ```js
 const vc = require('vc-js');
-// vc-js exports it's own secure documentLoader.
+// vc-js exports its own secure documentLoader.
 const {defaultDocumentLoader} = vc;
 // a valid json-ld @context.
 const myCustomContext = require('./myCustomContext');
