@@ -49,10 +49,11 @@ before(async () => {
   // Set up the key that will be signing and verifying
   keyPair = await Ed25519KeyPair.generate({
     id: 'https://example.edu/issuers/keys/1',
-    controller: 'https://example.com/i/carol'
+    controller: 'https://example.edu/issuers/565049'
   });
   // Register the controller document and the key document with documentLoader
-  contexts['https://example.com/i/carol'] = assertionController;
+  contexts['https://example.edu/issuers/565049'] = assertionController;
+  // FIXME this might require a security context.
   contexts['https://example.edu/issuers/keys/1'] = keyPair.publicNode();
 
   // Add the key to the Controller doc (authorizes its use for assertion)
@@ -102,8 +103,9 @@ describe('vc.issue()', () => {
 
 describe('vc.verify()', () => {
   it('should verify a vc', async () => {
+    const _credential = Object.assign({}, verifiableCredential);
     const result = await vc.verify({
-      credential: verifiableCredential,
+      credential: _credential,
       controller: assertionController,
       suite,
       documentLoader
