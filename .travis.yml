@@ -6,8 +6,8 @@ node_js:
   #- "12"
 sudo: false
 script:
-  - if [ "x$KARMA" = "x" ]; then npm run mocha; fi
-  - if [ "x$KARMA" != "x" ]; then npm run karma; fi
+  - if [ "x$KARMA" = "x" ]; then npm run test-node; fi
+  - if [ "x$KARMA" != "x" ]; then npm run test-karma; fi
 # only run karma tests for one node version
 matrix:
   include:
