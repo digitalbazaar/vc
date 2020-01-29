@@ -12,7 +12,7 @@ const invalidContexts = require('./contexts');
 const credential = require('./mocks/credential');
 const assertionController = require('./mocks/assertionController');
 
-chai.should();
+const should = chai.should();
 
 const contexts = Object.assign({}, realContexts);
 
@@ -137,8 +137,8 @@ describe('verifies RFC3339 Dates', function() {
 
 });
 
-describe.skip('verify API', () => {
-  it('verifies a valid presentation', async () => {
+describe('verify API', () => {
+  it.skip('verifies a valid presentation', async () => {
     const challenge = uuid();
     const domain = uuid();
     const {AuthenticationProofPurpose} = jsigs.purposes;
