@@ -1,4 +1,4 @@
-
+const credentialsContext = require('credentials-context');
 const invalidContexts = {
   veresOne: {
     url: 'https://w3id.org/veres-one/v1',
@@ -9,8 +9,8 @@ const invalidContexts = {
     value: require('./didv0.json')
   },
   valid: {
-    url: 'https://w3id.org/credentials/v1',
-    value: require('../../lib/contexts/credentials-v1.json')
+    url: 'https://www.w3.org/2018/credentials/v1',
+    value: credentialsContext.contexts.get('https://www.w3.org/2018/credentials/v1')
   },
   invalidId: {
     url: 'https://invalid-id.org',
