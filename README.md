@@ -229,16 +229,52 @@ Pre-requisites:
 * (Recommended) You have a strategy for where to publish your Controller
   Documents and Public Keys
 
-To create a verifiable presentation out of one or more verifiable credentials:
+#### Creating an Unsigned Presentation
 
-```js
-const verifiableCredential = [vc1, vc2];
-const vp = await vc.createPresentation({verifiableCredential, suite});
-console.log(JSON.stringify(vp, null, 2));
-```
+To create a presentation out of one or more verifiable credentials, you can
+use the `createPresentation()` convenience function. Alternatively, you can
+create the presentation object manually (don't forget to set the `@context` and
+`type` properties).
 
 To create a verifiable presentation with a custom `@context` field use a [custom documentLoader](#custom-documentLoader)
 
+```js
+const verifiableCredential = [vc1, vc2]; // either array or single object
+
+// optional `id` and `holder`
+const id = 'p123';
+const holder = 'did:ex:12345';
+
+const presentation = vc.createPresentation({
+  verifiableCredential, id, holder
+});
+
+console.log(JSON.stringify(presentation, null, 2));
+// ->
+{
+  @context': ['https://www.w3.org/2018/credentials/v1'],
+  type: ['VerifiablePresentation'],
+  id: 'p123',
+  holder: 'did:ex:12345',
+  verifiableCredential: [
+    // vc1 ...
+    // vc2 ...
+  ]
+}
+```
+
+Note that this creates an _unsigned_ presentation (which may be valid
+for some use cases).
+
+#### Signing the Presentation
+
+Once you've created the presentation (either via `createPresentation()` or
+manually), you can sign it using `signPresentation()`:
+
+```js
+const vp = await vc.signPresentation({presentation, suite});
+
+console.log(JSON.stringify(vp, null, 2));
 
 ### Verifying a Verifiable Credential
 
@@ -269,6 +305,17 @@ To verify a verifiable presentation:
 
 ```js
 const result = await vc.verify({presentation, suite});
+// {valid: true}
+```
+
+By default, `verify()` will throw an error if the `proof` section is missing.
+To verify an unsigned presentation, you must set the `unsignedPresentation`
+flag:
+
+```js
+const result = await vc.verify({
+  presentation, suite, unsignedPresentation: true
+});
 // {valid: true}
 ```
 
