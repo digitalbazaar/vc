@@ -242,7 +242,7 @@ To create a verifiable presentation with a custom `@context` field use a [custom
 const verifiableCredential = [vc1, vc2]; // either array or single object
 
 // optional `id` and `holder`
-const id = 'p123';
+const id = 'ebc6f1c2';
 const holder = 'did:ex:12345';
 
 const presentation = vc.createPresentation({
@@ -252,13 +252,41 @@ const presentation = vc.createPresentation({
 console.log(JSON.stringify(presentation, null, 2));
 // ->
 {
-  @context': ['https://www.w3.org/2018/credentials/v1'],
-  type: ['VerifiablePresentation'],
-  id: 'p123',
-  holder: 'did:ex:12345',
-  verifiableCredential: [
-    // vc1 ...
-    // vc2 ...
+  "@context": [
+    "https://www.w3.org/2018/credentials/v1"
+  ],
+  "type": [
+    "VerifiablePresentation"
+  ],
+  "id": "ebc6f1c2",
+  "holder": "did:ex:12345",
+  "verifiableCredential": [
+    // vc1:
+    {
+      "@context": [
+        "https://www.w3.org/2018/credentials/v1",
+        "https://www.w3.org/2018/credentials/examples/v1"
+      ],
+      "id": "http://example.edu/credentials/1872",
+      "type": [
+        "VerifiableCredential",
+        "AlumniCredential"
+      ],
+      "issuer": "https://example.edu/issuers/565049",
+      "issuanceDate": "2010-01-01T19:23:24Z",
+      "credentialSubject": {
+        "id": "did:example:ebfeb1f712ebc6f1c276e12ec21",
+        "alumniOf": "<span lang=\"en\">Example University</span>"
+      },
+      "proof": {
+        "type": "Ed25519Signature2018",
+        "created": "2020-02-03T17:23:49Z",
+        "jws": "eyJhbGciOiJFZERTQSIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..AUQ3AJ23WM5vMOWNtYKuqZBekRAOUibOMH9XuvOd39my1sO-X9R4QyAXLD2ospssLvIuwmQVhJa-F0xMOnkvBg",
+        "proofPurpose": "assertionMethod",
+        "verificationMethod": "https://example.edu/issuers/keys/1"
+      }
+    },
+    // vc2 goes here ...
   ]
 }
 ```
@@ -272,9 +300,55 @@ Once you've created the presentation (either via `createPresentation()` or
 manually), you can sign it using `signPresentation()`:
 
 ```js
-const vp = await vc.signPresentation({presentation, suite});
+const vp = await vc.signPresentation({presentation, suite, challenge});
 
 console.log(JSON.stringify(vp, null, 2));
+// ->
+{
+  "@context": [
+    "https://www.w3.org/2018/credentials/v1"
+  ],
+  "type": [
+    "VerifiablePresentation"
+  ],
+  "verifiableCredential": [
+    {
+      "@context": [
+        "https://www.w3.org/2018/credentials/v1",
+        "https://www.w3.org/2018/credentials/examples/v1"
+      ],
+      "id": "http://example.edu/credentials/1872",
+      "type": [
+        "VerifiableCredential",
+        "AlumniCredential"
+      ],
+      "issuer": "https://example.edu/issuers/565049",
+      "issuanceDate": "2010-01-01T19:23:24Z",
+      "credentialSubject": {
+        "id": "did:example:ebfeb1f712ebc6f1c276e12ec21",
+        "alumniOf": "<span lang=\"en\">Example University</span>"
+      },
+      "proof": {
+        "type": "Ed25519Signature2018",
+        "created": "2020-02-03T17:23:49Z",
+        "jws": "eyJhbGciOiJFZERTQSIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..AUQ3AJ23WM5vMOWNtYKuqZBekRAOUibOMH9XuvOd39my1sO-X9R4QyAXLD2ospssLvIuwmQVhJa-F0xMOnkvBg",
+        "proofPurpose": "assertionMethod",
+        "verificationMethod": "https://example.edu/issuers/keys/1"
+      }
+    }
+  ],
+  "id": "ebc6f1c2",
+  "holder": "did:ex:holder123",
+  "proof": {
+    "type": "Ed25519Signature2018",
+    "created": "2019-02-03T17:23:49Z",
+    "challenge": "12ec21",
+    "jws": "eyJhbGciOiJFZERTQSIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..ZO4Lkq8-fOruE4oUvuMaxepGX-vLD2gPyNIsz-iA7X0tzC3_96djaBYDxxl6wD1xKrx0h60NjI9i9p_MxoXkDQ",
+    "proofPurpose": "authentication",
+    "verificationMethod": "https://example.edu/issuers/keys/1"
+  }
+}
+```
 
 ### Verifying a Verifiable Credential
 

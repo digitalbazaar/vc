@@ -3,11 +3,15 @@
 ## 0.4.0 - TBD
 
 ### Changed
-- **BREAKING**: For VerifiablePresentations, the async `createPresentation()`
-  API is broken out into two separate calls: a **sync** `createPresentation()`
-  and an async `signPresentation()`.
-- **BREAKING**: Default proof purpose is changed VerifiablePresentations from
-  `assertionMethod` to `authentication`.
+- **BREAKING**: For VerifiablePresentations, break the async
+  `createPresentation()` API into two separate calls:
+  a **sync** `createPresentation()` and an async `signPresentation()`.
+- **BREAKING**: Change default proof purpose for VerifiablePresentations
+  from `assertionMethod` to `authentication`.
+- **BREAKING**: A `challenge` param is required when verifying a VP.
+
+### Added
+- Add support for optionally verifying unsigned presentations.
 
 ## 0.3.0 - 2020-01-28
 
