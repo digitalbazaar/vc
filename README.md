@@ -154,15 +154,15 @@ const {defaultDocumentLoader} = vc;
 // a valid json-ld @context.
 const myCustomContext = require('./myCustomContext');
 
-const documentLoader = async uri => {
-  if(uri === 'did:test:context:foo') {
+const documentLoader = async url => {
+  if(url === 'did:test:context:foo') {
     return {
       contextUrl: null,
-      documentUrl: uri,
+      documentUrl: url,
       document: myCustomContext
     };
   }
-  return defaultDocumentLoader(uri);
+  return defaultDocumentLoader(url);
 };
 
 // you can now use your custom documentLoader
