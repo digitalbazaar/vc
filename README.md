@@ -171,7 +171,6 @@ const documentLoader = async url => {
 const vp = await vc.createPresentation({
   verifiableCredential,
   suite,
-  type,
   documentLoader
 });
 
@@ -229,8 +228,7 @@ To create a verifiable presentation out of one or more verifiable credentials:
 
 ```js
 const verifiableCredential = [vc1, vc2];
-const type = ['DemoCredential']
-const vp = await vc.createPresentation({verifiableCredential, suite, type});
+const vp = await vc.createPresentation({verifiableCredential, suite});
 console.log(JSON.stringify(vp, null, 2));
 ```
 
