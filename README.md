@@ -148,13 +148,18 @@ Pre-requisites:
 * Your custom context is resolvable at an address.
 
 ```js
+// jsonld-signatures has a secure context loader
+// be requiring this first you ensure security
+// contexts are loaded from jsonld-signatures
+// and not an insecure source.
+const {extendContextLoader} = require('jsonld-signatures');
 const vc = require('vc-js');
 // vc-js exports its own secure documentLoader.
 const {defaultDocumentLoader} = vc;
 // a valid json-ld @context.
 const myCustomContext = require('./myCustomContext');
 
-const documentLoader = async url => {
+const documentLoader = extendContextLoader(async url => {
   if(url === 'did:test:context:foo') {
     return {
       contextUrl: null,
@@ -163,7 +168,7 @@ const documentLoader = async url => {
     };
   }
   return defaultDocumentLoader(url);
-};
+});
 
 // you can now use your custom documentLoader
 // with multiple vc methods such as:
