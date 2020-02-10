@@ -64,6 +64,7 @@
     "browserify": "^16.2.3",
     "chai": "^4.1.2",
     "core-js": "^3.6.4",
+    "cross-env": "^7.0.0",
     "crypto-ld": "^3.7.0",
     "eslint": "^6.8.0",
     "eslint-config-digitalbazaar": "^2.0.0",
@@ -77,6 +78,7 @@
     "karma-sourcemap-loader": "^0.3.7",
     "karma-webpack": "^4.0.2",
     "mocha": "^7.0.0",
+    "nyc": "^15.0.0",
     "regenerator-runtime": "^0.13.1",
     "uuid": "^3.4.0",
     "webpack": "^4.41.5",
@@ -103,6 +105,8 @@
     "test": "bin/vc-test",
     "test-node": "mocha ./tests/*.spec.js --opts ./tests/mocha.opts --require @babel/polyfill --require @babel/register",
     "test-karma": "karma start karma.conf.js",
-    "lint": "eslint '*.js' 'lib/**.js' 'tests/**.js' bin/vc-js"
+    "lint": "eslint '*.js' 'lib/**.js' 'tests/**.js' bin/vc-js",
+    "coverage": "cross-env NODE_ENV=test nyc --reporter=lcov --reporter=text-summary npm run test-node",
+    "coverage-report": "nyc report"
   }
 }
