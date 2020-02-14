@@ -40,7 +40,7 @@
     "fs-extra": "^8.1.0",
     "get-stdin": "^7.0.0",
     "jsonld": "^2.0.2",
-    "jsonld-signatures": "^4.6.0",
+    "jsonld-signatures": "^5.0.0",
     "supports-color": "^7.1.0"
   },
   "browser": {
