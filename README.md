@@ -1,6 +1,7 @@
 # Verifiable Credentials JS Library _(vc-js)_
 
 [![Build Status](https://travis-ci.org/digitalbazaar/vc-js.png?branch=master)](https://travis-ci.org/digitalbazaar/vc-js)
+[![NPM Version](https://img.shields.io/npm/v/vc-js.svg?style=flat-square)](https://npm.im/vc-js)
 
 > A Javascript library for issuing and verifying Verifiable Credentials
 
