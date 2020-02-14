@@ -1,6 +1,6 @@
 # vc-js ChangeLog
 
-## 0.4.0 - TBD
+## 0.4.0 - 2020-02-14
 
 ### Changed
 - **BREAKING**: For VerifiablePresentations, break the async
