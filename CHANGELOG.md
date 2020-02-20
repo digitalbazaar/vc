@@ -1,5 +1,11 @@
 # vc-js ChangeLog
 
+## 0.4.1 - 2020-02-20
+
+### Changed
+- Multiple types for a VerifiableCredential no longer required (fix).
+- Multiple `@context`s for a VC no longer required (fix).
+
 ## 0.4.0 - 2020-02-14
 
 ### Changed
