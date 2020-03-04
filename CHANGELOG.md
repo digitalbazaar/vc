@@ -1,5 +1,15 @@
 # vc-js ChangeLog
 
+## 0.5.0 - TBD
+
+### Changed
+- `verifiableCredential` param is now optional in `createPresentation()`.
+- **BREAKING**: `verify()` now only verifies presentations, not credentials,
+  (since that will be the most common use case). For credentials, create a
+  separate `verifyCredential()` method.
+- **BREAKING**: Rename `verify()`'s `purpose` parameter to
+  `presentationPurpose`.
+
 ## 0.4.1 - 2020-02-20
 
 ### Changed

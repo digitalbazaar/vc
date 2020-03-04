@@ -351,23 +351,6 @@ console.log(JSON.stringify(vp, null, 2));
 }
 ```
 
-### Verifying a Verifiable Credential
-
-Pre-requisites:
-
-* If you're using a custom `@context`, make sure it's resolvable
-* You're using the correct public key and corresponding suite
-* Your Controller Document is reachable via a `documentLoader`
-
-To verify a verifiable credential:
-
-```js
-const result = await vc.verify({credential, suite});
-// {valid: true}
-```
-
-To verify a verifiable credential with a custom `@context` field use a [custom documentLoader](#custom-documentLoader)
-
 ### Verifying a Verifiable Presentation
 
 Pre-requisites:
@@ -379,7 +362,10 @@ Pre-requisites:
 To verify a verifiable presentation:
 
 ```js
-const result = await vc.verify({presentation, suite});
+// challenge has been received from the requesting party - see 'challenge'
+// section below
+
+const result = await vc.verify({presentation, challenge, suite});
 // {valid: true}
 ```
 
@@ -393,6 +379,41 @@ const result = await vc.verify({
 });
 // {valid: true}
 ```
+
+#### `challenge` parameter
+
+Verifiable Presentations are typically used for authentication purposes.
+A `challenge` param (similar to a `nonce` in OAuth2/OpenID Connect) is provided
+by the party that's receiving the VP, and serves to prevent presentation replay
+attacks. The workflow is:
+
+1. Receiving party asks for the VerifiablePresentation, and provides a
+  `challenge` parameter.
+2. The client code creating the VP passes in that challenge (from the requesting
+  party), and it gets included in the VP.
+3. The client code passes the VP to the receiving party, which then checks to
+  make sure the `challenge` is the same as the one it provided in the request
+  in 1).
+
+### Verifying a Verifiable Credential
+
+For most situations, you will only need to verify a Verifiable Presentation,
+since Verifiable Credentials that are not wrapped in a VP are a rare occurrence.
+
+Pre-requisites:
+
+* If you're using a custom `@context`, make sure it's resolvable
+* You're using the correct public key and corresponding suite
+* Your Controller Document is reachable via a `documentLoader`
+
+To verify a verifiable credential:
+
+```js
+const result = await vc.verifyCredential({credential, suite});
+// {valid: true}
+```
+
+To verify a verifiable credential with a custom `@context` field use a [custom documentLoader](#custom-documentLoader)
 
 ## Testing
 

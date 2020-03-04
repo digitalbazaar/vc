@@ -178,7 +178,7 @@ describe('verify API (credentials)', () => {
       credential: mockCredential,
       suite
     });
-    const result = await vc.verify({
+    const result = await vc.verifyCredential({
       credential: verifiableCredential,
       controller: assertionController,
       suite,
@@ -195,7 +195,7 @@ describe('verify API (credentials)', () => {
     it('fails to verify if a context is null', async () => {
       const {credential, suite} = await _generateCredential();
       credential['@context'].push(invalidContexts.nullDoc.url);
-      const results = await vc.verify({
+      const results = await vc.verifyCredential({
         suite,
         credential,
         documentLoader
@@ -206,7 +206,7 @@ describe('verify API (credentials)', () => {
     it('fails to verify if a context contains an invalid id', async () => {
       const {credential, suite} = await _generateCredential();
       credential['@context'].push(invalidContexts.invalidId.url);
-      const results = await vc.verify({
+      const results = await vc.verifyCredential({
         suite,
         credential,
         documentLoader
@@ -217,7 +217,7 @@ describe('verify API (credentials)', () => {
     it('fails to verify if a context has a null version', async () => {
       const {credential, suite} = await _generateCredential();
       credential['@context'].push(invalidContexts.nullVersion.url);
-      const results = await vc.verify({
+      const results = await vc.verifyCredential({
         suite,
         credential,
         documentLoader
@@ -228,7 +228,7 @@ describe('verify API (credentials)', () => {
     it('fails to verify if a context has a null @id', async () => {
       const {credential, suite} = await _generateCredential();
       credential['@context'].push(invalidContexts.nullId.url);
-      const results = await vc.verify({
+      const results = await vc.verifyCredential({
         suite,
         credential,
         documentLoader
@@ -239,7 +239,7 @@ describe('verify API (credentials)', () => {
     it('fails to verify if a context has a null @type', async () => {
       const {credential, suite} = await _generateCredential();
       credential['@context'].push(invalidContexts.nullType.url);
-      const results = await vc.verify({
+      const results = await vc.verifyCredential({
         suite,
         credential,
         documentLoader
@@ -250,7 +250,7 @@ describe('verify API (credentials)', () => {
     it('fails to verify if a context links to a missing doc', async () => {
       const {credential, suite} = await _generateCredential();
       credential['@context'].push('https://fsad.digitalbazaar.com');
-      const results = await vc.verify({
+      const results = await vc.verifyCredential({
         suite,
         credential,
         documentLoader
@@ -261,7 +261,7 @@ describe('verify API (credentials)', () => {
     it('fails to verify if a context has an invalid url', async () => {
       const {credential, suite} = await _generateCredential();
       credential['@context'].push('htps://fsad.digitalbazaar.');
-      const results = await vc.verify({
+      const results = await vc.verifyCredential({
         suite,
         credential,
         documentLoader
