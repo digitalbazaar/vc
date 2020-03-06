@@ -397,8 +397,9 @@ attacks. The workflow is:
 
 ### Verifying a Verifiable Credential
 
-For most situations, you will only need to verify a Verifiable Presentation,
-since Verifiable Credentials that are not wrapped in a VP are a rare occurrence.
+For most situations, Verifiable Credentials will be wrapped in a Verifiable
+Presentation and the entire VP should be verified. However, this library
+provides a utility function to verify a Verifiable Credential on its own.
 
 Pre-requisites:
 
