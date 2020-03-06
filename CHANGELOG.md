@@ -5,8 +5,8 @@
 ### Changed
 - `verifiableCredential` param is now optional in `createPresentation()`.
 - **BREAKING**: `verify()` now only verifies presentations, not credentials,
-  (since that will be the most common use case). For credentials, create a
-  separate `verifyCredential()` method.
+  (since that will be the most common use case). For credentials, a separate
+  `verifyCredential()` method has been added.
 - **BREAKING**: Rename `verify()`'s `purpose` parameter to
   `presentationPurpose`.
 
