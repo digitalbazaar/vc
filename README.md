@@ -403,9 +403,14 @@ provides a utility function to verify a Verifiable Credential on its own.
 
 Pre-requisites:
 
-* If you're using a custom `@context`, make sure it's resolvable
-* You're using the correct public key and corresponding suite
-* Your Controller Document is reachable via a `documentLoader`
+* If you're using a custom `@context`, make sure it's resolvable,
+  providing a custom `documentLoader` as needed
+* You're passing the cryptographic suite(s) your application supports
+  (be prepared to handle errors if the VC does not use a matching suite)
+* You have specified a specific verification method (e.g., public key) that
+  your application will accept via a suite *or* you provide a custom
+  `documentLoader` that can resolve acceptable verification methods
+* Controller Document is reachable via a `documentLoader`
 
 To verify a verifiable credential:
 
