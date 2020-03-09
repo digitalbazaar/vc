@@ -19,69 +19,32 @@
 ## Security
 
 As with most security- and cryptography-related tools, the overall security of
-your system will largely depend on your design decisions.
-
-### Required Design Decisions
-
-As a developer, in order to use this library, you will need to make the
-following decisions, constrained by your use case:
-
-1. [Which key type](#choosing-key-type) and suite to use?
-2. What is your [Private Key Storage](#private-key-storage) strategy?
-   (KMS, file system, secure wallet)
-3. Where will you publish your Public Key? (What is your key resolving strategy)
-   - This will influence what you'll use for [Key ID](#key-id)s
-4. What is your Controller document strategy? (DID, embedded, web, ...)
+your system will largely depend on your design decisions (which key types
+you will use, where you'll store the private keys, what you put into your
+credentials, and so on.)
 
 ## Background
 
-See also (related specs):
+This library is a Javascript (Node.js and browser) implementation of the
+[Verifiable Credentials Data Model 1.0](https://w3c.github.io/vc-data-model/)
+specification (the JWT serialization is not currently supported).
 
-* [Verifiable Credentials Data Model](https://w3c.github.io/vc-data-model/)
-* [Linked Data Proofs 1.0](https://w3c-dvcg.github.io/ld-proofs/)
+It allows you to perform the following basic operations:
 
-#### Choosing Key Type
+1. Signing (issuing) a Verifiable Credential (VC).
+2. Creating a Verifiable Presentation (VP), signed or unsigned
+3. Verifying a VP
+4. Verifying a standalone VC
 
-In order to create or verify Verifiable Credentials, you will most likely need
-cryptographic key material, such as public/private key pairs. (There are other
-advanced use cases, such as biometrics, that do not involve keys directly, but
-those are out of scope for the moment.)
+**Pre-requisites:** Usage of this library assumes you have the ability to do
+the following:
 
-Which key type to use?
-
-TODO: Add design considerations for choosing key types / cryptographic
-algorithms for signing your credentials. For now:
-
-* Use **Ed25519** keys if you can
-* Use **EcdsaSepc256k1** keys if you must (for example, if you're developing for
-  a Bitcoin-based or Ethereum-based ledger)
-* You _can_ use RSA keys to sign, if your use case requires it.
-
-#### Key ID
-
-TODO: Add discussion on typical key ID strategies
-
-* `'did:example:123' + '#' + keyPair.fingerprint()` (Ledger DID based)
-* `'did:key:' + keyPair.fingerprint()` ([`did:key` method](https://github.com/digitalbazaar/did-method-key/pull/1/files) based)
-* `https://example.com/publicKey.json`
-* `urn:123`
-
-
-#### Controller Document
-
-TODO: Explain controller document
-
-* `did:example:123` (Controller's DID on a ledger)
-* Embedded / `did:key` method
-* `https://example.com/controller.json` (published on the web)
-
-```js
-const controllerDoc = {
-  '@context': 'https://w3id.org/security/v2',
-  id: controllerId,
-  assertionMethod: [keyPair.id]
-};
-```
+* [Generate LD key pairs and signature suites](BACKGROUND.md#generating-keys-and-suites)
+* Publish the corresponding public keys somewhere that is accessible to the
+  verifier.
+* Make sure your custom `@context`s, verification methods (such as public keys)
+  and their corresponding controller documents, and any other resolvable
+  objects, are reachable via a `documentLoader`.
 
 ## Install
 
@@ -97,96 +60,6 @@ npm install
 ```
 
 ## Usage
-
-### CLI
-
-To use on the command line, see
-[`vc-js-cli`](https://github.com/digitalbazaar/vc-js-cli).
-
-### Generating Keys and Suites
-
-See [Choosing Key Type](#choosing-key-type) background discussion for
-explanation.
-
-To generate an **Ed25519** key pair and corresponding signature suite (see
-[`crypto-ld`](https://github.com/digitalbazaar/crypto-ld/)) docs for advanced
-parameters, such as generating from a deterministic key seed):
-
-```js
-const {Ed25519KeyPair, suites: {Ed25519Signature2018}} = require('jsonld-signatures');
-
-const keyPair = await Ed25519KeyPair.generate();
-keyPair.id = 'https://example.edu/issuers/keys/1'; // See Key ID section
-keyPair.controller = 'https://example.com/i/carol'; // See Controller Document section
-
-const suite = new Ed25519Signature2018({
-  verificationMethod: keyPair.id,
-  key: keyPair
-});
-```
-
-To generate a **Ecdsa** key pair and corresponding suite:
-
-```js
-const Secp256k1KeyPair = require('secp256k1-key-pair');
-const EcdsaSepc256k1Signature2019 = require('ecdsa-secp256k1-signature-2019');
-
-const keyPair = await Secp256k1KeyPair.generate();
-keyPair.id = 'https://example.edu/issuers/keys/1'; // See Key ID section
-keyPair.controller = 'https://example.com/i/carol'; // See Controller Document section
-
-const suite = new EcdsaSepc256k1Signature2019({
-  verificationMethod: keyPair.id,
-  key: keyPair
-});
-```
-
-### Custom documentLoader
-
-Pre-requisites:
-
-* You have an existing valid JSON-LD `@context`.
-* Your custom context is resolvable at an address.
-
-```js
-// jsonld-signatures has a secure context loader
-// be requiring this first you ensure security
-// contexts are loaded from jsonld-signatures
-// and not an insecure source.
-const {extendContextLoader} = require('jsonld-signatures');
-const vc = require('vc-js');
-// vc-js exports its own secure documentLoader.
-const {defaultDocumentLoader} = vc;
-// a valid json-ld @context.
-const myCustomContext = require('./myCustomContext');
-
-const documentLoader = extendContextLoader(async url => {
-  if(url === 'did:test:context:foo') {
-    return {
-      contextUrl: null,
-      documentUrl: url,
-      document: myCustomContext
-    };
-  }
-  return defaultDocumentLoader(url);
-});
-
-// you can now use your custom documentLoader
-// with multiple vc methods such as:
-
-const vp = await vc.createPresentation({
-  verifiableCredential,
-  suite,
-  documentLoader
-});
-
-// or
-const signedVC = await vc.issue({credential, suite, documentLoader});
-
-// or
-const result = await vc.verify({credential, suite, documentLoader});
-
-```
 
 ### Issuing a Verifiable Credential
 
@@ -295,6 +168,53 @@ console.log(JSON.stringify(presentation, null, 2));
 Note that this creates an _unsigned_ presentation (which may be valid
 for some use cases).
 
+### Custom documentLoader
+
+Pre-requisites:
+
+* You have an existing valid JSON-LD `@context`.
+* Your custom context is resolvable at an address.
+
+```js
+// jsonld-signatures has a secure context loader
+// be requiring this first you ensure security
+// contexts are loaded from jsonld-signatures
+// and not an insecure source.
+const {extendContextLoader} = require('jsonld-signatures');
+const vc = require('vc-js');
+// vc-js exports its own secure documentLoader.
+const {defaultDocumentLoader} = vc;
+// a valid json-ld @context.
+const myCustomContext = require('./myCustomContext');
+
+const documentLoader = extendContextLoader(async url => {
+  if(url === 'did:test:context:foo') {
+    return {
+      contextUrl: null,
+      documentUrl: url,
+      document: myCustomContext
+    };
+  }
+  return defaultDocumentLoader(url);
+});
+
+// you can now use your custom documentLoader
+// with multiple vc methods such as:
+
+const vp = await vc.createPresentation({
+  verifiableCredential,
+  suite,
+  documentLoader
+});
+
+// or
+const signedVC = await vc.issue({credential, suite, documentLoader});
+
+// or
+const result = await vc.verify({credential, suite, documentLoader});
+
+```
+
 #### Signing the Presentation
 
 Once you've created the presentation (either via `createPresentation()` or
@@ -355,9 +275,8 @@ console.log(JSON.stringify(vp, null, 2));
 
 Pre-requisites:
 
-* If you're using a custom `@context`, make sure it's resolvable
-* You're using the correct public keys and corresponding suites
-* Your Controller Documents are reachable via a `documentLoader`
+* Your custom `@context`s, verification methods (like public keys) and their
+  corresponding controller documents are reachable via a `documentLoader`.
 
 To verify a verifiable presentation:
 
@@ -396,21 +315,14 @@ attacks. The workflow is:
   in 1).
 
 ### Verifying a Verifiable Credential
-
 For most situations, Verifiable Credentials will be wrapped in a Verifiable
 Presentation and the entire VP should be verified. However, this library
 provides a utility function to verify a Verifiable Credential on its own.
 
 Pre-requisites:
 
-* If you're using a custom `@context`, make sure it's resolvable,
-  providing a custom `documentLoader` as needed
-* You're passing the cryptographic suite(s) your application supports
-  (be prepared to handle errors if the VC does not use a matching suite)
-* You have specified a specific verification method (e.g., public key) that
-  your application will accept via a suite *or* you provide a custom
-  `documentLoader` that can resolve acceptable verification methods
-* Controller Document is reachable via a `documentLoader`
+* Your custom `@context`s, verification methods (like public keys) and their
+  corresponding controller documents are reachable via a `documentLoader`.
 
 To verify a verifiable credential:
 
@@ -420,6 +332,11 @@ const result = await vc.verifyCredential({credential, suite});
 ```
 
 To verify a verifiable credential with a custom `@context` field use a [custom documentLoader](#custom-documentLoader)
+
+### CLI
+
+To use on the command line, see
+[`vc-js-cli`](https://github.com/digitalbazaar/vc-js-cli).
 
 ## Testing
 
@@ -442,7 +359,7 @@ See [the contribute file](https://github.com/digitalbazaar/bedrock/blob/master/C
 
 PRs accepted.
 
-Small note: If editing the Readme, please conform to the
+Note: If editing the Readme, please conform to the
 [standard-readme](https://github.com/RichardLitt/standard-readme) specification.
 
 ## Commercial Support
