@@ -1,6 +1,6 @@
 # vc-js ChangeLog
 
-## 0.5.0 - TBD
+## 0.5.0 - 2020-03-26
 
 ### Changed
 - `verifiableCredential` param is now optional in `createPresentation()`.
