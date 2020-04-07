@@ -343,14 +343,13 @@ To use on the command line, see
 To run Mocha tests:
 
 ```
-npm run mocha
+npm run test-node
 ```
 
-To run the VC Test Suite:
+To run Karma (in-browser) tests:
 
 ```
-npm run fetch-vc-test-suite
-npm test
+npm run test-karma
 ```
 
 ## Contribute
