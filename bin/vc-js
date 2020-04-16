@@ -7,6 +7,8 @@ const vc = require('../lib/');
 const jsigs = require('jsonld-signatures');
 const {Ed25519KeyPair} = require('crypto-ld');
 
+/* eslint-disable no-unused-vars */
+
 // debuggers
 const loaderDebug = require('debug')('vc:loader');
 

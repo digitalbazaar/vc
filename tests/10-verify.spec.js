@@ -311,10 +311,10 @@ describe('verify API (presentations)', () => {
     }
     result.verified.should.be.a('boolean');
     result.verified.should.be.true;
-  })
+  });
 });
 
-async function  _generateCredential() {
+async function _generateCredential() {
   const mockCredential = jsonld.clone(mockData.credentials.alpha);
   const {didDocument, documentLoader} = await _loadDid();
   mockCredential.issuer = didDocument.id;
@@ -342,7 +342,8 @@ async function _generatePresentation({challenge, unsigned = false}) {
     await _generateCredential();
   testLoader.addLoader(dlc);
 
-  const presentation = vc.createPresentation({verifiableCredential: credential});
+  const presentation = vc.createPresentation(
+    {verifiableCredential: credential});
 
   if(unsigned) {
     return {presentation, suite: vcSuite,
@@ -354,7 +355,8 @@ async function _generatePresentation({challenge, unsigned = false}) {
   const vpSuite = new Ed25519Signature2018({key: authenticationKey});
 
   const vp = await vc.signPresentation({
-    presentation, suite: vpSuite, challenge, documentLoader: testLoader.documentLoader.bind(testLoader)
+    presentation, suite: vpSuite, challenge,
+    documentLoader: testLoader.documentLoader.bind(testLoader)
   });
 
   return {presentation: vp, suite: [vcSuite, vpSuite],
