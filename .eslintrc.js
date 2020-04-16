@@ -6,5 +6,6 @@ module.exports = {
   extends: [
     'digitalbazaar',
     'digitalbazaar/jsdoc'
-  ]
+  ],
+  ignorePatterns: ['dist/']
 };
