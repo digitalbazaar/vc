@@ -191,6 +191,25 @@ describe('verify API (credentials)', () => {
     result.verified.should.be.true;
   });
 
+  it('should verify a vc with a positive status check', async () => {
+    verifiableCredential = await vc.issue({
+      credential: mockCredential,
+      suite
+    });
+    const result = await vc.verifyCredential({
+      credential: verifiableCredential,
+      controller: assertionController,
+      suite,
+      documentLoader,
+      checkStatus: async () => ({verified: true})
+    });
+
+    if(result.error) {
+      throw result.error;
+    }
+    result.verified.should.be.true;
+  });
+
   describe('negative tests', async () => {
     it('fails to verify if a context is null', async () => {
       const {credential, suite} = await _generateCredential();
@@ -268,6 +287,24 @@ describe('verify API (credentials)', () => {
       });
       results.verified.should.be.a('boolean');
       results.verified.should.be.false;
+    });
+    it('should fail to verify a vc with a negative status check', async () => {
+      verifiableCredential = await vc.issue({
+        credential: mockCredential,
+        suite
+      });
+      const result = await vc.verifyCredential({
+        credential: verifiableCredential,
+        controller: assertionController,
+        suite,
+        documentLoader,
+        checkStatus: async () => ({verified: false})
+      });
+
+      if(result.error) {
+        throw result.error;
+      }
+      result.verified.should.be.true;
     });
   });
 });
