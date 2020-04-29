@@ -1,5 +1,11 @@
 # vc-js ChangeLog
 
+## 0.6.0 - 2020-04-29
+
+### Added
+- Add `checkStatus` option. This is a function that can be passed that
+  will be executed when a VC has a `credentialStatus` attribute.
+
 ## 0.5.0 - 2020-03-26
 
 ### Changed
