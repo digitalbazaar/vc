@@ -1,6 +1,6 @@
 # vc-js ChangeLog
 
-## 0.6.1 - 2020-05-xx
+## 0.6.1 - 2020-05-01
 
 ### Fixed
 - Fix reporting of `credentialResults` in `verify` output.
