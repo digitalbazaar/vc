@@ -1,5 +1,10 @@
 # vc-js ChangeLog
 
+## 0.6.2 - 2020-05-04
+
+### Fixed
+- Accept string value for a single VP context.
+
 ## 0.6.1 - 2020-05-01
 
 ### Fixed
