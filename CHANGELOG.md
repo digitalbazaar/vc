@@ -1,6 +1,6 @@
 # vc-js ChangeLog
 
-## 0.6.3 - 2020-05-xx
+## 0.6.3 - 2020-05-14
 
 ### Fixed
 - Improve error reporting when `suite` parameter is missing.
