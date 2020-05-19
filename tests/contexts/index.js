@@ -7,8 +7,8 @@ const invalidContexts = {
     value: require('./veresOnev1.json')
   },
   did: {
-    url: 'https://w3id.org/did/v0.11',
-    value: didContext.contexts.get('https://w3id.org/did/v0.11')
+    url: didContext.constants.DID_CONTEXT_URL,
+    value: didContext.contexts.get(didContext.constants.DID_CONTEXT_URL)
   },
   valid: {
     url: 'https://www.w3.org/2018/credentials/v1',
