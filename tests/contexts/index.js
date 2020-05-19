@@ -1,20 +1,22 @@
-const credentialsContext = require('credentials-context');
-const didContext = require('did-context');
+const {contexts: credentialsContext, constants: {CREDENTIALS_CONTEXT_V1_URL}} =
+  require('credentials-context');
+const {contexts: didContext, constants: {DID_CONTEXT_URL}} =
+  require('did-context');
+const {contexts: contextV1, constants: {VERES_ONE_CONTEXT_V1_URL}} =
+  require('veres-one-context');
 
 const invalidContexts = {
   veresOne: {
-    url: 'https://w3id.org/veres-one/v1',
-    value: require('./veresOnev1.json')
+    url: VERES_ONE_CONTEXT_V1_URL,
+    value: contextV1.get(VERES_ONE_CONTEXT_V1_URL)
   },
   did: {
-    url: didContext.constants.DID_CONTEXT_URL,
-    value: didContext.contexts.get(didContext.constants.DID_CONTEXT_URL)
+    url: DID_CONTEXT_URL,
+    value: didContext.get(DID_CONTEXT_URL)
   },
   valid: {
-    url: 'https://www.w3.org/2018/credentials/v1',
-    value: credentialsContext.contexts.get(
-      'https://www.w3.org/2018/credentials/v1'
-    )
+    url: CREDENTIALS_CONTEXT_V1_URL,
+    value: credentialsContext.get(CREDENTIALS_CONTEXT_V1_URL)
   },
   invalidId: {
     url: 'https://invalid-id.org',

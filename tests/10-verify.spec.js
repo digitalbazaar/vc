@@ -21,9 +21,7 @@ const {VeresOneDidDoc} = require('did-veres-one');
 
 const contexts = Object.assign({}, realContexts);
 contexts[mockDidDoc.id] = mockDidDoc;
-
 const testContextLoader = () => {
-  // FIXME: use credentials-context module when available
   for(const key in invalidContexts) {
     const {url, value} = invalidContexts[key];
     contexts[url] = value;
