@@ -66,6 +66,7 @@
     "core-js": "^3.6.4",
     "cross-env": "^7.0.0",
     "crypto-ld": "^3.7.0",
+    "did-context": "^2.0.0",
     "did-veres-one": "^10.0.1",
     "eslint": "^6.8.0",
     "eslint-config-digitalbazaar": "^2.0.0",
