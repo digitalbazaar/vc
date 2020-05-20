@@ -361,8 +361,11 @@ describe('tests for multiple credentials', async () => {
         await _generatePresentation({challenge, credentialsCount: count});
 
       // tampering with the first two credentials id
-      presentation.verifiableCredential[0].id = 'some fake id';
-      presentation.verifiableCredential[1].id = 'some other fake id';
+      const credentialOneId = 'some fake id';
+      const credentialTwoId = 'some other fake id';
+
+      presentation.verifiableCredential[0].id = credentialOneId;
+      presentation.verifiableCredential[1].id = credentialTwoId;
 
       const result = await vc.verify({
         documentLoader,
@@ -379,6 +382,7 @@ describe('tests for multiple credentials', async () => {
       result.verified.should.be.false;
       credentialOne.verified.should.be.a('boolean');
       credentialOne.verified.should.be.false;
+
       credentialTwo.verified.should.be.a('boolean');
       credentialTwo.verified.should.be.false;
 
@@ -386,7 +390,15 @@ describe('tests for multiple credentials', async () => {
         const credential = credentialResults[i];
         credential.verified.should.be.a('boolean');
         credential.verified.should.be.true;
+        should.exist(credential.credentialId);
+        credential.credentialId.should.be.a('string');
       }
+
+      credentialOne.credentialId.should.be.a('string');
+      credentialOne.credentialId.should.equal(credentialOneId);
+
+      credentialTwo.credentialId.should.be.a('string');
+      credentialTwo.credentialId.should.equal(credentialTwoId);
 
       firstErrorMsg.should.contain('Invalid signature.');
     });
@@ -411,6 +423,8 @@ describe('tests for multiple credentials', async () => {
       for(const credential of credentialResults) {
         credential.verified.should.be.a('boolean');
         credential.verified.should.be.true;
+        should.exist(credential.credentialId);
+        credential.credentialId.should.be.a('string');
       }
     });
   }
