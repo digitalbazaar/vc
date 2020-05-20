@@ -349,11 +349,78 @@ describe('verify API (presentations)', () => {
   });
 });
 
+describe('tests for multiple credentials', async () => {
+
+  const credentialsCount = [5, 25, 50, 100];
+
+  for(const count of credentialsCount) {
+    it('cause error when credentials are tampered', async function() {
+      this.timeout(10000);
+      const challenge = uuid();
+      const {presentation, suite: vcSuite, documentLoader} =
+        await _generatePresentation({challenge, credentialsCount: count});
+
+      // tampering with the first two credentials id
+      presentation.verifiableCredential[0].id = 'some fake id';
+      presentation.verifiableCredential[1].id = 'some other fake id';
+
+      const result = await vc.verify({
+        documentLoader,
+        presentation,
+        suite: vcSuite,
+        unsignedPresentation: true
+      });
+      const credentialResults = result.credentialResults;
+      const credentialOne = result.credentialResults[0];
+      const credentialTwo = result.credentialResults[1];
+      const firstErrorMsg = result.credentialResults[0].error.errors[0].message;
+
+      result.verified.should.be.a('boolean');
+      result.verified.should.be.false;
+      credentialOne.verified.should.be.a('boolean');
+      credentialOne.verified.should.be.false;
+      credentialTwo.verified.should.be.a('boolean');
+      credentialTwo.verified.should.be.false;
+
+      for(let i = 2; i < credentialResults.length; ++i) {
+        const credential = credentialResults[i];
+        credential.verified.should.be.a('boolean');
+        credential.verified.should.be.true;
+      }
+
+      firstErrorMsg.should.contain('Invalid signature.');
+    });
+
+    it('should not cause error when credentials are correct', async function() {
+      this.timeout(10000);
+      const challenge = uuid();
+      const {presentation, suite: vcSuite, documentLoader} =
+        await _generatePresentation({challenge, credentialsCount: count});
+
+      const result = await vc.verify({
+        documentLoader,
+        presentation,
+        suite: vcSuite,
+        unsignedPresentation: true
+      });
+      const credentialResults = result.credentialResults;
+
+      result.verified.should.be.a('boolean');
+      result.verified.should.be.true;
+
+      for(const credential of credentialResults) {
+        credential.verified.should.be.a('boolean');
+        credential.verified.should.be.true;
+      }
+    });
+  }
+});
+
 async function _generateCredential() {
   const mockCredential = jsonld.clone(mockData.credentials.alpha);
   const {didDocument, documentLoader} = await _loadDid();
   mockCredential.issuer = didDocument.id;
-
+  mockCredential.id = `http://example.edu/credentials/${uuid()}`;
   testLoader.addLoader(documentLoader);
 
   const assertionKey = didDocument.keys[mockDidKeys.ASSERTION_KEY_ID];
@@ -369,16 +436,24 @@ async function _generateCredential() {
   return {credential, documentLoader, suite};
 }
 
-async function _generatePresentation({challenge, unsigned = false}) {
+async function _generatePresentation({
+  challenge, unsigned = false, credentialsCount = 1
+}) {
   const {didDocument, documentLoader: didLoader} = await _loadDid();
   testLoader.addLoader(didLoader);
+  const credentials = [];
 
-  const {credential, documentLoader: dlc, suite: vcSuite} =
-    await _generateCredential();
+  // generate multiple credentials
+  for(let i = 0; i < credentialsCount; i++) {
+    const {credential} = await _generateCredential();
+    credentials.push(credential);
+  }
+
+  const {documentLoader: dlc, suite: vcSuite} = await _generateCredential();
   testLoader.addLoader(dlc);
 
   const presentation = vc.createPresentation(
-    {verifiableCredential: credential});
+    {verifiableCredential: credentials});
 
   if(unsigned) {
     return {presentation, suite: vcSuite,
