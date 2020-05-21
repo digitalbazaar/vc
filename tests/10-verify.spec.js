@@ -361,11 +361,8 @@ describe('tests for multiple credentials', async () => {
         await _generatePresentation({challenge, credentialsCount: count});
 
       // tampering with the first two credentials id
-      const credentialOneId = 'some fake id';
-      const credentialTwoId = 'some other fake id';
-
-      presentation.verifiableCredential[0].id = credentialOneId;
-      presentation.verifiableCredential[1].id = credentialTwoId;
+      presentation.verifiableCredential[0].id = 'some fake id';
+      presentation.verifiableCredential[1].id = 'some other fake id';
 
       const result = await vc.verify({
         documentLoader,
@@ -380,11 +377,16 @@ describe('tests for multiple credentials', async () => {
 
       result.verified.should.be.a('boolean');
       result.verified.should.be.false;
+
       credentialOne.verified.should.be.a('boolean');
       credentialOne.verified.should.be.false;
+      credentialOne.credentialId.should.be.a('string');
+      credentialOne.credentialId.should.equal('some fake id');
 
       credentialTwo.verified.should.be.a('boolean');
       credentialTwo.verified.should.be.false;
+      credentialTwo.credentialId.should.be.a('string');
+      credentialTwo.credentialId.should.equal('some other fake id');
 
       for(let i = 2; i < credentialResults.length; ++i) {
         const credential = credentialResults[i];
@@ -393,12 +395,6 @@ describe('tests for multiple credentials', async () => {
         should.exist(credential.credentialId);
         credential.credentialId.should.be.a('string');
       }
-
-      credentialOne.credentialId.should.be.a('string');
-      credentialOne.credentialId.should.equal(credentialOneId);
-
-      credentialTwo.credentialId.should.be.a('string');
-      credentialTwo.credentialId.should.equal(credentialTwoId);
 
       firstErrorMsg.should.contain('Invalid signature.');
     });
