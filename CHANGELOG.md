@@ -1,5 +1,11 @@
 # vc-js ChangeLog
 
+## 0.6.4 - 2020-05-22
+
+### Added
+- The results from verifying a presentation now includes `credentialId` which
+  makes it possible to correlate success/failure messages with credentials.
+
 ## 0.6.3 - 2020-05-14
 
 ### Fixed
