@@ -110,7 +110,8 @@ use the `createPresentation()` convenience function. Alternatively, you can
 create the presentation object manually (don't forget to set the `@context` and
 `type` properties).
 
-To create a verifiable presentation with a custom `@context` field use a [custom documentLoader](#custom-documentLoader)
+To create a verifiable presentation with a custom `@context` field use a
+[custom documentLoader](#custom-documentLoader)
 
 ```js
 const verifiableCredential = [vc1, vc2]; // either array or single object
@@ -177,7 +178,7 @@ Pre-requisites:
 
 ```js
 // jsonld-signatures has a secure context loader
-// be requiring this first you ensure security
+// by requiring this first you ensure security
 // contexts are loaded from jsonld-signatures
 // and not an insecure source.
 const {extendContextLoader} = require('jsonld-signatures');
@@ -201,10 +202,8 @@ const documentLoader = extendContextLoader(async url => {
 // you can now use your custom documentLoader
 // with multiple vc methods such as:
 
-const vp = await vc.createPresentation({
-  verifiableCredential,
-  suite,
-  documentLoader
+const vp = await vc.signPresentation({
+  presentation, suite, challenge, documentLoader
 });
 
 // or
@@ -221,7 +220,9 @@ Once you've created the presentation (either via `createPresentation()` or
 manually), you can sign it using `signPresentation()`:
 
 ```js
-const vp = await vc.signPresentation({presentation, suite, challenge});
+const vp = await vc.signPresentation({
+  presentation, suite, challenge, documentLoader
+});
 
 console.log(JSON.stringify(vp, null, 2));
 // ->
@@ -331,7 +332,8 @@ const result = await vc.verifyCredential({credential, suite});
 // {valid: true}
 ```
 
-To verify a verifiable credential with a custom `@context` field use a [custom documentLoader](#custom-documentLoader)
+To verify a verifiable credential with a custom `@context` field use a
+[custom documentLoader](#custom-documentLoader)
 
 ### CLI
 
