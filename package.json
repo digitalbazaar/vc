@@ -40,11 +40,12 @@
     "fs-extra": "^8.1.0",
     "get-stdin": "^7.0.0",
     "jsonld": "^2.0.2",
-    "jsonld-signatures": "^5.0.0",
+    "jsonld-signatures": "digitalbazaar/jsonld-signatures#v6.x",
     "supports-color": "^7.1.0"
   },
   "browser": {
     "bs58": false,
+    "Buffer": false,
     "crypto": false,
     "sodium-native": false,
     "util": false
@@ -60,12 +61,14 @@
     "@babel/preset-env": "^7.8.3",
     "@babel/register": "^7.8.3",
     "@babel/runtime": "^7.8.3",
+    "@digitalbazaar/ed25519-signature-2018": "digitalbazaar/ed25519-signature-2018#initial",
+    "@digitalbazaar/ed25519-verification-key-2018": "^1.0.2",
     "babel-loader": "^8.0.5",
     "browserify": "^16.2.3",
     "chai": "^4.1.2",
     "core-js": "^3.6.4",
     "cross-env": "^7.0.0",
-    "crypto-ld": "^3.7.0",
+    "crypto-ld": "^4.0.2",
     "did-context": "^2.0.0",
     "did-veres-one": "^10.0.1",
     "eslint": "^6.8.0",
@@ -90,7 +93,7 @@
     "webpack-merge": "^4.2.2"
   },
   "engines": {
-    "node": ">=8"
+    "node": ">=12"
   },
   "keywords": [
     "JSON",

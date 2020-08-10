@@ -5,7 +5,7 @@ const getStdin = require('get-stdin');
 const program = require('commander');
 const vc = require('../lib/');
 const jsigs = require('jsonld-signatures');
-const {Ed25519KeyPair} = require('crypto-ld');
+const {Ed25519VerificationKey2018} = require('@digitalbazaar/ed25519-verification-key-2018');
 
 /* eslint-disable no-unused-vars */
 
