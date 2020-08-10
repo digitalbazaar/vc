@@ -1,10 +1,10 @@
 const chai = require('chai');
 const should = chai.should();
 
-const {Ed25519KeyPair} = require('crypto-ld');
+const {Ed25519VerificationKey2018} = require('@digitalbazaar/ed25519-verification-key-2018');
 const jsigs = require('jsonld-signatures');
 const jsonld = require('jsonld');
-const {Ed25519Signature2018} = jsigs.suites;
+const {Ed25519Signature2018} = require('@digitalbazaar/ed25519-signature-2018');
 const CredentialIssuancePurpose = require('../lib/CredentialIssuancePurpose');
 
 const mockData = require('./mocks/mock.data');
@@ -51,7 +51,7 @@ const documentLoader = testLoader.documentLoader.bind(testLoader);
 
 before(async () => {
   // Set up the key that will be signing and verifying
-  keyPair = await Ed25519KeyPair.generate({
+  keyPair = await Ed25519VerificationKey2018.generate({
     id: 'https://example.edu/issuers/keys/1',
     controller: 'https://example.edu/issuers/565049'
   });
@@ -67,7 +67,7 @@ before(async () => {
   contexts['https://example.edu/issuers/keys/1'] = keyPair.publicNode();
 
   // Set up the signature suite, using the generated key
-  suite = new jsigs.suites.Ed25519Signature2018({
+  suite = new Ed25519Signature2018({
     verificationMethod: 'https://example.edu/issuers/keys/1',
     key: keyPair
   });
@@ -86,9 +86,9 @@ describe('vc.issue()', () => {
   });
 
   it('should throw an error on missing verificationMethod', async () => {
-    const suite = new jsigs.suites.Ed25519Signature2018({
+    const suite = new Ed25519Signature2018({
       // Note no key id or verificationMethod passed to suite
-      key: await Ed25519KeyPair.generate()
+      key: await Ed25519VerificationKey2018.generate()
     });
     let error;
     try {
