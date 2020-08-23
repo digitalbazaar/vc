@@ -65,7 +65,8 @@ before(async () => {
   // Register the controller document and the key document with documentLoader
   contexts['https://example.edu/issuers/565049'] = assertionController;
   // FIXME this might require a security context.
-  contexts['https://example.edu/issuers/keys/1'] = keyPair.publicNode();
+  contexts['https://example.edu/issuers/keys/1'] =
+    keyPair.export({publicKey: true});
 
   // Set up the signature suite, using the generated key
   suite = new Ed25519Signature2018({

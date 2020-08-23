@@ -109,7 +109,7 @@ const testKey = {
     '53KBp86VkzDKthrZdQCKv4UaAWd74DWCqgbmYmXuLytg' +
     'bU7pFghAWs23Tdd9iacMLZtkvwdo5vCvDQ8vj24HdJYv'
 };
-const testKeyPair = new Ed25519KeyPair(testKey);
+const testKeyPair = new Ed25519VerificationKey2018(testKey);
 
 const controller = {
   '@context': 'https://w3id.org/security/v2',
@@ -119,7 +119,8 @@ const controller = {
 
 const testContext = require('../lib/contexts');
 testContext['https://example.edu/issuers/14'] = controller;
-testContext['https://example.edu/issuers/keys/1'] = testKeyPair.publicNode();
+testContext['https://example.edu/issuers/keys/1'] =
+  testKeyPair.export({publicKey: true});
 testContext['https://example.org/examples/degree.json'] = {};
 
 async function testDocumentLoader(url) {
