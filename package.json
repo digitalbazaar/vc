@@ -115,7 +115,7 @@
     "test-karma": "karma start karma.conf.js",
     "lint": "eslint '*.js' 'lib/**.js' 'tests/**.js' bin/vc-js",
     "coverage": "cross-env NODE_ENV=test nyc --reporter=lcov --reporter=text-summary npm run test-node",
-    "coverage-ci": "cross-env NODE_ENV=test nyc --reporter=text-lcov npm run test-node > coverage.lcov",
+    "coverage-ci": "cross-env NODE_ENV=test nyc --reporter=lcovonly run test-node",
     "coverage-report": "nyc report"
   }
 }
