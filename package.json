@@ -82,6 +82,7 @@
     "mocha": "^7.0.0",
     "nyc": "^15.0.0",
     "regenerator-runtime": "^0.13.1",
+    "typescript": "^4.0.3",
     "uuid": "^3.4.0",
     "veres-one-context": "^11.0.0",
     "webpack": "^4.41.5",
@@ -101,7 +102,8 @@
     "Credential"
   ],
   "scripts": {
-    "prepublish": "npm run build",
+    "ts:defs": "npx tsc --declaration --outDir dist --emitDeclarationOnly",
+    "prepublish": "npm run build && npm run ts:defs",
     "build": "webpack",
     "fetch-test-suites": "npm run fetch-vc-test-suite",
     "fetch-vc-test-suite": "if [ ! -e test-suites/vc-test-suite ]; then git clone --depth 1 https://github.com/digitalbazaar/vc-test-suite.git test-suites/vc-test-suite; fi",
