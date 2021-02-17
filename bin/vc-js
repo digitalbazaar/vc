@@ -199,7 +199,6 @@ program
   .command('verify')
   .alias('v')
   .description('verify a credential')
-  .description('issue a credential')
   .option('-i, --issuer <issuer>', 'The URL for the issuer public key.')
   .option('-p, --public-key <public-key>', 'The public key PEM file.')
   //.option('-o, --owner <owner>', 'The key owner URL.')
