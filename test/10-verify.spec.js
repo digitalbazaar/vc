@@ -210,7 +210,7 @@ describe('verify API (credentials)', () => {
     result.verified.should.be.true;
   });
 
-  describe('negative tests', async () => {
+  describe('negative test', async () => {
     it('fails to verify if a context is null', async () => {
       const {credential, suite} = await _generateCredential();
       credential['@context'].push(invalidContexts.nullDoc.url);
@@ -351,7 +351,7 @@ describe('verify API (presentations)', () => {
   });
 });
 
-describe('tests for multiple credentials', async () => {
+describe('test for multiple credentials', async () => {
 
   const credentialsCount = [5, 25, 50, 100];
 

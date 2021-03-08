@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Digital Bazaar, Inc. All rights reserved.
+ * Copyright (c) 2019-2021 Digital Bazaar, Inc. All rights reserved.
  */
 
 module.exports = function(config) {
@@ -13,7 +13,7 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
-      'tests/*.spec.js'
+      'test/*.spec.js'
     ],
 
     // list of files to exclude
@@ -75,7 +75,7 @@ module.exports = function(config) {
     //   config.LOG_WARN || config.LOG_INFO || config.LOG_DEBUG
     logLevel: config.LOG_INFO,
 
-    // enable / disable watching file and executing tests whenever any
+    // enable / disable watching file and executing test whenever any
     // file changes
     autoWatch: false,
 
@@ -96,7 +96,7 @@ module.exports = function(config) {
     },
 
     // Continuous Integration mode
-    // if true, Karma captures browsers, runs the tests and exits
+    // if true, Karma captures browsers, runs the test and exits
     singleRun: true,
 
   });
