@@ -34,21 +34,10 @@
     "lib/contexts"
   ],
   "dependencies": {
-    "commander": "^2.20.3",
     "credentials-context": "^1.0.0",
-    "debug": "^4.1.1",
-    "fs-extra": "^8.1.0",
-    "get-stdin": "^7.0.0",
-    "jsonld": "^2.0.2",
-    "jsonld-signatures": "digitalbazaar/jsonld-signatures#v6.x",
-    "supports-color": "^7.1.0"
-  },
-  "browser": {
-    "bs58": false,
-    "Buffer": false,
-    "crypto": false,
-    "sodium-native": false,
-    "util": false
+    "esm": "^3.2.25",
+    "jsonld": "^4.0.1",
+    "jsonld-signatures": "digitalbazaar/jsonld-signatures#v8.x"
   },
   "devDependencies": {
     "@babel/cli": "^7.8.3",
@@ -62,7 +51,9 @@
     "@babel/register": "^7.8.3",
     "@babel/runtime": "^7.8.3",
     "@digitalbazaar/ed25519-signature-2018": "digitalbazaar/ed25519-signature-2018#initial",
-    "@digitalbazaar/ed25519-verification-key-2018": "^1.0.2",
+    "@digitalbazaar/ed25519-signature-2020": "digitalbazaar/ed25519-signature-2020#initial",
+    "@digitalbazaar/ed25519-verification-key-2018": "^2.0.0",
+    "@digitalbazaar/ed25519-verification-key-2020": "^1.0.0",
     "babel-loader": "^8.0.5",
     "browserify": "^16.2.3",
     "chai": "^4.1.2",
@@ -92,6 +83,11 @@
     "webpack-cli": "^3.3.10",
     "webpack-merge": "^4.2.2"
   },
+  "browser": {
+    "Buffer": false,
+    "crypto": false,
+    "util": false
+  },
   "engines": {
     "node": ">=12"
   },
@@ -108,12 +104,10 @@
     "ts:defs": "npx tsc --declaration --outDir dist --emitDeclarationOnly",
     "prepublish": "npm run build && npm run ts:defs",
     "build": "webpack",
-    "fetch-test-suites": "npm run fetch-vc-test-suite",
-    "fetch-vc-test-suite": "if [ ! -e test-suites/vc-test-suite ]; then git clone --depth 1 https://github.com/digitalbazaar/vc-test-suite.git test-suites/vc-test-suite; fi",
-    "test": "bin/vc-test",
-    "test-node": "mocha ./tests/*.spec.js --opts ./tests/mocha.opts --require @babel/polyfill --require @babel/register",
+    "test": "npm run lint && npm run test-node && npm run test-karma",
+    "test-node": "mocha ./test/*.spec.js --opts ./test/mocha.opts --require @babel/polyfill --require @babel/register",
     "test-karma": "karma start karma.conf.js",
-    "lint": "eslint '*.js' 'lib/**.js' 'tests/**.js' bin/vc-js",
+    "lint": "eslint '*.js' 'lib/**.js' 'test/**.js'",
     "coverage": "cross-env NODE_ENV=test nyc --reporter=lcov --reporter=text-summary npm run test-node",
     "coverage-ci": "cross-env NODE_ENV=test nyc --reporter=lcovonly run test-node",
     "coverage-report": "nyc report"
