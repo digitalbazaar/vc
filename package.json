@@ -93,9 +93,9 @@
     "prepublish": "npm run build && npm run ts:defs",
     "build": "webpack",
     "test": "npm run lint && npm run test-node && npm run test-karma",
-    "test-node": "mocha ./test/*.spec.js --require @babel/polyfill --require @babel/register",
+    "test-node": "cross-env NODE_ENV=test mocha --preserve-symlinks -t 10000 test/*.spec.js",
     "test-karma": "karma start karma.conf.js",
-    "lint": "eslint '*.js' 'lib/**.js' 'test/**.js'",
+    "lint": "eslint lib test/*.spec.js",
     "coverage": "cross-env NODE_ENV=test nyc --reporter=lcov --reporter=text-summary npm run test-node",
     "coverage-ci": "cross-env NODE_ENV=test nyc --reporter=lcovonly run test-node",
     "coverage-report": "nyc report"
