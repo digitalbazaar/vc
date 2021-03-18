@@ -9,7 +9,7 @@ const {Ed25519Signature2018} = require('@digitalbazaar/ed25519-signature-2018');
 const CredentialIssuancePurpose = require('../lib/CredentialIssuancePurpose');
 
 const mockData = require('./mocks/mock.data');
-const uuid = require('uuid/v4');
+const {v4: uuid} = require('uuid');
 const vc = require('..');
 const MultiLoader = require('./MultiLoader');
 const realContexts = require('../lib/contexts');
