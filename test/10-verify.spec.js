@@ -1,3 +1,6 @@
+/*!
+ * Copyright (c) 2019-2021 Digital Bazaar, Inc. All rights reserved.
+ */
 const chai = require('chai');
 const should = chai.should();
 
@@ -151,27 +154,6 @@ describe('vc.signPresentation()', () => {
   });
 });
 
-describe('verifies RFC3339 Dates', function() {
-  it('verify a valid date', function() {
-    const latest = new Date().toISOString();
-    vc.dateRegex.test(latest).should.be.true;
-  });
-  it('verify a valid date with lowercase t', function() {
-    const latest = new Date().toISOString().toLowerCase();
-    vc.dateRegex.test(latest).should.be.true;
-  });
-
-  it('should not verify an invalid date', function() {
-    const invalid = '2017/09/27';
-    vc.dateRegex.test(invalid).should.be.false;
-  });
-  it('should not verify 2 digit years', function() {
-    const invalid = '17-09-27T22:07:22.563z';
-    vc.dateRegex.test(invalid).should.be.false;
-  });
-
-});
-
 describe('verify API (credentials)', () => {
   it('should verify a vc', async () => {
     verifiableCredential = await vc.issue({
@@ -310,7 +292,7 @@ describe('verify API (credentials)', () => {
 });
 
 describe('verify API (presentations)', () => {
-  it('verifies a valid signed presentation', async () => {
+  it.only('verifies a valid signed presentation', async () => {
     const challenge = uuid();
 
     const {presentation, suite, documentLoader} =
@@ -322,6 +304,8 @@ describe('verify API (presentations)', () => {
       documentLoader,
       presentation
     });
+
+    console.log(result)
 
     if(result.error) {
       const firstError = [].concat(result.error)[0];
@@ -352,12 +336,10 @@ describe('verify API (presentations)', () => {
 });
 
 describe('test for multiple credentials', async () => {
-
   const credentialsCount = [5, 25, 50, 100];
 
   for(const count of credentialsCount) {
-    it('cause error when credentials are tampered', async function() {
-      this.timeout(10000);
+    it('cause error when credentials are tampered', async () => {
       const challenge = uuid();
       const {presentation, suite: vcSuite, documentLoader} =
         await _generatePresentation({challenge, credentialsCount: count});
@@ -401,8 +383,7 @@ describe('test for multiple credentials', async () => {
       firstErrorMsg.should.contain('Invalid signature.');
     });
 
-    it('should not cause error when credentials are correct', async function() {
-      this.timeout(10000);
+    it('should not cause error when credentials are correct', async () => {
       const challenge = uuid();
       const {presentation, suite: vcSuite, documentLoader} =
         await _generatePresentation({challenge, credentialsCount: count});

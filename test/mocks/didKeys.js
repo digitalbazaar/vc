@@ -1,3 +1,4 @@
+/* eslint-disable */
 /**
  * Private key store for the test DID Document.
  * Note that this is for unit testing purposes only, please do not commit
