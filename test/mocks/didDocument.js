@@ -1,3 +1,4 @@
+/* eslint-disable */
 module.exports = {
   "@context": [
     "https://w3id.org/did/v0.11",
