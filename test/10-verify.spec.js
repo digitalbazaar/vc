@@ -305,8 +305,6 @@ describe('verify API (presentations)', () => {
       presentation
     });
 
-    console.log(result)
-
     if(result.error) {
       const firstError = [].concat(result.error)[0];
       throw firstError;
