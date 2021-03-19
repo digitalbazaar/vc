@@ -32,8 +32,8 @@
   "dependencies": {
     "credentials-context": "^1.0.0",
     "esm": "^3.2.25",
-    "jsonld": "^4.0.1",
-    "jsonld-signatures": "digitalbazaar/jsonld-signatures#v8.x"
+    "jsonld": "^5.0.0",
+    "jsonld-signatures": "^8.0.1"
   },
   "devDependencies": {
     "@babel/core": "^7.13.8",
@@ -41,7 +41,7 @@
     "@babel/plugin-transform-runtime": "^7.13.9",
     "@babel/preset-env": "^7.13.9",
     "@babel/runtime": "^7.13.9",
-    "@digitalbazaar/ed25519-signature-2018": "digitalbazaar/ed25519-signature-2018#initial",
+    "@digitalbazaar/ed25519-signature-2018": "^1.0.0",
     "@digitalbazaar/ed25519-signature-2020": "digitalbazaar/ed25519-signature-2020#initial",
     "@digitalbazaar/ed25519-verification-key-2018": "^3.0.0",
     "@digitalbazaar/ed25519-verification-key-2020": "^2.0.0",
@@ -92,7 +92,7 @@
     "prepublish": "npm run build && npm run ts:defs",
     "build": "webpack",
     "test": "npm run lint && npm run test-node && npm run test-karma",
-    "test-node": "cross-env NODE_ENV=test mocha -b --preserve-symlinks -t 10000 test/*.spec.js",
+    "test-node": "cross-env NODE_ENV=test mocha --preserve-symlinks -t 10000 test/*.spec.js",
     "test-karma": "karma start karma.conf.js",
     "lint": "eslint lib test/*.spec.js",
     "coverage": "cross-env NODE_ENV=test nyc --reporter=lcov --reporter=text-summary npm run test-node",
