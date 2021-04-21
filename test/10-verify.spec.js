@@ -292,7 +292,7 @@ describe('verify API (credentials)', () => {
 });
 
 describe('verify API (presentations)', () => {
-  it.only('verifies a valid signed presentation', async () => {
+  it('verifies a valid signed presentation', async () => {
     const challenge = uuid();
 
     const {presentation, suite, documentLoader} =
