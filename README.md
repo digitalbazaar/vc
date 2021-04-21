@@ -1,6 +1,6 @@
 # Verifiable Credentials JS Library _(@digitalbazaar/vc)_
 
-[![Build Status](https://img.shields.io/github/workflow/status/digitalbazaar/vc/Node.js%20CI)](https://github.com/digitalbazaar/vc/actions?query=workflow%3A%22Node.js+CI%22)
+[![Build Status](https://img.shields.io/github/workflow/status/digitalbazaar/vc-js/Node.js%20CI)](https://github.com/digitalbazaar/vc-js/actions?query=workflow%3A%22Node.js+CI%22)
 [![NPM Version](https://img.shields.io/npm/v/@digitalbazaar/vc.svg)](https://npm.im/@digitalbazaar/vc)
 
 > A Javascript library for issuing and verifying Verifiable Credentials.
