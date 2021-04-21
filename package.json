@@ -24,8 +24,6 @@
   "license": "BSD-3-Clause",
   "main": "lib/index.js",
   "files": [
-    "dist/**/*.js",
-    "dist/**/*.js.map",
     "lib/**/*.js"
   ],
   "dependencies": {
@@ -65,8 +63,7 @@
     "nyc": "^15.1.0",
     "uuid": "^8.3.2",
     "veres-one-context": "^11.0.0",
-    "webpack": "^5.24.3",
-    "webpack-cli": "^4.5.0"
+    "webpack": "^5.24.3"
   },
   "nyc": {
     "exclude": [
@@ -95,8 +92,6 @@
     "Credential"
   ],
   "scripts": {
-    "prepublish": "npm run build",
-    "build": "webpack",
     "test": "npm run lint && npm run test-node && npm run test-karma",
     "test-node": "cross-env NODE_ENV=test mocha --preserve-symlinks -t 10000 test/*.spec.js",
     "test-karma": "karma start karma.conf.js",

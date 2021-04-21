@@ -4,6 +4,7 @@
 
 ### Removed
 - **BREAKING**: Remove typescript def generation support.
+- **BREAKING**: No longer shipping browser bundles.
 
 ## 0.6.4 - 2020-05-22
 
