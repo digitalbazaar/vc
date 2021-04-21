@@ -24,10 +24,10 @@
   "license": "BSD-3-Clause",
   "main": "lib/index.js",
   "files": [
-    "dist/*.js",
-    "dist/*.js.map",
-    "lib/*.js",
-    "lib/contexts"
+    "dist/**/*.js",
+    "dist/**/*.js.map",
+    "dist/**/*.ts",
+    "lib/**/*.js"
   ],
   "dependencies": {
     "credentials-context": "^1.0.0",
