@@ -1,7 +1,7 @@
-# Verifiable Credentials JS Library _(vc-js)_
+# Verifiable Credentials JS Library _(@digitalbazaar/vc)_
 
-[![Build Status](https://travis-ci.org/digitalbazaar/vc-js.png?branch=master)](https://travis-ci.org/digitalbazaar/vc-js)
-[![NPM Version](https://img.shields.io/npm/v/vc-js.svg?style=flat-square)](https://npm.im/vc-js)
+[![Build Status](https://img.shields.io/github/workflow/status/digitalbazaar/vc/Node.js%20CI)](https://github.com/digitalbazaar/vc/actions?query=workflow%3A%22Node.js+CI%22)
+[![NPM Version](https://img.shields.io/npm/v/digitalbazaar/vc.svg)](https://npm.im/@digitalbazaar/vc)
 
 > A Javascript library for issuing and verifying Verifiable Credentials.
 
@@ -66,7 +66,7 @@ For signing, when setting up a signature suite, you will need to pass in
 a key pair containing a private key.
 
 ```js
-import vc from '@digitalbazaar/vc-js';
+import vc from '@digitalbazaar/vc';
 
 // Required to set up a suite instance with private key
 import {Ed25519VerificationKey2020} from
@@ -88,7 +88,7 @@ Pre-requisites:
   Document and Public Key
 
 ```js
-const vc = require('vc-js');
+const vc = require('@digitalbazaar/vc');
 
 // Sample unsigned credential
 const credential = {
@@ -199,8 +199,8 @@ Pre-requisites:
 // contexts are loaded from jsonld-signatures
 // and not an insecure source.
 const {extendContextLoader} = require('jsonld-signatures');
-const vc = require('vc-js');
-// vc-js exports its own secure documentLoader.
+const vc = require('@digitalbazaar/vc');
+// @digitalbazaar/vc exports its own secure documentLoader.
 const {defaultDocumentLoader} = vc;
 // a valid json-ld @context.
 const myCustomContext = require('./myCustomContext');
