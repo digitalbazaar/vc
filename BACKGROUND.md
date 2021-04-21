@@ -1,4 +1,4 @@
-## `vc-js` Background Documentation
+## `@digitalbazaar/vc` Background Documentation
 
 See also (related specs):
 
