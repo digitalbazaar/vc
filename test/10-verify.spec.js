@@ -50,7 +50,9 @@ const testLoader = new MultiLoader({
   ]
 });
 
-let suite, keyPair, verifiableCredential;
+let suite;
+let keyPair;
+let verifiableCredential;
 const documentLoader = testLoader.documentLoader.bind(testLoader);
 
 before(async () => {
