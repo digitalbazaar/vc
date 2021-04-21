@@ -195,7 +195,7 @@ describe('verify API (credentials)', () => {
   });
 
   describe('negative test', async () => {
-    it('fails to verify if a context is null', async () => {
+    it('fails to verify if a context resolves to null', async () => {
       const {credential, suite} = await _generateCredential();
       credential['@context'].push(invalidContexts.nullDoc.url);
       const results = await vc.verifyCredential({
@@ -470,15 +470,16 @@ async function _loadDid() {
   const didDocument = new VeresOneDidDoc({doc: mockDidDoc});
   await didDocument.importKeys(mockDidKeys.keys);
   const documentLoader = url => {
+    let document;
     if(url.includes('#')) {
-      return {
-        contextUrl: null, document: didDocument.keys[url], documentUrl: url
-      };
-    } else {
-      return {
-        contextUrl: null, document: didDocument.doc, documentUrl: url
-      };
+      document = didDocument.keys[url];
+    } else if(url === didDocument.doc.id) {
+      document = didDocument.doc;
     }
+    if(document) {
+      return {contextUrl: null, document, documentUrl: url};
+    }
+    throw new Error(`"${url}" not authorized to be resolved.`);
   };
   return {
     didDocument, documentLoader
