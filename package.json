@@ -28,7 +28,6 @@
   ],
   "dependencies": {
     "credentials-context": "^1.0.0",
-    "esm": "^3.2.25",
     "jsonld": "^5.2.0",
     "jsonld-signatures": "^9.0.2"
   },
