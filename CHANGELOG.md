@@ -1,6 +1,6 @@
 # @digitalbazaar/vc ChangeLog
 
-## 1.0.0 - 2021-xx-xx
+## 1.0.0 - 2021-04-22
 
 ### Changed
 - **BREAKING**: Rename library to `@digitalbazaar/vc`.
