@@ -9,7 +9,7 @@
 ### Removed
 - **BREAKING**: Remove typescript def generation support.
 - **BREAKING**: No longer shipping browser bundles.
-- **BREAKING**: Move `vc-js` binary to `@digitalbazaar/vc-js-cli`.
+- **BREAKING**: Move binaries from `bin/` to `@digitalbazaar/vc-js-cli`.
 
 ## 0.6.4 - 2020-05-22
 
