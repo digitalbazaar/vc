@@ -1,7 +1,7 @@
 /* eslint-disable */
 module.exports = {
   "@context": [
-    "https://w3id.org/did/v0.11",
+    "https://www.w3.org/ns/did/v1",
     "https://w3id.org/veres-one/v1"
   ],
   "id": "did:v1:test:nym:z6MknshWwzBaWsZ7jph8pUeJWg8rhoub7dK6upUK3WMJqd6m",
