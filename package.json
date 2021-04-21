@@ -26,7 +26,6 @@
   "files": [
     "dist/**/*.js",
     "dist/**/*.js.map",
-    "dist/**/*.ts",
     "lib/**/*.js"
   ],
   "dependencies": {
@@ -64,7 +63,6 @@
     "mocha": "^8.3.1",
     "mocha-lcov-reporter": "^1.3.0",
     "nyc": "^15.1.0",
-    "typescript": "^4.0.3",
     "uuid": "^8.3.2",
     "veres-one-context": "^11.0.0",
     "webpack": "^5.24.3",
@@ -97,8 +95,7 @@
     "Credential"
   ],
   "scripts": {
-    "ts:defs": "npx tsc --declaration --outDir dist --emitDeclarationOnly",
-    "prepublish": "npm run build && npm run ts:defs",
+    "prepublish": "npm run build",
     "build": "webpack",
     "test": "npm run lint && npm run test-node && npm run test-karma",
     "test-node": "cross-env NODE_ENV=test mocha --preserve-symlinks -t 10000 test/*.spec.js",

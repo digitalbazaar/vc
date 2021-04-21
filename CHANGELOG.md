@@ -1,5 +1,10 @@
 # vc-js ChangeLog
 
+## 1.0.0 - 2021-xx-xx
+
+### Removed
+- **BREAKING**: Remove typescript def generation support.
+
 ## 0.6.4 - 2020-05-22
 
 ### Added
