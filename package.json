@@ -29,7 +29,7 @@
   "dependencies": {
     "credentials-context": "kimdhamilton/credentials-context#nofs",
     "jsonld": "digitalbazaar/jsonld.js#v5.2.1-rc1",
-    "jsonld-signatures": "digitalbazaar/jsonld-signatures##v9.0.3-rc1"
+    "jsonld-signatures": "digitalbazaar/jsonld-signatures#v9.0.3-rc1"
   },
   "devDependencies": {
     "@babel/core": "^7.13.8",
