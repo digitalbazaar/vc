@@ -1,25 +1,11 @@
 {
-  "name": "@digitalbazaar/vc",
-  "version": "1.0.1-0",
+  "name": "@digitalcredentials/vc",
+  "version": "1.0.0",
   "description": "Verifiable Credentials JavaScript library.",
-  "homepage": "https://github.com/digitalbazaar/vc-js",
-  "author": {
-    "name": "Digital Bazaar, Inc.",
-    "email": "support@digitalbazaar.com",
-    "url": "https://digitalbazaar.com/"
-  },
-  "contributors": [
-    "Dave Longley <dlongley@digitalbazaar.com>",
-    "David I. Lehn <dlehn@digitalbazaar.com>",
-    "Dmitri Zagidulin <dmitriz@digitalbazaar.com>"
-  ],
+  "homepage": "https://github.com/digitalcredentials/vc-js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/digitalbazaar/vc-js"
-  },
-  "bugs": {
-    "url": "https://github.com/digitalbazaar/vc-js/issues",
-    "email": "support@digitalbazaar.com"
+    "url": "https://github.com/digitalcredentials/vc-js"
   },
   "license": "BSD-3-Clause",
   "main": "lib/index.js",
@@ -38,9 +24,9 @@
     "@babel/preset-env": "^7.13.9",
     "@babel/runtime": "^7.13.9",
     "@digitalbazaar/ed25519-signature-2018": "^2.0.1",
-    "@digitalbazaar/ed25519-signature-2020": "^3.0.0",
+    "@digitalcredentials/ed25519-signature-2020": "^3.0.0",
     "@digitalbazaar/ed25519-verification-key-2018": "^3.1.1",
-    "@digitalbazaar/ed25519-verification-key-2020": "^3.1.0",
+    "@digitalcredentials/ed25519-verification-key-2020": "^3.1.0",
     "babel-loader": "^8.2.2",
     "chai": "^4.3.3",
     "cross-env": "^7.0.3",
@@ -91,12 +77,17 @@
     "Credential"
   ],
   "scripts": {
-    "test": "npm run lint && npm run test-node && npm run test-karma",
+    "test": "npm run test-node && npm run test-karma",
     "test-node": "cross-env NODE_ENV=test mocha --preserve-symlinks -t 10000 test/*.spec.js",
     "test-karma": "karma start karma.conf.js",
     "lint": "eslint lib test/*.spec.js",
     "coverage": "cross-env NODE_ENV=test nyc --reporter=lcov --reporter=text-summary npm run test-node",
     "coverage-ci": "cross-env NODE_ENV=test nyc --reporter=lcovonly npm run test-node",
     "coverage-report": "nyc report"
+  },
+  "dependencies": {
+    "@digitalcredentials/credentials-context": "^1.0.0",
+    "@digitalcredentials/jsonld": "^1.0.1",
+    "@digitalcredentials/jsonld-signatures": "^1.0.0"
   }
 }

@@ -1,7 +1,7 @@
 const {contexts: credentialsContext, constants: {CREDENTIALS_CONTEXT_V1_URL}} =
-  require('credentials-context');
+  require('@digitalcredentials/credentials-context');
 const {contexts: didContext, constants: {DID_CONTEXT_URL}} =
-  require('did-context');
+  require('@digitalcredentials/did-context');
 const {contexts: contextV1, constants: {VERES_ONE_CONTEXT_V1_URL}} =
   require('veres-one-context');
 
