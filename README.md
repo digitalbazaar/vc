@@ -70,8 +70,8 @@ import vc from '@digitalbazaar/vc';
 
 // Required to set up a suite instance with private key
 import {Ed25519VerificationKey2020} from
-  '@digitalbazaar/ed25519-verification-key-2020';
-import {Ed25519Signature2020} from '@digitalbazaar/ed25519-signature-2020';
+  '@digitalcredentials/ed25519-verification-key-2020';
+import {Ed25519Signature2020} from '@digitalcredentials/ed25519-signature-2020';
 
 const keyPair = await Ed25519VerificationKey2020.generate();
 
