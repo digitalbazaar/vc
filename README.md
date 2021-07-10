@@ -227,7 +227,7 @@ const vp = await vc.signPresentation({
 const signedVC = await vc.issue({credential, suite, documentLoader});
 
 // or
-const result = await vc.verify({credential, suite, documentLoader});
+const result = await vc.verifyCredential({credential: signedVC, suite, documentLoader});
 
 ```
 
