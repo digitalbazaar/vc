@@ -84,10 +84,5 @@
     "coverage": "cross-env NODE_ENV=test nyc --reporter=lcov --reporter=text-summary npm run test-node",
     "coverage-ci": "cross-env NODE_ENV=test nyc --reporter=lcovonly npm run test-node",
     "coverage-report": "nyc report"
-  },
-  "dependencies": {
-    "@digitalcredentials/credentials-context": "^1.0.0",
-    "@digitalcredentials/jsonld": "^1.0.1",
-    "@digitalcredentials/jsonld-signatures": "^1.0.0"
   }
 }
