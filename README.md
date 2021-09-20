@@ -1,7 +1,7 @@
-# Verifiable Credentials JS Library _(@digitalbazaar/vc)_
+# Verifiable Credentials JS Library _(@digitalcredentials/vc)_
 
-[![Build Status](https://img.shields.io/github/workflow/status/digitalbazaar/vc-js/Node.js%20CI)](https://github.com/digitalbazaar/vc-js/actions?query=workflow%3A%22Node.js+CI%22)
-[![NPM Version](https://img.shields.io/npm/v/@digitalbazaar/vc.svg)](https://npm.im/@digitalbazaar/vc)
+[![Build Status](https://img.shields.io/github/workflow/status/digitalcredentials/vc-js/Node.js%20CI)](https://github.com/digitalcredentials/vc-js/actions?query=workflow%3A%22Node.js+CI%22)
+[![NPM Version](https://img.shields.io/npm/v/@digitalcredentials/vc.svg)](https://npm.im/@digitalcredentials/vc)
 
 > A Javascript library for issuing and verifying Verifiable Credentials.
 
@@ -24,6 +24,9 @@ you will use, where you'll store the private keys, what you put into your
 credentials, and so on.)
 
 ## Background
+
+(Forked from [`digitalbazaar/vc` v1.0.0](https://github.com/digitalbazaar/vc-js)
+to provide ReactNative compatibility.)
 
 This library is a Javascript (Node.js and browser) implementation of the
 [Verifiable Credentials Data Model 1.0](https://w3c.github.io/vc-data-model/)
@@ -53,7 +56,7 @@ the following:
 To install locally (for development):
 
 ```
-git clone https://github.com/digitalbazaar/vc-js.git
+git clone https://github.com/digitalcredentials/vc-js.git
 cd vc-js
 npm install
 ```
@@ -66,7 +69,7 @@ For signing, when setting up a signature suite, you will need to pass in
 a key pair containing a private key.
 
 ```js
-import vc from '@digitalbazaar/vc';
+import vc from '@digitalcredentials/vc';
 
 // Required to set up a suite instance with private key
 import {Ed25519VerificationKey2020} from
@@ -88,7 +91,7 @@ Pre-requisites:
   Document and Public Key
 
 ```js
-const vc = require('@digitalbazaar/vc');
+const vc = require('@digitalcredentials/vc');
 
 // Sample unsigned credential
 const credential = {
@@ -199,8 +202,8 @@ Pre-requisites:
 // contexts are loaded from jsonld-signatures
 // and not an insecure source.
 const {extendContextLoader} = require('jsonld-signatures');
-const vc = require('@digitalbazaar/vc');
-// @digitalbazaar/vc exports its own secure documentLoader.
+const vc = require('@digitalcredentials/vc');
+// @digitalcredentials/vc exports its own secure documentLoader.
 const {defaultDocumentLoader} = vc;
 // a valid json-ld @context.
 const myCustomContext = require('./myCustomContext');
@@ -352,10 +355,6 @@ const result = await vc.verifyCredential({credential, suite, documentLoader});
 To verify a verifiable credential with a custom `@context` field use a
 [custom documentLoader](#custom-documentLoader)
 
-### CLI
-
-To use on the command line, see
-[`vc-js-cli`](https://github.com/digitalbazaar/vc-js-cli).
 
 ## Testing
 
@@ -380,11 +379,7 @@ PRs accepted.
 Note: If editing the Readme, please conform to the
 [standard-readme](https://github.com/RichardLitt/standard-readme) specification.
 
-## Commercial Support
-
-Commercial support for this library is available upon request from
-Digital Bazaar: support@digitalbazaar.com
-
 ## License
 
-[New BSD License (3-clause)](LICENSE) © Digital Bazaar
+* MIT License - DCC - TypeScript compatibility.
+* New BSD License (3-clause) © 2020-2021 Digital Bazaar - Initial implementation.
