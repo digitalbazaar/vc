@@ -27,7 +27,7 @@
     "lib/**/*.js"
   ],
   "dependencies": {
-    "credentials-context": "kimdhamilton/credentials-context#nofs",
+    "credentials-context": "digitalbazaar/credentials-context#nofs",
     "jsonld": "digitalbazaar/jsonld.js#rn",
     "jsonld-signatures": "digitalbazaar/jsonld-signatures#rn"
   },
