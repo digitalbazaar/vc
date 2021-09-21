@@ -1,6 +1,5 @@
 # Verifiable Credentials JS Library _(@digitalcredentials/vc)_
 
-[![Build Status](https://img.shields.io/github/workflow/status/digitalcredentials/vc-js/Node.js%20CI)](https://github.com/digitalcredentials/vc-js/actions?query=workflow%3A%22Node.js+CI%22)
 [![NPM Version](https://img.shields.io/npm/v/@digitalcredentials/vc.svg)](https://npm.im/@digitalcredentials/vc)
 
 > A Javascript library for issuing and verifying Verifiable Credentials.

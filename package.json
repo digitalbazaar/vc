@@ -13,9 +13,9 @@
     "lib/**/*.js"
   ],
   "dependencies": {
-    "credentials-context": "^2.0.0",
-    "jsonld": "^5.2.0",
-    "jsonld-signatures": "^9.3.0"
+    "@digitalcredentials/jsonld": "^5.2.1",
+    "@digitalcredentials/jsonld-signatures": "^9.3.1",
+    "credentials-context": "^2.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.13.8",
@@ -24,9 +24,9 @@
     "@babel/preset-env": "^7.13.9",
     "@babel/runtime": "^7.13.9",
     "@digitalbazaar/ed25519-signature-2018": "^2.0.1",
-    "@digitalcredentials/ed25519-signature-2020": "^3.0.0",
-    "@digitalbazaar/ed25519-verification-key-2018": "^3.1.1",
-    "@digitalcredentials/ed25519-verification-key-2020": "^3.1.0",
+    "@digitalbazaar/ed25519-verification-key-2018": "^3.0.0",
+    "@digitalcredentials/ed25519-signature-2020": "^3.1.1",
+    "@digitalcredentials/ed25519-verification-key-2020": "^3.1.1",
     "babel-loader": "^8.2.2",
     "chai": "^4.3.3",
     "cross-env": "^7.0.3",
