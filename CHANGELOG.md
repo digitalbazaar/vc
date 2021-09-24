@@ -1,5 +1,11 @@
 # @digitalbazaar/vc ChangeLog
 
+## 1.1.0 -
+
+### Changed
+- Fix validation of `credentialSubject.id`, `issuer` and `evidence` --
+  if it's not a URI, reject the credential.
+
 ## 1.0.0 - 2021-04-22
 
 ### Changed
