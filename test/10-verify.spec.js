@@ -409,6 +409,58 @@ describe('test for multiple credentials', async () => {
   }
 });
 
+describe('_checkCredential', () => {
+  it('should reject a credentialSubject.id that is not a URI', () => {
+    const credential = jsonld.clone(mockData.credentials.alpha);
+    credential.issuer = 'http://example.edu/credentials/58473';
+    credential.credentialSubject.id = '12345';
+    let error;
+    try {
+      vc._checkCredential(credential);
+    } catch(e) {
+      error = e;
+    }
+    should.exist(error,
+      'Should throw error when "credentialSubject.id" is not a URI');
+    error.should.be.instanceof(TypeError);
+    error.message.should
+      .contain('"credentialSubject.id" must be a URI');
+  });
+
+  it('should reject an issuer that is not a URI', () => {
+    const credential = jsonld.clone(mockData.credentials.alpha);
+    credential.issuer = '12345';
+    let error;
+    try {
+      vc._checkCredential(credential);
+    } catch(e) {
+      error = e;
+    }
+    should.exist(error,
+      'Should throw error when "credentialSubject.id" is not a URI');
+    error.should.be.instanceof(TypeError);
+    error.message.should
+      .contain('"issuer" must be a URI');
+  });
+
+  it('should reject an evidence id that is not a URI', () => {
+    const credential = jsonld.clone(mockData.credentials.alpha);
+    credential.issuer = 'did:example:12345';
+    credential.evidence = '12345';
+    let error;
+    try {
+      vc._checkCredential(credential);
+    } catch(e) {
+      error = e;
+    }
+    should.exist(error,
+      'Should throw error when "evidence" is not a URI');
+    error.should.be.instanceof(TypeError);
+    error.message.should
+      .contain('"evidence" must be a URI');
+  });
+});
+
 async function _generateCredential() {
   const mockCredential = jsonld.clone(mockData.credentials.alpha);
   const {didDocument, documentLoader} = await _loadDid();
