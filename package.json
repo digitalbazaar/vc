@@ -1,6 +1,6 @@
 {
   "name": "@digitalcredentials/vc",
-  "version": "1.0.5",
+  "version": "1.1.1",
   "description": "Verifiable Credentials JavaScript library.",
   "homepage": "https://github.com/digitalcredentials/vc-js",
   "repository": {
@@ -25,7 +25,7 @@
     "@babel/runtime": "^7.13.9",
     "@digitalbazaar/ed25519-signature-2018": "^2.0.1",
     "@digitalbazaar/ed25519-verification-key-2018": "^3.0.0",
-    "@digitalcredentials/ed25519-signature-2020": "^3.1.1",
+    "@digitalcredentials/ed25519-signature-2020": "^3.0.2",
     "@digitalcredentials/ed25519-verification-key-2020": "^3.1.1",
     "babel-loader": "^8.2.2",
     "chai": "^4.3.3",

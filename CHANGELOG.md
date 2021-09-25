@@ -1,6 +1,6 @@
 # @digitalbazaar/vc ChangeLog
 
-## 1.1.0 -
+## 1.1.1 - 2021-09-25
 
 ### Changed
 - Fix validation of `credentialSubject.id`, `issuer` and `evidence` --
@@ -8,6 +8,11 @@
 
 ### Added
 - If `issuanceDate` is not set, default to `now()` on issuing.
+
+## 1.0.1 - 2021-09-20
+
+### Changed
+- Remove use of runtime `esm` compiler for TypeScript and ReactNative compat.
 
 ## 1.0.0 - 2021-04-22
 
