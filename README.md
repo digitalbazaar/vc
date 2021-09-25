@@ -106,7 +106,7 @@ const credential = {
   }
 };
 
-const signedVC = await vc.issue({credential, suite});
+const signedVC = await vc.issue({credential, suite, documentLoader});
 console.log(JSON.stringify(signedVC, null, 2));
 ```
 
@@ -302,7 +302,7 @@ To verify a verifiable presentation:
 // challenge has been received from the requesting party - see 'challenge'
 // section below
 
-const result = await vc.verify({presentation, challenge, suite});
+const result = await vc.verify({presentation, challenge, suite, documentLoader});
 // {valid: true}
 ```
 
@@ -312,7 +312,7 @@ flag:
 
 ```js
 const result = await vc.verify({
-  presentation, suite, unsignedPresentation: true
+  presentation, suite, documentLoader, unsignedPresentation: true
 });
 // {valid: true}
 ```
@@ -345,7 +345,7 @@ Pre-requisites:
 To verify a verifiable credential:
 
 ```js
-const result = await vc.verifyCredential({credential, suite});
+const result = await vc.verifyCredential({credential, suite, documentLoader});
 // {valid: true}
 ```
 
