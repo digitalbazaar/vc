@@ -6,6 +6,9 @@
 - Fix validation of `credentialSubject.id`, `issuer` and `evidence` --
   if it's not a URI, reject the credential.
 
+### Added
+- If `issuanceDate` is not set, default to `now()` on issuing.
+
 ## 1.0.0 - 2021-04-22
 
 ### Changed
