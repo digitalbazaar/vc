@@ -1,6 +1,6 @@
 # @digitalbazaar/vc ChangeLog
 
-## 2.0.0 -
+## 2.0.0 - 2021-10-20
 
 ### Changed
 - Fix validation of `credentialSubject.id`, `issuer` and `evidence` --
