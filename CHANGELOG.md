@@ -1,10 +1,11 @@
 # @digitalbazaar/vc ChangeLog
 
-## 1.1.0 -
+## 2.0.0 -
 
 ### Changed
 - Fix validation of `credentialSubject.id`, `issuer` and `evidence` --
   if it's not a URI, reject the credential.
+- **BREAKING**: No longer pass in custom parameters to `issue()`.
 
 ### Added
 - If `issuanceDate` is not set, default to `now()` on issuing.
