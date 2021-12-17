@@ -1,5 +1,10 @@
 # @digitalbazaar/vc ChangeLog
 
+## 2.1.0 - 2021-xx-xx
+
+### Changed
+- Sync VC example context from vc-data-model spec source.
+
 ## 2.0.0 - 2021-10-20
 
 ### Changed
