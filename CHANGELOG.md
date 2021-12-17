@@ -1,5 +1,10 @@
 # @digitalcredentials/vc ChangeLog
 
+## 2.1.0 - 2021-xx-xx
+
+### Changed
+- Sync VC example context from vc-data-model spec source.
+
 ## 1.1.2 - 2022-02-02
 
 ### Changed
@@ -10,6 +15,7 @@
 ### Changed
 - Fix validation of `credentialSubject.id`, `issuer` and `evidence` --
   if it's not a URI, reject the credential.
+- **BREAKING**: No longer pass in custom parameters to `issue()`.
 
 ### Added
 - If `issuanceDate` is not set, default to `now()` on issuing.
