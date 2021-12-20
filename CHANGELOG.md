@@ -62,7 +62,7 @@
 
 Version skipped to match upstream.
 
-## 2.1.0 - 2021-xx-xx
+## 2.1.0 - 2021-12-20
 
 ### Changed
 - Sync VC example context from vc-data-model spec source.
