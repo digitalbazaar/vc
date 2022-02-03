@@ -1,5 +1,10 @@
 # @digitalbazaar/vc ChangeLog
 
+## 1.1.2 - 2022-02-02
+
+### Changed
+- Refactor _validateUriId (remove protocol check - unsupported by RN).
+
 ## 1.1.1 - 2021-09-25
 
 ### Changed
