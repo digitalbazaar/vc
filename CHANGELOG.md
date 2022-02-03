@@ -1,4 +1,4 @@
-# @digitalbazaar/vc ChangeLog
+# @digitalcredentials/vc ChangeLog
 
 ## 1.1.2 - 2022-02-02
 
