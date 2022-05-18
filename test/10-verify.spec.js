@@ -1,30 +1,31 @@
 /*!
- * Copyright (c) 2019-2021 Digital Bazaar, Inc. All rights reserved.
+ * Copyright (c) 2019-2022 Digital Bazaar, Inc. All rights reserved.
  */
-const chai = require('chai');
+import chai from 'chai';
 const should = chai.should();
 
-const {Ed25519VerificationKey2018} =
-  require('@digitalbazaar/ed25519-verification-key-2018');
-const jsigs = require('jsonld-signatures');
-const jsonld = require('jsonld');
-const {Ed25519Signature2018} = require('@digitalbazaar/ed25519-signature-2018');
-const CredentialIssuancePurpose = require('../lib/CredentialIssuancePurpose');
+import {
+  Ed25519VerificationKey2018
+} from '@digitalbazaar/ed25519-verification-key-2018';
+import jsigs from 'jsonld-signatures';
+import jsonld from 'jsonld';
+import {Ed25519Signature2018} from '@digitalbazaar/ed25519-signature-2018';
+import {CredentialIssuancePurpose} from '../lib/CredentialIssuancePurpose.js';
 
-const mockData = require('./mocks/mock.data');
-const {v4: uuid} = require('uuid');
-const vc = require('..');
-const MultiLoader = require('./MultiLoader');
-const realContexts = require('../lib/contexts');
-const invalidContexts = require('./contexts');
-const mockCredential = require('./mocks/credential');
-const assertionController = require('./mocks/assertionController');
-const mockDidDoc = require('./mocks/didDocument');
-const mockDidKeys = require('./mocks/didKeys');
-const {VeresOneDidDoc} = require('did-veres-one');
+import {mock as mockData} from './mocks/mock.data.js';
+import {v4 as uuid} from 'uuid';
+import * as vc from '../lib/index.js';
+import {MultiLoader} from './MultiLoader.js';
+import {contexts as realContexts} from '../lib/contexts/index.js';
+import {invalidContexts} from './contexts/index.js';
+import {credential as mockCredential} from './mocks/credential.js';
+import {assertionController} from './mocks/assertionController.js';
+import {mockDidDocument} from './mocks/didDocument.js';
+import {mockDidKeys} from './mocks/didKeys.js';
+import {VeresOneDidDoc} from 'did-veres-one';
 
 const contexts = Object.assign({}, realContexts);
-contexts[mockDidDoc.id] = mockDidDoc;
+contexts[mockDidDocument.id] = mockDidDocument;
 const testContextLoader = () => {
   for(const key in invalidContexts) {
     const {url, value} = invalidContexts[key];
@@ -519,7 +520,7 @@ async function _generatePresentation({
 }
 
 async function _loadDid() {
-  const didDocument = new VeresOneDidDoc({doc: mockDidDoc});
+  const didDocument = new VeresOneDidDoc({didDocument: mockDidDocument});
   await didDocument.importKeys(mockDidKeys.keys);
   const documentLoader = url => {
     let document;

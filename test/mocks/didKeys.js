@@ -1,4 +1,4 @@
-/* eslint-disable */
+/* eslint-disable quotes, quote-props, max-len */
 /**
  * Private key store for the test DID Document.
  * Note that this is for unit testing purposes only, please do not commit
@@ -35,10 +35,10 @@ const keys = {
     "publicKeyBase58": "GiTfPKW2XznNCjT3EKGWvTG7Y5EHuY4upzq3kcw2tpry",
     "type": "Ed25519VerificationKey2018"
   }
-}
+};
 
-module.exports = {
+export const mockDidKeys = {
   keys,
   AUTHENTICATION_KEY_ID: 'did:v1:test:nym:z6MknshWwzBaWsZ7jph8pUeJWg8rhoub7dK6upUK3WMJqd6m#z6MkrpF1a896RdiCPsxt65HVgZeijUxyetCJgF9QXGrY8Zz2',
   ASSERTION_KEY_ID: 'did:v1:test:nym:z6MknshWwzBaWsZ7jph8pUeJWg8rhoub7dK6upUK3WMJqd6m#z6MkvAihyZkTsYGqKEHjutEMmYp7MeW9KRKGX1jyatu3p3eM'
-}
+};

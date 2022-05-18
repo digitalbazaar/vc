@@ -1,8 +1,7 @@
-/* eslint-disable */
-const constants = require('../constants');
+/* eslint-disable quotes, quote-props, max-len */
+import constants from '../constants.js';
 
-const mock = {};
-module.exports = mock;
+export const mock = {};
 
 const didContexts = [
   constants.DID_CONTEXT_URL,
