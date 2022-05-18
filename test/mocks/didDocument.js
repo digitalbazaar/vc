@@ -1,5 +1,5 @@
-/* eslint-disable */
-module.exports = {
+/* eslint-disable quotes, quote-props, max-len */
+export const mockDidDocument = {
   "@context": [
     "https://www.w3.org/ns/did/v1",
     "https://w3id.org/veres-one/v1"
@@ -37,4 +37,4 @@ module.exports = {
       "publicKeyBase58": "GiTfPKW2XznNCjT3EKGWvTG7Y5EHuY4upzq3kcw2tpry"
     }
   ]
-}
+};
