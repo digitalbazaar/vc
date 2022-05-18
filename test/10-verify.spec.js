@@ -20,12 +20,9 @@ import {contexts as realContexts} from '../lib/contexts/index.js';
 import {invalidContexts} from './contexts/index.js';
 import {credential as mockCredential} from './mocks/credential.js';
 import {assertionController} from './mocks/assertionController.js';
-import {mockDidDocument} from './mocks/didDocument.js';
-import {mockDidKeys} from './mocks/didKeys.js';
-import {VeresOneDidDoc} from 'did-veres-one';
+import {VeresOneDriver} from 'did-veres-one';
 
 const contexts = Object.assign({}, realContexts);
-contexts[mockDidDocument.id] = mockDidDocument;
 const testContextLoader = () => {
   for(const key in invalidContexts) {
     const {url, value} = invalidContexts[key];
@@ -465,11 +462,11 @@ describe('_checkCredential', () => {
 async function _generateCredential() {
   const mockCredential = jsonld.clone(mockData.credentials.alpha);
   const {didDocument, documentLoader} = await _loadDid();
-  mockCredential.issuer = didDocument.id;
+  mockCredential.issuer = didDocument.didDocument.id;
   mockCredential.id = `http://example.edu/credentials/${uuid()}`;
   testLoader.addLoader(documentLoader);
 
-  const assertionKey = didDocument.keys[mockDidKeys.ASSERTION_KEY_ID];
+  const assertionKey = didDocument.methodFor({purpose: 'assertionMethod'});
 
   const suite = new Ed25519Signature2018({key: assertionKey});
   const credential = await jsigs.sign(mockCredential, {
@@ -506,7 +503,7 @@ async function _generatePresentation({
       documentLoader: testLoader.documentLoader.bind(testLoader)};
   }
 
-  const authenticationKey = didDocument.keys[mockDidKeys.AUTHENTICATION_KEY_ID];
+  const authenticationKey = didDocument.methodFor({purpose: 'authentication'});
 
   const vpSuite = new Ed25519Signature2018({key: authenticationKey});
 
@@ -520,14 +517,18 @@ async function _generatePresentation({
 }
 
 async function _loadDid() {
-  const didDocument = new VeresOneDidDoc({didDocument: mockDidDocument});
-  await didDocument.importKeys(mockDidKeys.keys);
+  const driver = new VeresOneDriver({mode: 'test'});
+  const didDocument = await driver.generate({
+    seed: new Uint8Array(32)
+  });
   const documentLoader = url => {
     let document;
     if(url.includes('#')) {
-      document = didDocument.keys[url];
-    } else if(url === didDocument.doc.id) {
-      document = didDocument.doc;
+      // FIXME: code path not yet tested
+      throw new Error('FIXME');
+      document = didDocument.keyPairs.get(url);
+    } else if(url === didDocument.didDocument.id) {
+      document = didDocument.didDocument;
     }
     if(document) {
       return {contextUrl: null, document, documentUrl: url};
