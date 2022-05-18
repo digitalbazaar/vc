@@ -1,5 +1,14 @@
 # @digitalbazaar/vc ChangeLog
 
+## 3.0.0 - 2022-xx-xx
+
+### Changed
+- **BREAKING**: Convert to module (ESM).
+- **BREAKING**: Require Node.js >=14.
+- Update dependencies.
+  - **BREAKING**: `did-veres-one@15.0.0` used in tests.
+- Lint module.
+
 ## 2.1.0 - 2021-12-20
 
 ### Changed
