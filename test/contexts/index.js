@@ -11,8 +11,10 @@ import {
   constants as v1Constants
 } from 'veres-one-context';
 
-import {createRequire} from 'node:module';
-const requireJson = createRequire(import.meta.url);
+import {invalidId} from './invalid_id.js';
+import {nullVersion} from './null_version.js';
+import {nullId} from './null_id.js';
+import {nullType} from './null_type.js';
 
 const {CREDENTIALS_CONTEXT_V1_URL} = credentialConstants;
 const {DID_CONTEXT_URL} = didConstants;
@@ -33,19 +35,19 @@ export const invalidContexts = {
   },
   invalidId: {
     url: 'https://invalid-id.org',
-    value: requireJson('./invalid_id.json')
+    value: invalidId
   },
   nullVersion: {
     url: 'https://null-version.org',
-    value: requireJson('./null_version.json')
+    value: nullVersion
   },
   nullId: {
     url: 'https://null-id.org',
-    value: requireJson('./null_id.json')
+    value: nullId
   },
   nullType: {
     url: 'https://null-type.org',
-    value: requireJson('./null_type.json')
+    value: nullType
   },
   nullDoc: {
     url: 'https://null-doc.org',

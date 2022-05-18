@@ -1,13 +1,16 @@
+/* eslint-disable quotes, quote-props, max-len */
+export const nullType =
 {
   "@context": [{
-    "@version": null
-  }, {
+    "@version": 1.1
+  }, "https://w3id.org/security/v2", {
     "cred": "https://w3.org/2018/credentials#",
     "xsd": "http://www.w3.org/2001/XMLSchema#",
-    "Policy2": "cred:Policy",
+
+    "Policy": "cred:Policy",
     "VerifiableCredential": "cred:VerifiableCredential",
     "VerifiablePresentation": "cred:VerifiablePresentation",
-    "credentialStatus": {"@id": "cred:credentialStatus", "@type": "@id"},
+    "credentialStatus": {"@id": "cred:credentialStatus", "@type": null},
     "credentialSubject": {"@id": "cred:credentialSubject", "@type": "@id"},
     "evidence": {"@id": "cred:evidence", "@type": "@id"},
     "expirationDate": {"@id": "cred:expirationDate", "@type": "xsd:dateTime"},
@@ -19,4 +22,4 @@
 
     "referenceId": "cred:referenceId"
   }]
-}
+};
