@@ -86,7 +86,9 @@ Version skipped to match upstream.
 - Update dependencies.
   - **BREAKING**: `did-veres-one@15.0.0` used in tests.
 - Lint module.
-
+- **BREAKING**: Remove `./lib/contexts` and `./lib/documentLoader.js`. Use
+  `@digitalbazaar/security-document-loader` and load examples and odrl contexts
+  from their respective packages instead.
 ## 2.1.0 - 2021-12-20
 
 ### Changed
