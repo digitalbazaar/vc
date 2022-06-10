@@ -11,18 +11,33 @@ import jsigs from 'jsonld-signatures';
 import jsonld from 'jsonld';
 import {Ed25519Signature2018} from '@digitalbazaar/ed25519-signature-2018';
 import {CredentialIssuancePurpose} from '../lib/CredentialIssuancePurpose.js';
-
 import {mock as mockData} from './mocks/mock.data.js';
 import {v4 as uuid} from 'uuid';
 import * as vc from '../lib/index.js';
 import {MultiLoader} from './MultiLoader.js';
-import {contexts as realContexts} from '../lib/contexts/index.js';
 import {invalidContexts} from './contexts/index.js';
 import {credential as mockCredential} from './mocks/credential.js';
 import {assertionController} from './mocks/assertionController.js';
 import {VeresOneDriver} from 'did-veres-one';
+import {
+  CONTEXT_V1 as odrlCtx,
+  CONTEXT_URL_V1 as odrlCtxUrl
+} from '@digitalbazaar/odrl-context';
+import {
+  CONTEXT_V1 as vcExamplesV1Ctx,
+  CONTEXT_URL_V1 as vcExamplesV1CtxUrl
+} from '@digitalbazaar/credentials-examples-context';
+import {
+  CONTEXT as credentialCtx,
+  CONTEXT_URL_V1 as credentialCtxUrl
+} from 'credentials-context';
 
-const contexts = Object.assign({}, realContexts);
+export const contexts = {};
+
+contexts[vcExamplesV1CtxUrl] = vcExamplesV1Ctx;
+contexts[odrlCtxUrl] = odrlCtx;
+contexts[credentialCtxUrl] = credentialCtx;
+
 const testContextLoader = () => {
   for(const key in invalidContexts) {
     const {url, value} = invalidContexts[key];
@@ -82,7 +97,8 @@ describe('vc.issue()', () => {
     const credential = jsonld.clone(mockCredential);
     const verifiableCredential = await vc.issue({
       credential,
-      suite
+      suite,
+      documentLoader
     });
     verifiableCredential.should.exist;
     verifiableCredential.should.be.an('object');
@@ -164,7 +180,8 @@ describe('vc.signPresentation()', () => {
     const vp = await vc.signPresentation({
       presentation,
       suite, // from before() block
-      challenge: '12ec21'
+      challenge: '12ec21',
+      documentLoader
     });
 
     vp.should.have.property('proof');
@@ -182,7 +199,8 @@ describe('verify API (credentials)', () => {
   it('should verify a vc', async () => {
     const verifiableCredential = await vc.issue({
       credential: mockCredential,
-      suite
+      suite,
+      documentLoader
     });
     const result = await vc.verifyCredential({
       credential: verifiableCredential,
@@ -200,7 +218,8 @@ describe('verify API (credentials)', () => {
   it('should verify a vc with a positive status check', async () => {
     const verifiableCredential = await vc.issue({
       credential: mockCredential,
-      suite
+      suite,
+      documentLoader
     });
     const result = await vc.verifyCredential({
       credential: verifiableCredential,
@@ -297,7 +316,8 @@ describe('verify API (credentials)', () => {
     it('should fail to verify a vc with a negative status check', async () => {
       const verifiableCredential = await vc.issue({
         credential: mockCredential,
-        suite
+        suite,
+        documentLoader
       });
       const result = await vc.verifyCredential({
         credential: verifiableCredential,
