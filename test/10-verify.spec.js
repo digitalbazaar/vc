@@ -29,7 +29,6 @@ const mockDidDoc = require('./mocks/didDocument');
 const mockDidKeys = require('./mocks/didKeys');
 const {VeresOneDidDoc} = require('did-veres-one');
 
-const contexts = Object.assign({}, realContexts);
 const testContextLoader = () => {
   for(const key in invalidContexts) {
     const {url, value} = invalidContexts[key];
@@ -89,7 +88,8 @@ describe('vc.issue()', () => {
     const credential = jsonld.clone(mockCredential);
     const verifiableCredential = await vc.issue({
       credential,
-      suite
+      suite,
+      documentLoader
     });
     verifiableCredential.should.exist;
     verifiableCredential.should.be.an('object');
@@ -171,7 +171,8 @@ describe('vc.signPresentation()', () => {
     const vp = await vc.signPresentation({
       presentation,
       suite, // from before() block
-      challenge: '12ec21'
+      challenge: '12ec21',
+      documentLoader
     });
 
     vp.should.have.property('proof');
@@ -230,7 +231,8 @@ describe('verify API (credentials)', () => {
   it('should verify a vc with a positive status check', async () => {
     const verifiableCredential = await vc.issue({
       credential: mockCredential,
-      suite
+      suite,
+      documentLoader
     });
     const result = await vc.verifyCredential({
       credential: verifiableCredential,
@@ -334,7 +336,8 @@ describe('verify API (credentials)', () => {
     it('should fail to verify a vc with a negative status check', async () => {
       const verifiableCredential = await vc.issue({
         credential: mockCredential,
-        suite
+        suite,
+        documentLoader
       });
       const result = await vc.verifyCredential({
         credential: verifiableCredential,
