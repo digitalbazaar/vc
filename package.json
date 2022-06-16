@@ -79,7 +79,7 @@
     "Credential"
   ],
   "scripts": {
-    "test": "npm run lint && npm run test-node && npm run test-karma",
+    "test": "npm run test-node",
     "test-node": "cross-env NODE_ENV=test mocha --preserve-symlinks -t 10000 test/*.spec.js",
     "test-karma": "karma start karma.conf.cjs",
     "lint": "eslint .",
