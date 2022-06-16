@@ -54,12 +54,10 @@
     "webpack": "^5.72.1"
   },
   "c8": {
-    "exclude": [
-      "test"
-    ],
     "reporter": [
-      "html",
-      "text-summary"
+      "lcov",
+      "text-summary",
+      "text"
     ]
   },
   "engines": {
