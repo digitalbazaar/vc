@@ -19,12 +19,7 @@
     "@digitalcredentials/jsonld-signatures": "~11.0.0",
     "@digitalcredentials/open-badges-context": "^2.1.0",
     "credentials-context": "^2.0.0",
-<<<<<<< HEAD
     "fix-esm": "^1.0.1"
-=======
-    "jsonld": "^6.0.0",
-    "jsonld-signatures": "^10.0.0"
->>>>>>> 5422cde (Update dependencies.)
   },
   "devDependencies": {
     "@babel/core": "^7.13.8",
