@@ -12,6 +12,7 @@ module.exports = {
     'digitalbazaar/module'
   ],
   rules: {
-    'jsdoc/require-description-complete-sentence': 0
+    'jsdoc/require-description-complete-sentence': 0,
+    'unicorn/prefer-node-protocol': 'error'
   }
 };
