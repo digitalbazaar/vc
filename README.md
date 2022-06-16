@@ -48,7 +48,13 @@ the following:
 
 ## Install
 
-- Node.js 12+ required.
+- Browsers and Node.js 14+ are supported.
+
+To install from NPM:
+
+```
+npm install @digitalbazaar/vc
+```
 
 To install locally (for development):
 
