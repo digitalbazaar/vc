@@ -62,7 +62,7 @@
 
 Version skipped to match upstream.
 
-## 3.0.0 - 2022-xx-xx
+## 3.0.0 - 2022-06-15
 
 ### Changed
 - **BREAKING**: Convert to module (ESM).
