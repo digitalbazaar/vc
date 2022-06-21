@@ -1,5 +1,10 @@
 # @digitalbazaar/vc ChangeLog
 
+## 3.0.1 - 2022-TBD
+
+### Fixed
+- Check if credential has expired if `expirationDate` property exists.
+
 ## 3.0.0 - 2022-06-15
 
 ### Changed
