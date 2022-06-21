@@ -459,6 +459,23 @@ describe('_checkCredential', () => {
     error.message.should
       .contain('"evidence" must be a URI');
   });
+
+  it('should reject if "expirationDate" has expired', () => {
+    const credential = jsonld.clone(mockData.credentials.alpha);
+    credential.issuer = 'did:example:12345';
+    // set expirationDate to an expired date.
+    credential.expirationDate = '2020-05-31T19:21:25Z';
+    let error;
+    try {
+      vc._checkCredential(credential);
+    } catch(e) {
+      error = e;
+    }
+    should.exist(error,
+      'Should throw error when "expirationDate" has expired.');
+    error.message.should
+      .contain('Credential has expired.');
+  });
 });
 
 async function _generateCredential() {

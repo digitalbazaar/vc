@@ -1,5 +1,12 @@
 # @digitalcredentials/vc ChangeLog
 
+### Fixed
+- Check if credential has expired if `expirationDate` property exists.
+
+## 3.0.0 - 2022-xx-xx
+
+Version skipped to match upstream.
+
 ## 2.1.0 - 2021-xx-xx
 
 ### Changed
