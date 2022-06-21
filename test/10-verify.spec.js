@@ -15,7 +15,6 @@ const CredentialIssuancePurpose = require('../lib/CredentialIssuancePurpose');
 const {securityLoader} =
   require('@digitalcredentials/security-document-loader');
 
-<<<<<<< HEAD
 const mockData = require('./mocks/mock.data');
 const {v4: uuid} = require('uuid');
 const vc = require('..');
@@ -29,17 +28,6 @@ const assertionController = require('./mocks/assertionController');
 const mockDidDoc = require('./mocks/didDocument');
 const mockDidKeys = require('./mocks/didKeys');
 const {VeresOneDidDoc} = require('did-veres-one');
-=======
-import {mock as mockData} from './mocks/mock.data.js';
-import {v4 as uuid} from 'uuid';
-import * as vc from '../lib/index.js';
-import {MultiLoader} from './MultiLoader.js';
-import {contexts as realContexts} from '../lib/contexts/index.js';
-import {invalidContexts} from './contexts/index.js';
-import {credential as mockCredential} from './mocks/credential.js';
-import {assertionController} from './mocks/assertionController.js';
-import {VeresOneDriver} from 'did-veres-one';
->>>>>>> 3f95989 (Fix tests.)
 
 const contexts = Object.assign({}, realContexts);
 const testContextLoader = () => {
