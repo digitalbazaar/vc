@@ -62,10 +62,15 @@
 
 Version skipped to match upstream.
 
-## 3.0.1 - 2022-TBD
+## 4.0.0 - 2022-TBD
 
-### Fixed
-- Check if credential has expired if `expirationDate` property exists.
+### Changed
+- **BREAKING**: Check if credential has expired when `expirationDate` property
+  exists.
+
+### Added
+- Add optional param `now` to `_checkCredential()`, `_verifyCredential()`,
+  `createPresentation()` and `issue()`.
 
 ## 3.0.0 - 2022-06-15
 
