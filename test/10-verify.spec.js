@@ -476,6 +476,23 @@ describe('_checkCredential', () => {
     error.message.should
       .contain('Credential has expired.');
   });
+
+  it('should reject if "issuanceDate" is not on or before "now".', () => {
+    const credential = jsonld.clone(mockData.credentials.alpha);
+    credential.issuer = 'did:example:12345';
+    credential.issuanceDate = '2022-10-31T19:21:25Z';
+    const now = '2022-06-31T19:21:25Z';
+    let error;
+    try {
+      vc._checkCredential({credential, now});
+    } catch(e) {
+      error = e;
+    }
+    should.exist(error,
+      'Should throw error when "issuanceDate" is not on or before "now".');
+    error.message.should.contain('"issuanceDate": 2022-10-31T19:21:25Z ' +
+      'must be on or before "now": 2022-06-31T19:21:25Z.');
+  });
 });
 
 async function _generateCredential() {
