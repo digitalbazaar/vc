@@ -460,7 +460,7 @@ describe('_checkCredential', () => {
       .contain('"evidence" must be a URI');
   });
 
-  it('should reject if "expirationDate" has expired', () => {
+  it('should reject if "expirationDate" has passed', () => {
     const credential = jsonld.clone(mockData.credentials.alpha);
     credential.issuer = 'did:example:12345';
     // set expirationDate to an expired date.
@@ -472,12 +472,12 @@ describe('_checkCredential', () => {
       error = e;
     }
     should.exist(error,
-      'Should throw error when "expirationDate" has expired.');
+      'Should throw error when "expirationDate" has passed');
     error.message.should
       .contain('Credential has expired.');
   });
 
-  it('should reject if "issuanceDate" is not on or before "now".', () => {
+  it('should reject if "now" is before "issuanceDate', () => {
     const credential = jsonld.clone(mockData.credentials.alpha);
     credential.issuer = 'did:example:12345';
     credential.issuanceDate = '2022-10-31T19:21:25Z';
@@ -489,9 +489,10 @@ describe('_checkCredential', () => {
       error = e;
     }
     should.exist(error,
-      'Should throw error when "issuanceDate" is not on or before "now".');
-    error.message.should.contain('"issuanceDate": 2022-10-31T19:21:25Z ' +
-      'must be on or before "now": 2022-06-31T19:21:25Z.');
+      'Should throw error when "now" is before "issuanceDate"');
+    error.message.should.contain(
+      'The current date time (2022-06-31T19:21:25Z) is before the ' +
+      '"issuanceDate" (2022-10-31T19:21:25Z).');
   });
 });
 
