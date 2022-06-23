@@ -69,8 +69,8 @@ Version skipped to match upstream.
   exists.
 
 ### Added
-- Add optional param `now` to `_checkCredential()`, `_verifyCredential()`,
-  `createPresentation()` and `issue()`.
+- Add optional param `now` to `verifyCredential()`, `createPresentation()`,
+  `verify()`, and `issue()`.
 
 ## 3.0.0 - 2022-06-15
 
