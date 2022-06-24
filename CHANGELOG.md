@@ -62,7 +62,7 @@
 
 Version skipped to match upstream.
 
-## 4.0.0 - 2022-TBD
+## 4.0.0 - 2022-06-23
 
 ### Changed
 - **BREAKING**: Check if credential has expired when `expirationDate` property
