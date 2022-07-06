@@ -347,7 +347,8 @@ Pre-requisites:
 To verify a verifiable credential:
 
 ```js
-const result = await vc.verifyCredential({credential, suite, documentLoader});
+const suite = new Ed25519Signature2020();
+const result = await vc.verifyCredential({credential: signedVC, suite, documentLoader});
 // {valid: true}
 ```
 
