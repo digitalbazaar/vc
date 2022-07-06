@@ -1,5 +1,15 @@
 # @digitalcredentials/vc ChangeLog
 
+## 4.0.0 - 2022-xx-xx
+
+### Changed
+- **BREAKING**: Check if credential has expired when `expirationDate` property
+  exists.
+
+### Added
+- Add optional param `now` to `verifyCredential()`, `createPresentation()`,
+  `verify()`, and `issue()`.
+
 ### Fixed
 - Check if credential has expired if `expirationDate` property exists.
 
