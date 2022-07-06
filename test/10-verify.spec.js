@@ -416,7 +416,7 @@ describe('_checkCredential', () => {
     credential.credentialSubject.id = '12345';
     let error;
     try {
-      vc._checkCredential(credential);
+      vc._checkCredential({credential});
     } catch(e) {
       error = e;
     }
@@ -432,7 +432,7 @@ describe('_checkCredential', () => {
     credential.issuer = '12345';
     let error;
     try {
-      vc._checkCredential(credential);
+      vc._checkCredential({credential});
     } catch(e) {
       error = e;
     }
@@ -449,7 +449,7 @@ describe('_checkCredential', () => {
     credential.evidence = '12345';
     let error;
     try {
-      vc._checkCredential(credential);
+      vc._checkCredential({credential});
     } catch(e) {
       error = e;
     }
@@ -467,7 +467,7 @@ describe('_checkCredential', () => {
     credential.expirationDate = '2020-05-31T19:21:25Z';
     let error;
     try {
-      vc._checkCredential(credential);
+      vc._checkCredential({credential});
     } catch(e) {
       error = e;
     }
