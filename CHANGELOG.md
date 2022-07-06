@@ -1,5 +1,10 @@
 # @digitalcredentials/vc ChangeLog
 
+## 4.1.1 - 2022-07-06
+
+### Fixed
+- Remove use of `URL.protocol` (not implemented in React Native).
+
 ## 4.1.0 - 2022-07-06
 
 ### Added
