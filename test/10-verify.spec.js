@@ -173,6 +173,13 @@ describe('verify API (credentials)', () => {
       throw result.error;
     }
     result.verified.should.be.true;
+
+    result.results[0].log.should.eql([
+      {id: 'expiration', valid: true},
+      {id: 'valid_signature', valid: true},
+      {id: 'issuer_did_resolves', valid: true},
+      {id: 'revocation_status', valid: true}
+    ]);
   });
 
   it('should verify a vc with a positive status check', async () => {
@@ -192,6 +199,13 @@ describe('verify API (credentials)', () => {
       throw result.error;
     }
     result.verified.should.be.true;
+
+    result.results[0].log.should.eql([
+      {id: 'expiration', valid: true},
+      {id: 'valid_signature', valid: true},
+      {id: 'issuer_did_resolves', valid: true},
+      {id: 'revocation_status', valid: true}
+    ]);
   });
 
   describe('negative test', async () => {
@@ -288,7 +302,14 @@ describe('verify API (credentials)', () => {
       if(result.error) {
         throw result.error;
       }
-      result.verified.should.be.true;
+      result.verified.should.be.false;
+
+      result.results[0].log.should.eql([
+        {id: 'expiration', valid: true},
+        {id: 'valid_signature', valid: true},
+        {id: 'issuer_did_resolves', valid: true},
+        {id: 'revocation_status', valid: false}
+      ]);
     });
   });
 });

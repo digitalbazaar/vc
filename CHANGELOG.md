@@ -1,5 +1,11 @@
 # @digitalcredentials/vc ChangeLog
 
+## 4.1.0 - 2022-07-06
+
+### Added
+- Add fine grained verification event `log` parameter to `verifyCredential()`
+  results.
+
 ## 4.0.0 - 2022-07-06
 
 ### Changed
