@@ -1,6 +1,6 @@
 # @digitalbazaar/vc ChangeLog
 
-## 5.0.0 - 2022-08-xx
+## 5.0.0 - 2022-08-24
 
 ### Changed
 - **BREAKING**: Use `jsonld-signatures@11` and `jsonld@8` to get new `safe`
