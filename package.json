@@ -29,8 +29,8 @@
   ],
   "dependencies": {
     "credentials-context": "^2.0.0",
-    "jsonld": "^6.0.0",
-    "jsonld-signatures": "^10.0.0"
+    "jsonld": "^8.0.0",
+    "jsonld-signatures": "^11.0.0"
   },
   "devDependencies": {
     "@digitalbazaar/ed25519-signature-2018": "^3.0.0",
