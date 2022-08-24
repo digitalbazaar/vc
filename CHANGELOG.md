@@ -62,6 +62,12 @@
 
 Version skipped to match upstream.
 
+## 5.0.0 - 2022-08-xx
+
+### Changed
+- **BREAKING**: Use `jsonld-signatures@11` and `jsonld@8` to get new `safe`
+  mode (and on by default when using `canonize`) feature.
+
 ## 4.0.0 - 2022-06-23
 
 ### Changed
