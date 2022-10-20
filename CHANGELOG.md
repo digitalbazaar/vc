@@ -1,5 +1,11 @@
 # @digitalcredentials/vc ChangeLog
 
+## 4.2.0 - 2022-10-19
+
+### Fixed
+- **BREAKING**: For `verify()` and `verifyCredential()`, if an error is encountered,
+  re-throw it (do not return it as part of the results log).
+
 ## 4.1.1 - 2022-07-06
 
 ### Fixed
