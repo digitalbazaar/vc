@@ -200,26 +200,10 @@ Pre-requisites:
 // by requiring this first you ensure security
 // contexts are loaded from jsonld-signatures
 // and not an insecure source.
-const {extendContextLoader} = require('jsonld-signatures');
-const vc = require('@digitalcredentials/vc');
-// @digitalcredentials/vc exports its own secure documentLoader.
-const {defaultDocumentLoader} = vc;
-// a valid json-ld @context.
-const myCustomContext = require('./myCustomContext');
+import vc from '@digitalcredentials/vc';
+import { securityLoader } from '@digitalcredentials/security-document-loader';
 
-const documentLoader = extendContextLoader(async url => {
-  if(url === 'did:test:context:foo') {
-    return {
-      contextUrl: null,
-      documentUrl: url,
-      document: myCustomContext
-    };
-  }
-  return defaultDocumentLoader(url);
-});
-
-// you can now use your custom documentLoader
-// with multiple vc methods such as:
+const documentLoader = securityLoader().build();
 
 const vp = await vc.signPresentation({
   presentation, suite, challenge, documentLoader
@@ -303,6 +287,10 @@ To verify a verifiable presentation:
 ```js
 // challenge has been received from the requesting party - see 'challenge'
 // section below
+import vc from '@digitalcredentials/vc';
+import { securityLoader } from '@digitalcredentials/security-document-loader';
+
+const documentLoader = securityLoader().build();
 
 const result = await vc.verify({presentation, challenge, suite, documentLoader});
 // {valid: true}
