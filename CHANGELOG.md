@@ -1,5 +1,12 @@
 # @digitalcredentials/vc ChangeLog
 
+## 5.0.0 - 2022-11-03
+
+### Changed
+- **BREAKING**: Remove check if `issuanceDate` is not in the future as this is
+  a fully expected use-case (to issue credentials that become valid at some
+  point in time).
+
 ## 4.2.0 - 2022-10-19
 
 ### Fixed
