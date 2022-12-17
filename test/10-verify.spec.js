@@ -57,7 +57,6 @@ const testLoader = new MultiLoader({
 
 let suite;
 let keyPair;
-let verifiableCredential;
 const documentLoader = testLoader.documentLoader.bind(testLoader);
 
 before(async () => {
@@ -87,9 +86,34 @@ before(async () => {
 
 describe('vc.issue()', () => {
   it('should issue a verifiable credential with proof', async () => {
-    verifiableCredential = await vc.issue({
-      credential: mockCredential,
+    const credential = jsonld.clone(mockCredential);
+    const verifiableCredential = await vc.issue({
+      credential,
       suite
+    });
+    verifiableCredential.should.exist;
+    verifiableCredential.should.be.an('object');
+    verifiableCredential.should.have.property('proof');
+    verifiableCredential.proof.should.be.an('object');
+  });
+
+  it('should issue an expired verifiable credential', async () => {
+    const keyPair = await Ed25519VerificationKey2018.generate();
+    const fp = Ed25519VerificationKey2018
+      .fingerprintFromPublicKey({publicKeyBase58: keyPair.publicKeyBase58});
+    keyPair.id = `did:key:${fp}#${fp}`;
+    const credential = jsonld.clone(mockCredential);
+    credential.id = `urn:uuid:${uuid()}`;
+    credential.issuer = `did:key:${fp}`;
+    credential.expirationDate = '2020-05-31T19:21:25Z';
+    const verifiableCredential = await vc.issue({
+      credential,
+      suite: new Ed25519Signature2018({
+        key: keyPair
+      }),
+      // set `now` to expiration date, allowing the credential to be issued
+      // without failing the expired check
+      now: (new Date('2020-05-31T19:21:25Z'))
     });
     verifiableCredential.should.exist;
     verifiableCredential.should.be.an('object');
@@ -204,7 +228,7 @@ describe('verify API (credentials)', () => {
   });
 
   it('should verify a vc with a positive status check', async () => {
-    verifiableCredential = await vc.issue({
+    const verifiableCredential = await vc.issue({
       credential: mockCredential,
       suite
     });
@@ -308,7 +332,7 @@ describe('verify API (credentials)', () => {
       results.verified.should.be.false;
     });
     it('should fail to verify a vc with a negative status check', async () => {
-      verifiableCredential = await vc.issue({
+      const verifiableCredential = await vc.issue({
         credential: mockCredential,
         suite
       });
