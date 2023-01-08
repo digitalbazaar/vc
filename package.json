@@ -2,7 +2,7 @@
   "name": "@digitalbazaar/vc",
   "version": "5.0.1-0",
   "description": "Verifiable Credentials JavaScript library.",
-  "homepage": "https://github.com/digitalbazaar/vc-js",
+  "homepage": "https://github.com/digitalbazaar/vc",
   "author": {
     "name": "Digital Bazaar, Inc.",
     "email": "support@digitalbazaar.com",
@@ -15,10 +15,10 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/digitalbazaar/vc-js"
+    "url": "https://github.com/digitalbazaar/vc"
   },
   "bugs": {
-    "url": "https://github.com/digitalbazaar/vc-js/issues",
+    "url": "https://github.com/digitalbazaar/vc/issues",
     "email": "support@digitalbazaar.com"
   },
   "license": "BSD-3-Clause",
