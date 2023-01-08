@@ -28,6 +28,7 @@
     "lib/**/*.js"
   ],
   "dependencies": {
+    "@digitalbazaar/credentials-v2-context": "github:digitalbazaar/credentials-v2-context#initial",
     "credentials-context": "^2.0.0",
     "jsonld": "^8.0.0",
     "jsonld-signatures": "^11.0.0"
