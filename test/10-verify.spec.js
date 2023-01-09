@@ -113,7 +113,8 @@ describe('vc.issue()', () => {
       }),
       // set `now` to expiration date, allowing the credential to be issued
       // without failing the expired check
-      now: (new Date('2020-05-31T19:21:25Z'))
+      now: (new Date('2020-05-31T19:21:25Z')),
+      documentLoader
     });
     verifiableCredential.should.exist;
     verifiableCredential.should.be.an('object');
