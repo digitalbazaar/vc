@@ -29,29 +29,27 @@ const mockDidDoc = require('./mocks/didDocument');
 const mockDidKeys = require('./mocks/didKeys');
 const {VeresOneDidDoc} = require('did-veres-one');
 
-const testContextLoader = () => {
+const testContextLoader = extendContextLoader(async url => {
   for(const key in invalidContexts) {
     const {url, value} = invalidContexts[key];
-    contexts[url] = value;
+    contexts.set(url, value);
   }
-  return async url => {
-    const context = contexts.get(url);
-    if(!context) {
-      throw new Error('NotFoundError');
-    }
+  const context = contexts.get(url);
+  if(context) {
     return {
       contextUrl: null,
       document: jsonld.clone(context),
       documentUrl: url
     };
-  };
-};
+  }
+  return defaultDocumentLoader(url);
+});
 
 // documents are added to this documentLoader incrementally
 const testLoader = new MultiLoader({
   documentLoader: [
     // CREDENTIALS_CONTEXT_URL
-    testContextLoader()
+    testContextLoader
   ]
 });
 
