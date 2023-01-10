@@ -15,6 +15,7 @@ const CredentialIssuancePurpose = require('../lib/CredentialIssuancePurpose');
 const {securityLoader} =
   require('@digitalcredentials/security-document-loader');
 
+<<<<<<< HEAD
 const mockData = require('./mocks/mock.data');
 const {v4: uuid} = require('uuid');
 const vc = require('..');
@@ -28,12 +29,19 @@ const assertionController = require('./mocks/assertionController');
 const mockDidDoc = require('./mocks/didDocument');
 const mockDidKeys = require('./mocks/didKeys');
 const {VeresOneDidDoc} = require('did-veres-one');
+=======
+const contexts = new Map();
+contexts.set(vcExamplesV1CtxUrl, vcExamplesV1Ctx);
+contexts.set(odrlCtxUrl, odrlCtx);
+for(const key in invalidContexts) {
+  const {url, value} = invalidContexts[key];
+  contexts.set(url, value);
+}
+const {extendContextLoader} = jsigs;
+const {defaultDocumentLoader} = vc;
+>>>>>>> 5044f64 (Move for loop outside from the testContextLoader.)
 
 const testContextLoader = extendContextLoader(async url => {
-  for(const key in invalidContexts) {
-    const {url, value} = invalidContexts[key];
-    contexts.set(url, value);
-  }
   const context = contexts.get(url);
   if(context) {
     return {
