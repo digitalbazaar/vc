@@ -28,7 +28,6 @@
     "lib/**/*.js"
   ],
   "dependencies": {
-    "@digitalbazaar/security-document-loader": "^2.0.0",
     "credentials-context": "^2.0.0",
     "jsonld": "^8.0.0",
     "jsonld-signatures": "^11.0.0"
