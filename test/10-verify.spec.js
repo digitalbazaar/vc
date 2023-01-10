@@ -15,7 +15,6 @@ import {mock as mockData} from './mocks/mock.data.js';
 import {v4 as uuid} from 'uuid';
 import * as vc from '../lib/index.js';
 import {MultiLoader} from './MultiLoader.js';
-import {contexts as realContexts} from '../lib/contexts/index.js';
 import {invalidContexts} from './contexts/index.js';
 import {credential as mockCredential} from './mocks/credential.js';
 import {assertionController} from './mocks/assertionController.js';
@@ -32,31 +31,30 @@ import {
 const contexts = new Map();
 contexts.set(vcExamplesV1CtxUrl, vcExamplesV1Ctx);
 contexts.set(odrlCtxUrl, odrlCtx);
-realContexts.forEach((value, key) => contexts.set(key, value));
+const {extendContextLoader} = jsigs;
+const {defaultDocumentLoader} = vc;
 
-const testContextLoader = () => {
+const testContextLoader = extendContextLoader(async url => {
   for(const key in invalidContexts) {
     const {url, value} = invalidContexts[key];
-    contexts[url] = value;
+    contexts.set(url, value);
   }
-  return async url => {
-    const context = contexts.get(url);
-    if(!context) {
-      throw new Error('NotFoundError');
-    }
+  const context = contexts.get(url);
+  if(context) {
     return {
       contextUrl: null,
       document: jsonld.clone(context),
       documentUrl: url
     };
-  };
-};
+  }
+  return defaultDocumentLoader(url);
+});
 
 // documents are added to this documentLoader incrementally
 const testLoader = new MultiLoader({
   documentLoader: [
     // CREDENTIALS_CONTEXT_URL
-    testContextLoader()
+    testContextLoader
   ]
 });
 
