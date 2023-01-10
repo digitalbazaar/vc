@@ -31,14 +31,14 @@ import {
 const contexts = new Map();
 contexts.set(vcExamplesV1CtxUrl, vcExamplesV1Ctx);
 contexts.set(odrlCtxUrl, odrlCtx);
+for(const key in invalidContexts) {
+  const {url, value} = invalidContexts[key];
+  contexts.set(url, value);
+}
 const {extendContextLoader} = jsigs;
 const {defaultDocumentLoader} = vc;
 
 const testContextLoader = extendContextLoader(async url => {
-  for(const key in invalidContexts) {
-    const {url, value} = invalidContexts[key];
-    contexts.set(url, value);
-  }
   const context = contexts.get(url);
   if(context) {
     return {
