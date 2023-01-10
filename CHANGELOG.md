@@ -64,10 +64,8 @@ Version skipped to match upstream.
 
 ## 6.0.0 - 2023-TBD
 
-### Changed
-- **BREAKING**: Remove `./lib/contexts` and `./lib/documentLoader.js`. Use
-  `@digitalbazaar/security-document-loader` and load examples and odrl contexts
-  from their respective packages instead.
+### Removed
+- **BREAKING**: Remove `odrl` and `vc examples` contexts from `./lib/contexts`.
 
 ## 5.0.0 - 2022-08-24
 

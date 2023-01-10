@@ -35,12 +35,13 @@ const testContextLoader = () => {
     contexts[url] = value;
   }
   return async url => {
-    if(!contexts[url]) {
+    const context = contexts.get(url);
+    if(!context) {
       throw new Error('NotFoundError');
     }
     return {
       contextUrl: null,
-      document: jsonld.clone(contexts[url]),
+      document: jsonld.clone(context),
       documentUrl: url
     };
   };
