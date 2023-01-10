@@ -15,6 +15,7 @@ import {mock as mockData} from './mocks/mock.data.js';
 import {v4 as uuid} from 'uuid';
 import * as vc from '../lib/index.js';
 import {MultiLoader} from './MultiLoader.js';
+import {contexts as realContexts} from '../lib/contexts/index.js';
 import {invalidContexts} from './contexts/index.js';
 import {credential as mockCredential} from './mocks/credential.js';
 import {assertionController} from './mocks/assertionController.js';
@@ -27,16 +28,11 @@ import {
   CONTEXT_V1 as vcExamplesV1Ctx,
   CONTEXT_URL_V1 as vcExamplesV1CtxUrl
 } from '@digitalbazaar/credentials-examples-context';
-import {
-  CONTEXT as credentialCtx,
-  CONTEXT_URL_V1 as credentialCtxUrl
-} from 'credentials-context';
 
-export const contexts = {};
-
-contexts[vcExamplesV1CtxUrl] = vcExamplesV1Ctx;
-contexts[odrlCtxUrl] = odrlCtx;
-contexts[credentialCtxUrl] = credentialCtx;
+const contexts = new Map();
+contexts.set(vcExamplesV1CtxUrl, vcExamplesV1Ctx);
+contexts.set(odrlCtxUrl, odrlCtx);
+realContexts.forEach((value, key) => contexts.set(key, value));
 
 const testContextLoader = () => {
   for(const key in invalidContexts) {
@@ -44,12 +40,13 @@ const testContextLoader = () => {
     contexts[url] = value;
   }
   return async url => {
-    if(!contexts[url]) {
+    const context = contexts.get(url);
+    if(!context) {
       throw new Error('NotFoundError');
     }
     return {
       contextUrl: null,
-      document: jsonld.clone(contexts[url]),
+      document: jsonld.clone(context),
       documentUrl: url
     };
   };
