@@ -65,10 +65,11 @@ Version skipped to match upstream.
 ## 6.0.0 - 2023-TBD
 
 ### Removed
-- **BREAKING**: Remove `odrl` and `vc examples` contexts from `./lib/contexts`.
-The contexts are now available in
-[@digitalbazaar/odrl-context](https://github.com/digitalbazaar/odrl-context) and
-[@digitalbazaar/credentials-examples-context](https://github.com/digitalbazaar/credentials-examples-context).
+- **BREAKING**: Remove ODRL and VC examples contexts from `./lib/contexts/` and
+  from the default document loader. The contexts are now available in
+  [`@digitalbazaar/odrl-context`](https://github.com/digitalbazaar/odrl-context)
+  and
+  [`@digitalbazaar/credentials-examples-context`](https://github.com/digitalbazaar/credentials-examples-context).
 
 ## 5.0.0 - 2022-08-24
 
