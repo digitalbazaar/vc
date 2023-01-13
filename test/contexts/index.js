@@ -1,20 +1,20 @@
 import {
-  contexts as credentialsContexts,
-  constants as credentialConstants
+  constants as credentialConstants,
+  contexts as credentialsContexts
 } from 'credentials-context';
 import {
-  contexts as didContexts,
-  constants as didConstants
+  constants as didConstants,
+  contexts as didContexts
 } from 'did-context';
 import {
-  contexts as v1Contexts,
-  constants as v1Constants
+  constants as v1Constants,
+  contexts as v1Contexts
 } from 'veres-one-context';
 
 import {invalidId} from './invalid_id.js';
-import {nullVersion} from './null_version.js';
 import {nullId} from './null_id.js';
 import {nullType} from './null_type.js';
+import {nullVersion} from './null_version.js';
 
 const {CREDENTIALS_CONTEXT_V1_URL} = credentialConstants;
 const {DID_CONTEXT_URL} = didConstants;

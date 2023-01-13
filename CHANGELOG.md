@@ -71,6 +71,9 @@ Version skipped to match upstream.
   and
   [`@digitalbazaar/credentials-examples-context`](https://github.com/digitalbazaar/credentials-examples-context).
 
+### Changed
+- Update dev dependencies.
+
 ## 5.0.0 - 2022-08-24
 
 ### Changed
