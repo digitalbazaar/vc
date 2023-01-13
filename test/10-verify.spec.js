@@ -4,21 +4,7 @@
 import chai from 'chai';
 const should = chai.should();
 
-import {
-  Ed25519VerificationKey2018
-} from '@digitalbazaar/ed25519-verification-key-2018';
-import jsigs from 'jsonld-signatures';
-import jsonld from 'jsonld';
-import {Ed25519Signature2018} from '@digitalbazaar/ed25519-signature-2018';
-import {CredentialIssuancePurpose} from '../lib/CredentialIssuancePurpose.js';
-import {mock as mockData} from './mocks/mock.data.js';
-import {v4 as uuid} from 'uuid';
 import * as vc from '../lib/index.js';
-import {MultiLoader} from './MultiLoader.js';
-import {invalidContexts} from './contexts/index.js';
-import {credential as mockCredential} from './mocks/credential.js';
-import {assertionController} from './mocks/assertionController.js';
-import {VeresOneDriver} from 'did-veres-one';
 import {
   CONTEXT_V1 as odrlCtx,
   CONTEXT_URL_V1 as odrlCtxUrl
@@ -27,6 +13,20 @@ import {
   CONTEXT_V1 as vcExamplesV1Ctx,
   CONTEXT_URL_V1 as vcExamplesV1CtxUrl
 } from '@digitalbazaar/credentials-examples-context';
+import {assertionController} from './mocks/assertionController.js';
+import {CredentialIssuancePurpose} from '../lib/CredentialIssuancePurpose.js';
+import {Ed25519Signature2018} from '@digitalbazaar/ed25519-signature-2018';
+import {
+  Ed25519VerificationKey2018
+} from '@digitalbazaar/ed25519-verification-key-2018';
+import {invalidContexts} from './contexts/index.js';
+import jsigs from 'jsonld-signatures';
+import jsonld from 'jsonld';
+import {credential as mockCredential} from './mocks/credential.js';
+import {mock as mockData} from './mocks/mock.data.js';
+import {MultiLoader} from './MultiLoader.js';
+import {v4 as uuid} from 'uuid';
+import {VeresOneDriver} from 'did-veres-one';
 
 const contexts = new Map();
 contexts.set(vcExamplesV1CtxUrl, vcExamplesV1Ctx);
