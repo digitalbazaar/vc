@@ -11,6 +11,8 @@
 
 ### Changed
 - Update dev dependencies.
+- Update `jsonld` and to `@digitalbazaar/ed25519-signature-2018@4`.
+  - **BREAKING**: Remove support for `expansionMap`.
 
 ## 5.0.0 - 2022-08-24
 
