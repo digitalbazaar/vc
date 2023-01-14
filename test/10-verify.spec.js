@@ -153,13 +153,13 @@ describe('vc.createPresentation()', () => {
   it('should create an unsigned presentation', () => {
     const presentation = vc.createPresentation({
       verifiableCredential: mockCredential,
-      id: 'ebc6f1c2',
+      id: 'test:ebc6f1c2',
       holder: 'did:ex:holder123'
     });
 
     presentation.type.should.eql(['VerifiablePresentation']);
     presentation.should.have.property('verifiableCredential');
-    presentation.should.have.property('id', 'ebc6f1c2');
+    presentation.should.have.property('id', 'test:ebc6f1c2');
     presentation.should.have.property('holder', 'did:ex:holder123');
     presentation.should.not.have.property('proof');
   });
@@ -169,7 +169,7 @@ describe('vc.signPresentation()', () => {
   it('should create a signed VP', async () => {
     const presentation = vc.createPresentation({
       verifiableCredential: mockCredential,
-      id: 'ebc6f1c2',
+      id: 'test:ebc6f1c2',
       holder: 'did:ex:holder123'
     });
 
@@ -377,14 +377,14 @@ describe('test for multiple credentials', async () => {
   const credentialsCount = [5, 25, 50, 100];
 
   for(const count of credentialsCount) {
-    it('cause error when credentials are tampered', async () => {
+    it(`cause error when credentials are tampered [${count}]`, async () => {
       const challenge = uuid();
       const {presentation, suite: vcSuite, documentLoader} =
         await _generatePresentation({challenge, credentialsCount: count});
 
       // tampering with the first two credentials id
-      presentation.verifiableCredential[0].id = 'some fake id';
-      presentation.verifiableCredential[1].id = 'some other fake id';
+      presentation.verifiableCredential[0].id = 'test:some_fake_id';
+      presentation.verifiableCredential[1].id = 'test:some_other_fake_id';
 
       const result = await vc.verify({
         documentLoader,
@@ -403,12 +403,12 @@ describe('test for multiple credentials', async () => {
       credentialOne.verified.should.be.a('boolean');
       credentialOne.verified.should.be.false;
       credentialOne.credentialId.should.be.a('string');
-      credentialOne.credentialId.should.equal('some fake id');
+      credentialOne.credentialId.should.equal('test:some_fake_id');
 
       credentialTwo.verified.should.be.a('boolean');
       credentialTwo.verified.should.be.false;
       credentialTwo.credentialId.should.be.a('string');
-      credentialTwo.credentialId.should.equal('some other fake id');
+      credentialTwo.credentialId.should.equal('test:some_other_fake_id');
 
       for(let i = 2; i < credentialResults.length; ++i) {
         const credential = credentialResults[i];

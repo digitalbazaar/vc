@@ -33,7 +33,7 @@
     "jsonld-signatures": "^11.0.0"
   },
   "devDependencies": {
-    "@digitalbazaar/ed25519-signature-2018": "^3.0.0",
+    "@digitalbazaar/ed25519-signature-2018": "^4.0.0",
     "@digitalbazaar/ed25519-verification-key-2018": "^4.0.0",
     "@digitalbazaar/credentials-examples-context": "^1.0.0",
     "@digitalbazaar/odrl-context": "^1.0.0",
