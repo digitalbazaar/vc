@@ -1,6 +1,6 @@
 # @digitalbazaar/vc ChangeLog
 
-## 6.0.0 - 2023-TBD
+## 6.0.0 - 2023-01-17
 
 ### Removed
 - **BREAKING**: Remove ODRL and VC examples contexts from `./lib/contexts/` and
