@@ -72,9 +72,8 @@ Version skipped to match upstream.
   [`@digitalbazaar/credentials-examples-context`](https://github.com/digitalbazaar/credentials-examples-context).
 
 ### Changed
-- Update dev dependencies.
-- Update `jsonld` and to `@digitalbazaar/ed25519-signature-2018@4`.
-  - **BREAKING**: Remove support for `expansionMap`.
+- Update dependencies.
+  - **BREAKING**: Remove support for `expansionMap`. (Removed in dependencies.)
 
 ## 5.0.0 - 2022-08-24
 
