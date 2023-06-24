@@ -1,0 +1,14 @@
+name: move new, edited, reopened issues to DCC Engineering project
+
+on:
+  issues:
+    types: [ opened, edited, reopened ]
+jobs:
+  add-to-project:
+    name: Add issue to project
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/add-to-project@main
+        with:
+          project-url: https://github.com/orgs/digitalcredentials/projects/14
+          github-token: ${{ secrets.PROJECTS_ACCESS_TOKEN }}
