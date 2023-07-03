@@ -11,13 +11,9 @@ import * as ecdsaSd2023Cryptosuite from
   '@digitalbazaar/ecdsa-sd-2023-cryptosuite';
 import * as vc from '../lib/index.js';
 import {
-  CONTEXT_V1 as odrlCtx,
-  CONTEXT_URL_V1 as odrlCtxUrl
-} from '@digitalbazaar/odrl-context';
-import {
-  CONTEXT_V1 as vcExamplesV1Ctx,
-  CONTEXT_URL_V1 as vcExamplesV1CtxUrl
-} from '@digitalbazaar/credentials-examples-context';
+  invalidContexts,
+  validContexts
+} from './contexts/index.js';
 import {assertionController} from './mocks/assertionController.js';
 import chai from 'chai';
 import {CredentialIssuancePurpose} from '../lib/CredentialIssuancePurpose.js';
@@ -27,7 +23,6 @@ import {Ed25519Signature2018} from '@digitalbazaar/ed25519-signature-2018';
 import {
   Ed25519VerificationKey2018
 } from '@digitalbazaar/ed25519-verification-key-2018';
-import {invalidContexts} from './contexts/index.js';
 import jsigs from 'jsonld-signatures';
 import jsonld from 'jsonld';
 import {credential as mockCredential} from './mocks/credential.js';
@@ -38,8 +33,6 @@ import {v4 as uuid} from 'uuid';
 import {VeresOneDriver} from 'did-veres-one';
 
 const remoteDocuments = new Map();
-remoteDocuments.set(vcExamplesV1CtxUrl, vcExamplesV1Ctx);
-remoteDocuments.set(odrlCtxUrl, odrlCtx);
 remoteDocuments.set(
   dataIntegrityContext.constants.CONTEXT_URL,
   dataIntegrityContext.contexts.get(
@@ -51,6 +44,11 @@ remoteDocuments.set(
 const should = chai.should();
 for(const key in invalidContexts) {
   const {url, value} = invalidContexts[key];
+  remoteDocuments.set(url, value);
+}
+// add the valid contexts to the loader
+for(const key in validContexts) {
+  const {url, value} = validContexts[key];
   remoteDocuments.set(url, value);
 }
 const {extendContextLoader} = jsigs;
@@ -251,7 +249,6 @@ describe('vc.signPresentation()', () => {
       id: 'test:ebc6f1c2',
       holder: 'did:ex:holder123'
     });
-
     const vp = await vc.signPresentation({
       presentation,
       suite, // from before() block
