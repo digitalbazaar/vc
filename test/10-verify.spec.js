@@ -19,6 +19,7 @@ import {
   CONTEXT_URL_V1 as vcExamplesV1CtxUrl
 } from '@digitalbazaar/credentials-examples-context';
 import {assertionController} from './mocks/assertionController.js';
+import chai from 'chai';
 import {CredentialIssuancePurpose} from '../lib/CredentialIssuancePurpose.js';
 import dataIntegrityContext from '@digitalbazaar/data-integrity-context';
 import {DataIntegrityProof} from '@digitalbazaar/data-integrity';
@@ -47,6 +48,7 @@ remoteDocuments.set(
   multikeyContext.constants.CONTEXT_URL,
   multikeyContext.contexts.get(
     multikeyContext.constants.CONTEXT_URL));
+const should = chai.should();
 for(const key in invalidContexts) {
   const {url, value} = invalidContexts[key];
   remoteDocuments.set(url, value);
