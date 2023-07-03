@@ -3,6 +3,10 @@ import {
   contexts as credentialsContexts
 } from 'credentials-context';
 import {
+  contexts as credentialsV2Contexts,
+  constants as credentialV2Constants
+} from '@digitalbazaar/credentials-v2-context';
+import {
   constants as didConstants,
   contexts as didContexts
 } from 'did-context';
@@ -17,6 +21,7 @@ import {nullType} from './null_type.js';
 import {nullVersion} from './null_version.js';
 
 const {CREDENTIALS_CONTEXT_V1_URL} = credentialConstants;
+const {CONTEXT_URL: CREDENTIALS_CONTEXT_V2_URL} = credentialV2Constants;
 const {DID_CONTEXT_URL} = didConstants;
 const {VERES_ONE_CONTEXT_V1_URL} = v1Constants;
 
@@ -32,6 +37,10 @@ export const invalidContexts = {
   valid: {
     url: CREDENTIALS_CONTEXT_V1_URL,
     value: credentialsContexts.get(CREDENTIALS_CONTEXT_V1_URL)
+  },
+  valid2: {
+    url: CREDENTIALS_CONTEXT_V2_URL,
+    value: credentialsV2Contexts.get(CREDENTIALS_CONTEXT_V2_URL)
   },
   invalidId: {
     url: 'https://invalid-id.org',

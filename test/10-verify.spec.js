@@ -1,9 +1,6 @@
 /*!
  * Copyright (c) 2019-2023 Digital Bazaar, Inc. All rights reserved.
  */
-import chai from 'chai';
-const should = chai.should();
-
 import * as EcdsaMultikey from '@digitalbazaar/ecdsa-multikey';
 import * as ecdsaSd2023Cryptosuite from
   '@digitalbazaar/ecdsa-sd-2023-cryptosuite';
@@ -17,6 +14,7 @@ import {
   CONTEXT_URL_V1 as vcExamplesV1CtxUrl
 } from '@digitalbazaar/credentials-examples-context';
 import {assertionController} from './mocks/assertionController.js';
+import chai from 'chai';
 import {CredentialIssuancePurpose} from '../lib/CredentialIssuancePurpose.js';
 import dataIntegrityContext from '@digitalbazaar/data-integrity-context';
 import {DataIntegrityProof} from '@digitalbazaar/data-integrity';
@@ -51,6 +49,7 @@ remoteDocuments.set(
   multikeyContext.constants.CONTEXT_URL,
   multikeyContext.contexts.get(
     multikeyContext.constants.CONTEXT_URL));
+const should = chai.should();
 for(const key in invalidContexts) {
   const {url, value} = invalidContexts[key];
   remoteDocuments.set(url, value);
