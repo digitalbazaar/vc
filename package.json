@@ -31,7 +31,8 @@
     "@digitalbazaar/credentials-v2-context": "github:digitalbazaar/credentials-v2-context#initial",
     "credentials-context": "^2.0.0",
     "jsonld": "^8.3.1",
-    "jsonld-signatures": "^11.2.1"
+    "jsonld-signatures": "^11.2.1",
+    "ed25519-signature-2018-context": "^1.1.0"
   },
   "devDependencies": {
     "@digitalbazaar/credentials-examples-context": "^1.0.0",
