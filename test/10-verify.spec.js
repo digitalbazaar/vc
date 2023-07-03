@@ -206,7 +206,6 @@ describe('vc.signPresentation()', () => {
       id: 'test:ebc6f1c2',
       holder: 'did:ex:holder123'
     });
-
     const vp = await vc.signPresentation({
       presentation,
       suite, // from before() block
