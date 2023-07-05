@@ -19,7 +19,6 @@ credentials.alpha = {
     }
   ],
   "id": "http://example.edu/credentials/58473",
-  "issuanceDate": "2010-01-01T19:23:24Z",
   "type": ["VerifiableCredential", "AlumniCredential"],
   "credentialSubject": {
     "id": "did:example:ebfeb1f712ebc6f1c276e12ec21",
