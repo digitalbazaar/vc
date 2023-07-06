@@ -11,9 +11,10 @@ import * as ecdsaSd2023Cryptosuite from
   '@digitalbazaar/ecdsa-sd-2023-cryptosuite';
 import * as vc from '../lib/index.js';
 import {
-  invalidContexts,
-  validContexts
-} from './contexts/index.js';
+  documentLoader,
+  contexts as remoteDocuments,
+  testLoader
+} from './testContextLoader.js';
 import {assertionController} from './mocks/assertionController.js';
 import chai from 'chai';
 import {CredentialIssuancePurpose} from '../lib/CredentialIssuancePurpose.js';
@@ -23,16 +24,22 @@ import {Ed25519Signature2018} from '@digitalbazaar/ed25519-signature-2018';
 import {
   Ed25519VerificationKey2018
 } from '@digitalbazaar/ed25519-verification-key-2018';
+import {invalidContexts} from './contexts/index.js';
 import jsigs from 'jsonld-signatures';
 import jsonld from 'jsonld';
 import {credential as mockCredential} from './mocks/credential.js';
 import {mock as mockData} from './mocks/mock.data.js';
 import multikeyContext from '@digitalbazaar/multikey-context';
-import {MultiLoader} from './MultiLoader.js';
 import {v4 as uuid} from 'uuid';
 import {VeresOneDriver} from 'did-veres-one';
 
 const remoteDocuments = new Map();
+const {
+  createDiscloseCryptosuite,
+  createSignCryptosuite,
+  createVerifyCryptosuite
+} = ecdsaSd2023Cryptosuite;
+
 remoteDocuments.set(
   dataIntegrityContext.constants.CONTEXT_URL,
   dataIntegrityContext.contexts.get(
@@ -46,35 +53,6 @@ for(const key in invalidContexts) {
   const {url, value} = invalidContexts[key];
   remoteDocuments.set(url, value);
 }
-// add the valid contexts to the loader
-for(const key in validContexts) {
-  const {url, value} = validContexts[key];
-  remoteDocuments.set(url, value);
-}
-const {extendContextLoader} = jsigs;
-const {defaultDocumentLoader} = vc;
-
-const testContextLoader = extendContextLoader(async url => {
-  const remoteDocument = remoteDocuments.get(url);
-  if(remoteDocument) {
-    return {
-      contextUrl: null,
-      document: jsonld.clone(remoteDocument),
-      documentUrl: url
-    };
-  }
-  return defaultDocumentLoader(url);
-});
-
-// documents are added to this documentLoader incrementally
-const testLoader = new MultiLoader({
-  documentLoader: [
-    // CREDENTIALS_CONTEXT_URL
-    testContextLoader
-  ]
-});
-
-const documentLoader = testLoader.documentLoader.bind(testLoader);
 
 // do ed25519 setup...
 let suite;
