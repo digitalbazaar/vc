@@ -733,7 +733,7 @@ describe('_checkCredential', () => {
       .contain('Credential has expired.');
   });
 
-  it('should reject if "now" is before "issuanceDate', () => {
+  it('should reject if "now" is before "issuanceDate"', () => {
     const credential = jsonld.clone(mockData.credentials.alpha);
     credential.issuer = 'did:example:12345';
     credential.issuanceDate = '2022-10-31T19:21:25Z';
