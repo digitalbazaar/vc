@@ -13,6 +13,7 @@ import {
 import {assertionController} from './mocks/assertionController.js';
 import chai from 'chai';
 import {CredentialIssuancePurpose} from '../lib/CredentialIssuancePurpose.js';
+import {credentials} from './mocks/credential.js';
 import dataIntegrityContext from '@digitalbazaar/data-integrity-context';
 import {DataIntegrityProof} from '@digitalbazaar/data-integrity';
 import {Ed25519Signature2018} from '@digitalbazaar/ed25519-signature-2018';
@@ -22,7 +23,6 @@ import {
 import {invalidContexts} from './contexts/index.js';
 import jsigs from 'jsonld-signatures';
 import jsonld from 'jsonld';
-import {credential as mockCredential} from './mocks/credential.js';
 import {mock as mockData} from './mocks/mock.data.js';
 import multikeyContext from '@digitalbazaar/multikey-context';
 import {v4 as uuid} from 'uuid';
@@ -100,7 +100,7 @@ before(async () => {
 
 describe('vc.issue()', () => {
   it('should issue a verifiable credential with proof', async () => {
-    const credential = jsonld.clone(mockCredential);
+    const credential = jsonld.clone(credentials.v2);
     const verifiableCredential = await vc.issue({
       credential,
       suite,
@@ -117,7 +117,7 @@ describe('vc.issue()', () => {
     const fp = Ed25519VerificationKey2018
       .fingerprintFromPublicKey({publicKeyBase58: keyPair.publicKeyBase58});
     keyPair.id = `did:key:${fp}#${fp}`;
-    const credential = jsonld.clone(mockCredential);
+    const credential = jsonld.clone(credentials.v1);
     credential.id = `urn:uuid:${uuid()}`;
     credential.issuer = `did:key:${fp}`;
     credential.expirationDate = '2020-05-31T19:21:25Z';
@@ -145,7 +145,7 @@ describe('vc.issue()', () => {
     let error;
     try {
       await vc.issue({
-        credential: mockCredential,
+        credential: credentials.v2,
         suite
       });
     } catch(e) {
@@ -183,7 +183,7 @@ describe('vc.issue()', () => {
 describe('vc.createPresentation()', () => {
   it('should create an unsigned presentation', () => {
     const presentation = vc.createPresentation({
-      verifiableCredential: mockCredential,
+      verifiableCredential: credentials.v2,
       id: 'test:ebc6f1c2',
       holder: 'did:ex:holder123'
     });
@@ -199,7 +199,7 @@ describe('vc.createPresentation()', () => {
 describe('vc.signPresentation()', () => {
   it('should create a signed VP', async () => {
     const presentation = vc.createPresentation({
-      verifiableCredential: mockCredential,
+      verifiableCredential: credentials.v2,
       id: 'test:ebc6f1c2',
       holder: 'did:ex:holder123'
     });
@@ -224,7 +224,7 @@ describe('vc.signPresentation()', () => {
 describe('verify API (credentials)', () => {
   it('should verify a vc', async () => {
     const verifiableCredential = await vc.issue({
-      credential: mockCredential,
+      credential: credentials.v2,
       suite,
       documentLoader
     });
@@ -268,7 +268,7 @@ describe('verify API (credentials)', () => {
     });
 
     const verifiableCredential = await vc.issue({
-      credential: {...mockCredential},
+      credential: {...credentials.v1},
       suite: ecdsaSdSignSuite,
       documentLoader
     });
@@ -485,7 +485,7 @@ describe('verify API (credentials)', () => {
       });
 
       const verifiableCredential = await vc.issue({
-        credential: {...mockCredential},
+        credential: {...credentials.v1},
         suite: ecdsaSdSignSuite,
         documentLoader
       });
