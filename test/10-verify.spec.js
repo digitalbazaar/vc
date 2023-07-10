@@ -692,7 +692,7 @@ describe('_checkCredential', () => {
   });
 
   it('should reject if "now" is before "issuanceDate"', () => {
-    const credential = jsonld.clone(mockData.credentials.alpha);
+    const credential = jsonld.clone(credentials.v1);
     credential.issuer = 'did:example:12345';
     credential.issuanceDate = '2022-10-31T19:21:25Z';
     const now = '2022-06-30T19:21:25Z';
