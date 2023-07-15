@@ -13,9 +13,14 @@
     "lib/**/*.js"
   ],
   "dependencies": {
-    "@digitalcredentials/jsonld": "^5.2.1",
+    "@digitalbazaar/vc-status-list": "^7.0.0",
+    "@digitalcredentials/ed25519-signature-2020": "^3.0.2",
+    "@digitalcredentials/jsonld": "^5.2.2",
     "@digitalcredentials/jsonld-signatures": "^9.3.1",
-    "credentials-context": "^2.0.0"
+    "@digitalcredentials/security-document-loader": "^2.0.0",
+    "@digitalcredentials/vc-status-list": "^5.0.2",
+    "credentials-context": "^2.0.0",
+    "fix-esm": "^1.0.1"
   },
   "devDependencies": {
     "@babel/core": "^7.13.8",
@@ -76,7 +81,7 @@
   ],
   "scripts": {
     "test": "npm run test-node",
-    "test-node": "cross-env NODE_ENV=test mocha --preserve-symlinks -t 10000 test/*.spec.js",
+    "test-node": "cross-env NODE_ENV=test mocha -b --preserve-symlinks -t 10000 test/*.spec.js",
     "test-karma": "karma start karma.conf.js",
     "lint": "eslint lib test/*.spec.js",
     "coverage": "cross-env NODE_ENV=test nyc --reporter=lcov --reporter=text-summary npm run test-node",
