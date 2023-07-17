@@ -9,11 +9,11 @@ const {Ed25519VerificationKey2018} =
 const jsigs = require('@digitalcredentials/jsonld-signatures');
 const jsonld = require('@digitalcredentials/jsonld');
 const {Ed25519Signature2018} = require('@digitalbazaar/ed25519-signature-2018');
-const {Ed25519Signature2020} = require('@digitalcredentials/ed25519-signature-2020');
+const {Ed25519Signature2020} =
+  require('@digitalcredentials/ed25519-signature-2020');
 const CredentialIssuancePurpose = require('../lib/CredentialIssuancePurpose');
-const { checkStatus } = require("fix-esm").require('@digitalcredentials/vc-status-list');
-
-const { securityLoader } = require('@digitalcredentials/security-document-loader');
+const {securityLoader} =
+  require('@digitalcredentials/security-document-loader');
 
 const mockData = require('./mocks/mock.data');
 const {v4: uuid} = require('uuid');
@@ -22,6 +22,7 @@ const MultiLoader = require('./MultiLoader');
 const realContexts = require('../lib/contexts');
 const invalidContexts = require('./contexts');
 const mockCredential = require('./mocks/credential');
+const legacyOBv3Credential = require('./mocks/credential-legacy-obv3');
 const assertionController = require('./mocks/assertionController');
 const mockDidDoc = require('./mocks/didDocument');
 const mockDidKeys = require('./mocks/didKeys');
@@ -161,58 +162,16 @@ describe('vc.signPresentation()', () => {
 });
 
 describe('verify API (credentials)', () => {
-  it.skip('should verify a vc', async () => {
-    // verifiableCredential = await vc.issue({
-    //   credential: mockCredential,
-    //   suite
-    // });
-    const documentLoader = securityLoader({ fetchRemoteContexts: true }).build()
-    const verifiableCredential = {
-      "@context": [
-        "https://www.w3.org/2018/credentials/v1",
-        "https://w3id.org/security/suites/ed25519-2020/v1",
-        "https://w3id.org/vc/status-list/2021/v1"
-      ],
-      "id": "https://credentials-dcc-credentials-dev.raccoongang.com/verifiable_credentials/api/v1/status-list/2021/v1/did:key:z6MkkePoGJV8CQJJULSHHUEv71okD9PsrqXnZpNQuoUfb3id/",
-      "type": [
-        "VerifiableCredential",
-        "StatusList2021Credential"
-      ],
-      "credentialSubject": {
-        "id": "https://credentials-dcc-credentials-dev.raccoongang.com/verifiable_credentials/api/v1/status-list/2021/v1/did:key:z6MkkePoGJV8CQJJULSHHUEv71okD9PsrqXnZpNQuoUfb3id/#list",
-        "encodedList": "H4sIAHo1bmQC/+3BAQ0AAADCoPdPbQ43oAAAAAAAAAAAAODfAC7KO00QJwAA",
-        "statusPurpose": "revocation",
-        "type": "StatusList2021"
-      },
-      "issuer": {
-        "id": "did:key:z6MkkePoGJV8CQJJULSHHUEv71okD9PsrqXnZpNQuoUfb3id"
-      },
-      "issuanceDate": "2023-05-24T16:02:32Z",
-      "proof": {
-        "type": "Ed25519Signature2020",
-        "proofPurpose": "assertionMethod",
-        "proofValue": "zyvtkuyYKhCgJ62j2oRvzmqADcpDzRhFvdcdbeVtEYnTeZ8zjhXNoyPvvUnmNUMEb13Ua7kSr1p5Lxp5EFup9Q5z",
-        "verificationMethod": "did:key:z6MkkePoGJV8CQJJULSHHUEv71okD9PsrqXnZpNQuoUfb3id#z6MkkePoGJV8CQJJULSHHUEv71okD9PsrqXnZpNQuoUfb3id",
-        "created": "2023-05-24T16:04:10.179Z"
-      },
-      "validFrom": "2023-05-24T16:02:32Z",
-      "issued": "2023-05-24T16:02:32Z"
-    }
-    const suite = new Ed25519Signature2020()
-
+  it('should verify an OBv3 vc', async () => {
     const result = await vc.verifyCredential({
-      credential: verifiableCredential,
-      checkStatus,
-      suite,
-      documentLoader
+      credential: legacyOBv3Credential,
+      suite: new Ed25519Signature2020(),
+      documentLoader: securityLoader().build()
     });
 
     if(result.error) {
       throw result.error;
     }
-
-    console.log(result)
-
     result.verified.should.be.true;
 
     result.results[0].log.should.eql([
@@ -381,8 +340,8 @@ describe('verify API (presentations)', () => {
     const {presentation, suite: vcSuite, documentLoader} =
       await _generatePresentation({unsigned: true});
 
-    console.log(JSON.stringify(presentation, null, 2))
-    console.log(vcSuite)
+    console.log(JSON.stringify(presentation, null, 2));
+    console.log(vcSuite);
 
     const result = await vc.verify({
       documentLoader,

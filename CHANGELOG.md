@@ -1,5 +1,9 @@
 # @digitalcredentials/vc ChangeLog
 
+## 6.0.0 -
+### Changed
+- **BREAKING**: Add a fallback/override for legacy OBv3 VCs.
+
 ## 5.0.0 - 2022-11-03
 
 ### Changed
