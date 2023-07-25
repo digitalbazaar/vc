@@ -865,7 +865,37 @@ describe('_checkCredential', () => {
     error.message.should.contain(
       'A credentialSubject must make a claim.');
   });
+  it('should reject if a "credentialSubject" is empty', () => {
+    const credential = jsonld.clone(credentials.v1);
+    credential.credentialSubject = [{}, {id: 'did:key:zFoo'}];
+    credential.issuer = 'did:example:12345';
+    credential.issuanceDate = '2022-10-31T19:21:25Z';
+    let error;
+    try {
+      vc._checkCredential({credential});
+    } catch(e) {
+      error = e;
+    }
+    should.exist(error,
+      'Should throw error when "credentialSubject" is empty.');
+    error.message.should.contain(
+      'A credentialSubject must make a claim.');
+  });
 
+  it('should accept multiple credentialSubjects', () => {
+    const credential = jsonld.clone(credentials.v1);
+    credential.credentialSubject = [{id: 'did:key:zFoo'}, {name: 'did key'}];
+    credential.issuer = 'did:example:12345';
+    credential.issuanceDate = '2022-10-31T19:21:25Z';
+    let error;
+    try {
+      vc._checkCredential({credential});
+    } catch(e) {
+      error = e;
+    }
+    should.not.exist(error,
+      'Should not throw error when multiple credentialSubjects.');
+  });
 });
 
 async function _generateCredential() {
