@@ -1,5 +1,13 @@
 # @digitalbazaar/vc ChangeLog
 
+## 7.0.0 -
+
+### Added
+- **BREAKING**: Default issuance now uses VC 2.0 context.
+- Support for VC 2.0 credentials issuance and verification.
+- Support for VP 2.0 presentations issuance and verification.
+- Test vectors for VC 2.0 VCs.
+
 ## 6.3.0 - 2023-xx-xx
 
 ### Changed
