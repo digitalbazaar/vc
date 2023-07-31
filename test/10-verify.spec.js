@@ -863,7 +863,7 @@ describe('_checkCredential', () => {
     should.exist(error,
       'Should throw error when "credentialSubject" is empty.');
     error.message.should.contain(
-      'A credentialSubject must make a claim.');
+      '"credentialSubject" must make a claim.');
   });
   it('should reject if a "credentialSubject" is empty', () => {
     const credential = jsonld.clone(credentials.v1);
@@ -879,7 +879,7 @@ describe('_checkCredential', () => {
     should.exist(error,
       'Should throw error when "credentialSubject" is empty.');
     error.message.should.contain(
-      'A credentialSubject must make a claim.');
+      '"credentialSubject" must make a claim.');
   });
 
   it('should accept multiple credentialSubjects', () => {
