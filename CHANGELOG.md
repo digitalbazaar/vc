@@ -1,6 +1,6 @@
 # @digitalbazaar/vc ChangeLog
 
-## 6.0.2 - 2023-08-dd
+## 6.0.2 - 2023-08-04
 
 ### Fixed
 - Ensure that `issuanceDate` is only checked on verification,
