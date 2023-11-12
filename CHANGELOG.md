@@ -1,5 +1,12 @@
 # @digitalbazaar/vc ChangeLog
 
+## 6.1.0 - 2023-11-dd
+
+### Added
+- Add `derive()` API for deriving new verifiable credentials from
+  existing ones, for the purpose of selective disclosure or
+  unlinkable presentation.
+
 ## 6.0.2 - 2023-08-04
 
 ### Fixed
