@@ -30,12 +30,12 @@
   "dependencies": {
     "credentials-context": "^2.0.0",
     "jsonld": "^8.1.0",
-    "jsonld-signatures": "^11.0.0"
+    "jsonld-signatures": "^11.2.1"
   },
   "devDependencies": {
+    "@digitalbazaar/credentials-examples-context": "^1.0.0",
     "@digitalbazaar/ed25519-signature-2018": "^4.0.0",
     "@digitalbazaar/ed25519-verification-key-2018": "^4.0.0",
-    "@digitalbazaar/credentials-examples-context": "^1.0.0",
     "@digitalbazaar/odrl-context": "^1.0.0",
     "c8": "^7.12.0",
     "chai": "^4.3.7",
