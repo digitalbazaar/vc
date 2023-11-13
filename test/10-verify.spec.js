@@ -283,8 +283,7 @@ describe('verify API (credentials)', () => {
     const verifiableCredential = await vc.issue({
       credential: {...mockCredential},
       suite: ecdsaSdSignSuite,
-      documentLoader,
-      proof: {id: proofId}
+      documentLoader
     });
     const derivedCredential = await vc.derive({
       verifiableCredential,
