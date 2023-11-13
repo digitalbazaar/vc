@@ -29,7 +29,7 @@
   ],
   "dependencies": {
     "credentials-context": "^2.0.0",
-    "jsonld": "^8.1.0",
+    "jsonld": "^8.3.1",
     "jsonld-signatures": "^11.2.1"
   },
   "devDependencies": {
