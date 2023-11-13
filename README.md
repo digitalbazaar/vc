@@ -143,7 +143,7 @@ const credential = {
   "@context": [
     "https://www.w3.org/2018/credentials/v1",
     "https://www.w3.org/2018/credentials/examples/v1",
-    "https://w3id.org/security/data-integrity/v1"
+    "https://w3id.org/security/data-integrity/v2"
   ],
   "id": "http://example.edu/credentials/1872",
   "type": [
@@ -157,13 +157,13 @@ const credential = {
     "alumniOf": "<span lang=\"en\">Example University</span>"
   },
   "proof": {
-    "id": "urn:uuid:da088899-3439-41ea-a580-af3f1cf98cd3",
+    "id": "urn:uuid:2ef8c7ce-a4da-44b4-ba7f-3d43eaf1e50c",
     "type": "DataIntegrityProof",
-    "created": "2023-11-13T19:49:38Z",
+    "created": "2023-11-13T22:58:06Z",
     "verificationMethod": "https://example.edu/issuers/keys/2",
     "cryptosuite": "ecdsa-sd-2023",
     "proofPurpose": "assertionMethod",
-    "proofValue": "u2V0AhVhAdOR5uVnirVkeYpjRKTfGufrKc27BB1uPNKvjyN4fVYvQhXY4OkKzoREFGuTWn1-r4Nb2k23D9ZVAd6jYAJsK6VgjgCQCOwKH4XuTNuK73GYoJ3sNvdoc0SIpRPFEEjSJ6GFtaahYIBYWcqTbnDoyERyYOS3rNeoqN3CVqqVf3v_vF24OYDgYglhA9q8TQLqkHoBLPud3-EBuYTjjBBdbwmbehJABFP6iIBo_I5c5u6paP_kAR1-S2oKBw5qndURUc9RsytiOzy3lNVhAXHAS2RPQ7x7OakIetJAa3piURzME9XXg7Dz_OudDyEo0EwbA_XFUHlfdOTlhysWFmLH0FHG6MhDuBOLMDvMfGoJtL2lzc3VhbmNlRGF0ZWcvaXNzdWVy"
+    "proofValue": "u2V0AhVhAtYPKUQxwULXzMdsAfqtipsiX6YEPURYSBFYxoFY-v0vCPyAs1Ckyy61Wtk3xZWyBGNaEr3w0wQiJHHd5B9uR-1gjgCQCVtFPMk-ECi0CJFYv_GTjCChf8St0FQjuExTAnwP0-ipYIOHSun3YqabOfNe2DYFkHBTZa0Csf1a7YUDW8hhsOHqTglhA8aqnyanT-Ybo2-aHBTcI-UmHX0iluGb2IxoHLLhQoOPm2rDW0eB04Fa2Dh6WMKoOl_Bz3wZZDGQ31XoGrQvgIlhAo8qspvC-QQ-xI3KADiA12sO5LRsZ7hl9ozoJEECVsDOKlxWd-dhices5b2ZQIiiRE9XxxJx8YuwCMoD2bRLbOIJtL2lzc3VhbmNlRGF0ZWcvaXNzdWVy"
   }
 };
 
