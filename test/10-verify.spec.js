@@ -456,7 +456,7 @@ describe('verify API (credentials)', () => {
         suite: ecdsaSdDeriveSuite,
         documentLoader
       });
-      derivedCredential.credentialSubject.id = `urn:urn:${uuid()}`;
+      derivedCredential.credentialSubject.id = `urn:uuid:${uuid()}`;
       const result = await vc.verifyCredential({
         credential: derivedCredential,
         controller: assertionController,
