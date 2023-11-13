@@ -30,11 +30,11 @@ const mockDidKeys = require('./mocks/didKeys');
 const {VeresOneDidDoc} = require('did-veres-one');
 
 const testContextLoader = extendContextLoader(async url => {
-  const context = contexts.get(url);
-  if(context) {
+  const remoteDocument = remoteDocuments.get(url);
+  if(remoteDocument) {
     return {
       contextUrl: null,
-      document: jsonld.clone(context),
+      document: jsonld.clone(remoteDocument),
       documentUrl: url
     };
   }
@@ -49,32 +49,60 @@ const testLoader = new MultiLoader({
   ]
 });
 
-let suite;
-let keyPair;
 const documentLoader = testLoader.documentLoader.bind(testLoader);
 
+// do ed25519 setup...
+let suite;
+let keyPair;
 before(async () => {
-  // Set up the key that will be signing and verifying
+  // set up the Ed25519 key pair that will be signing and verifying
   keyPair = await Ed25519VerificationKey2018.generate({
     id: 'https://example.edu/issuers/keys/1',
     controller: 'https://example.edu/issuers/565049'
   });
 
-  // Add the key to the Controller doc (authorizes its use for assertion)
+  // add the key to the controller doc (authorizes its use for assertion)
   assertionController.assertionMethod.push(keyPair.id);
-  // Also add the key for authentication (VP) purposes
+  // also add the key for authentication (VP) purposes
+  // FIXME: this shortcut to reuse the same key and sign VPs as issuer can
+  // confuse developers trying to learn from the test suite and it should
+  // be changed
   assertionController.authentication.push(keyPair.id);
 
-  // Register the controller document and the key document with documentLoader
-  contexts['https://example.edu/issuers/565049'] = assertionController;
-  // FIXME this might require a security context.
-  contexts['https://example.edu/issuers/keys/1'] =
-    keyPair.export({publicKey: true});
+  // register the controller document and the key document with documentLoader
+  remoteDocuments.set(
+    'https://example.edu/issuers/565049', assertionController);
+  remoteDocuments.set(
+    'https://example.edu/issuers/keys/1', keyPair.export({publicKey: true}));
 
-  // Set up the signature suite, using the generated key
+  // set up the signature suite, using the generated key
   suite = new Ed25519Signature2018({
     verificationMethod: 'https://example.edu/issuers/keys/1',
     key: keyPair
+  });
+});
+
+// do ecdsa setup...
+let ecdsaKeyPair;
+let ecdsaSdSuite;
+before(async () => {
+  // set up the ECDSA key pair that will be signing and verifying
+  ecdsaKeyPair = await EcdsaMultikey.generate({
+    curve: 'P-256',
+    id: 'https://example.edu/issuers/keys/2',
+    controller: 'https://example.edu/issuers/565049'
+  });
+
+  // add the key to the controller doc (authorizes its use for assertion)
+  assertionController.assertionMethod.push(ecdsaKeyPair.id);
+
+  // setup ecdsa-sd-2023 suite for selective disclosure
+  ecdsaSdSuite = new DataIntegrityProof({
+    signer: ecdsaKeyPair.signer(), cryptosuite: createSignCryptosuite({
+      mandatoryPointers: [
+        '/issuer'
+      ]
+    })
   });
 });
 
