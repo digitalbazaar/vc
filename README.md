@@ -118,6 +118,75 @@ const signedVC = await vc.issue({credential, suite, documentLoader});
 console.log(JSON.stringify(signedVC, null, 2));
 ```
 
+### Deriving a Selective Disclosure Verifiable Credential
+
+Pre-requisites:
+
+* You have a verifiable credential that was issued using a cryptosuite that
+  support selective disclosure, such as `ecdsa-sd-2023`
+* If you're using a custom `@context`, make sure it's resolvable
+
+```js
+import * as vc from '@digitalbazaar/vc';
+import * as ecdsaSd2023Cryptosuite from
+  '@digitalbazaar/ecdsa-sd-2023-cryptosuite';
+import {DataIntegrityProof} from '@digitalbazaar/data-integrity';
+
+const {
+  createDiscloseCryptosuite,
+  createSignCryptosuite,
+  createVerifyCryptosuite
+} = ecdsaSd2023Cryptosuite;
+
+// Sample signed credential
+const credential = {
+  "@context": [
+    "https://www.w3.org/2018/credentials/v1",
+    "https://www.w3.org/2018/credentials/examples/v1",
+    "https://w3id.org/security/data-integrity/v1"
+  ],
+  "id": "http://example.edu/credentials/1872",
+  "type": [
+    "VerifiableCredential",
+    "AlumniCredential"
+  ],
+  "issuer": "https://example.edu/issuers/565049",
+  "issuanceDate": "2010-01-01T19:23:24Z",
+  "credentialSubject": {
+    "id": "did:example:ebfeb1f712ebc6f1c276e12ec21",
+    "alumniOf": "<span lang=\"en\">Example University</span>"
+  },
+  "proof": {
+    "id": "urn:uuid:da088899-3439-41ea-a580-af3f1cf98cd3",
+    "type": "DataIntegrityProof",
+    "created": "2023-11-13T19:49:38Z",
+    "verificationMethod": "https://example.edu/issuers/keys/2",
+    "cryptosuite": "ecdsa-sd-2023",
+    "proofPurpose": "assertionMethod",
+    "proofValue": "u2V0AhVhAdOR5uVnirVkeYpjRKTfGufrKc27BB1uPNKvjyN4fVYvQhXY4OkKzoREFGuTWn1-r4Nb2k23D9ZVAd6jYAJsK6VgjgCQCOwKH4XuTNuK73GYoJ3sNvdoc0SIpRPFEEjSJ6GFtaahYIBYWcqTbnDoyERyYOS3rNeoqN3CVqqVf3v_vF24OYDgYglhA9q8TQLqkHoBLPud3-EBuYTjjBBdbwmbehJABFP6iIBo_I5c5u6paP_kAR1-S2oKBw5qndURUc9RsytiOzy3lNVhAXHAS2RPQ7x7OakIetJAa3piURzME9XXg7Dz_OudDyEo0EwbA_XFUHlfdOTlhysWFmLH0FHG6MhDuBOLMDvMfGoJtL2lzc3VhbmNlRGF0ZWcvaXNzdWVy"
+  }
+};
+
+// note no `signer` needed; the selective disclosure credential will be
+// derived from the base proof already provided by the issuer
+const ecdsaSdDeriveSuite = new DataIntegrityProof({
+  cryptosuite: createDiscloseCryptosuite({
+    // the ID of the base proof to convert to a disclosure proof
+    proofId: 'urn:uuid:da088899-3439-41ea-a580-af3f1cf98cd3',
+    // selectively disclose the entire credential subject; different JSON
+    // pointers could be provided to selectively disclose different information;
+    // the issuer will have mandatory fields that will be automatically
+    // disclosed such as the `issuer` and `issuanceDate` fields
+    selectivePointers: [
+      '/credentialSubject'
+    ]
+  })
+});
+
+const derivedVC = await vc.derive({credential, suite, documentLoader});
+console.log(JSON.stringify(derivedVC, null, 2));
+```
+
 ### Creating a Verifiable Presentation
 
 Pre-requisites:
@@ -343,6 +412,27 @@ To verify a verifiable credential:
 ```js
 const suite = new Ed25519Signature2020();
 const result = await vc.verifyCredential({credential: signedVC, suite, documentLoader});
+// {valid: true}
+```
+
+To verify a selective disclosure verifiable credential ensure the suite
+supports it, for example:
+
+```js
+import * as ecdsaSd2023Cryptosuite from
+  '@digitalbazaar/ecdsa-sd-2023-cryptosuite';
+import {DataIntegrityProof} from '@digitalbazaar/data-integrity';
+
+const {
+  createDiscloseCryptosuite,
+  createSignCryptosuite,
+  createVerifyCryptosuite
+} = ecdsaSd2023Cryptosuite;
+
+const suite = new DataIntegrityProof({
+  cryptosuite: createVerifyCryptosuite()
+});
+const result = await vc.verifyCredential({credential, suite, documentLoader});
 // {valid: true}
 ```
 
