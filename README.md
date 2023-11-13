@@ -116,12 +116,75 @@ const signedVC = await vc.issue({credential, suite, documentLoader});
 console.log(JSON.stringify(signedVC, null, 2));
 ```
 
+### Issuing a Selective Disclosure Verifiable Credential
+
+Pre-requisites:
+
+* You have a private key (with id and controller) and corresponding suite
+* You have are using a cryptosuite that supports selective disclosure, such
+  as `ecdsa-sd-2023`
+* If you're using a custom `@context`, make sure it's resolvable
+* (Recommended) You have a strategy for where to publish your Controller
+  Document and Public Key
+
+```js
+import * as vc from '@digitalbazaar/vc';
+import * as ecdsaSd2023Cryptosuite from
+  '@digitalbazaar/ecdsa-sd-2023-cryptosuite';
+import {DataIntegrityProof} from '@digitalbazaar/data-integrity';
+
+const ecdsaKeyPair = await EcdsaMultikey.generate({
+  curve: 'P-256',
+  id: 'https://example.edu/issuers/keys/2',
+  controller: 'https://example.edu/issuers/565049'
+});
+
+// sample unsigned credential
+const credential = {
+  "@context": [
+    "https://www.w3.org/2018/credentials/v1",
+    "https://www.w3.org/2018/credentials/examples/v1"
+  ],
+  "id": "https://example.com/credentials/1872",
+  "type": ["VerifiableCredential", "AlumniCredential"],
+  "issuer": "https://example.edu/issuers/565049",
+  "issuanceDate": "2010-01-01T19:23:24Z",
+  "credentialSubject": {
+    "id": "did:example:ebfeb1f712ebc6f1c276e12ec21",
+    "alumniOf": "Example University"
+  }
+};
+
+// setup ecdsa-sd-2023 suite for signing selective disclosure VCs
+const suite = new DataIntegrityProof({
+  signer: ecdsaKeyPair.signer(),
+  cryptosuite: createSignCryptosuite({
+    // require the `issuer` and `issuanceDate` fields to always be disclosed
+    // by the holder (presenter)
+    mandatoryPointers: [
+      '/issuanceDate',
+      '/issuer'
+    ]
+  })
+});
+// use a proof ID to enable it to be found and transformed into a disclosure
+// proof by the holder later
+const proofId = `urn:uuid:${uuid()}`;
+suite.proof = {id: proofId};
+
+const signedVC = await vc.issue({credential, suite, documentLoader});
+console.log(JSON.stringify(signedVC, null, 2));
+```
+
 ### Deriving a Selective Disclosure Verifiable Credential
+
+Note: This step is performed as a holder of a verifiable credential, not as
+an issuer.
 
 Pre-requisites:
 
 * You have a verifiable credential that was issued using a cryptosuite that
-  support selective disclosure, such as `ecdsa-sd-2023`
+  supports selective disclosure, such as `ecdsa-sd-2023`
 * If you're using a custom `@context`, make sure it's resolvable
 
 ```js
@@ -136,7 +199,7 @@ const {
   createVerifyCryptosuite
 } = ecdsaSd2023Cryptosuite;
 
-// Sample signed credential
+// sample signed credential
 const credential = {
   "@context": [
     "https://www.w3.org/2018/credentials/v1",
@@ -167,7 +230,7 @@ const credential = {
 
 // note no `signer` needed; the selective disclosure credential will be
 // derived from the base proof already provided by the issuer
-const ecdsaSdDeriveSuite = new DataIntegrityProof({
+const suite = new DataIntegrityProof({
   cryptosuite: createDiscloseCryptosuite({
     // the ID of the base proof to convert to a disclosure proof
     proofId: 'urn:uuid:da088899-3439-41ea-a580-af3f1cf98cd3',
