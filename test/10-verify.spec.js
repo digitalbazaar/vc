@@ -4,10 +4,10 @@
 import chai from 'chai';
 const should = chai.should();
 
-import * as vc from '../lib/index.js';
 import * as EcdsaMultikey from '@digitalbazaar/ecdsa-multikey';
 import * as ecdsaSd2023Cryptosuite from
   '@digitalbazaar/ecdsa-sd-2023-cryptosuite';
+import * as vc from '../lib/index.js';
 import {
   CONTEXT_V1 as odrlCtx,
   CONTEXT_URL_V1 as odrlCtxUrl
@@ -17,9 +17,9 @@ import {
   CONTEXT_URL_V1 as vcExamplesV1CtxUrl
 } from '@digitalbazaar/credentials-examples-context';
 import {assertionController} from './mocks/assertionController.js';
+import {CredentialIssuancePurpose} from '../lib/CredentialIssuancePurpose.js';
 import dataIntegrityContext from '@digitalbazaar/data-integrity-context';
 import {DataIntegrityProof} from '@digitalbazaar/data-integrity';
-import {CredentialIssuancePurpose} from '../lib/CredentialIssuancePurpose.js';
 import {Ed25519Signature2018} from '@digitalbazaar/ed25519-signature-2018';
 import {
   Ed25519VerificationKey2018
@@ -102,7 +102,8 @@ before(async () => {
   remoteDocuments.set(
     'https://example.edu/issuers/565049', assertionController);
   remoteDocuments.set(
-    'https://example.edu/issuers/keys/1', keyPair.export({publicKey: true}));
+    'https://example.edu/issuers/keys/1',
+    await keyPair.export({publicKey: true}));
 
   // set up the signature suite, using the generated key
   suite = new Ed25519Signature2018({
@@ -113,7 +114,6 @@ before(async () => {
 
 // do ecdsa setup...
 let ecdsaKeyPair;
-let ecdsaSdSuite;
 before(async () => {
   // set up the ECDSA key pair that will be signing and verifying
   ecdsaKeyPair = await EcdsaMultikey.generate({
@@ -124,15 +124,10 @@ before(async () => {
 
   // add the key to the controller doc (authorizes its use for assertion)
   assertionController.assertionMethod.push(ecdsaKeyPair.id);
-
-  // setup ecdsa-sd-2023 suite for selective disclosure
-  ecdsaSdSuite = new DataIntegrityProof({
-    signer: ecdsaKeyPair.signer(), cryptosuite: createSignCryptosuite({
-      mandatoryPointers: [
-        '/issuer'
-      ]
-    })
-  });
+  // register the key document with documentLoader
+  remoteDocuments.set(
+    'https://example.edu/issuers/keys/2',
+    await ecdsaKeyPair.export({publicKey: true}));
 });
 
 describe('vc.issue()', () => {
@@ -259,6 +254,56 @@ describe('verify API (credentials)', () => {
     result.verified.should.be.true;
   });
 
+  it('should verify a derived vc', async () => {
+    const proofId = `urn:uuid:${uuid()}`;
+    // setup ecdsa-sd-2023 suite for signing selective disclosure VCs
+    const ecdsaSdSignSuite = new DataIntegrityProof({
+      signer: ecdsaKeyPair.signer(), cryptosuite: createSignCryptosuite({
+        mandatoryPointers: [
+          '/issuanceDate',
+          '/issuer'
+        ]
+      })
+    });
+    ecdsaSdSignSuite.proof = {id: proofId};
+    // setup ecdsa-sd-2023 suite for deriving selective disclosure VCs
+    const ecdsaSdDeriveSuite = new DataIntegrityProof({
+      cryptosuite: createDiscloseCryptosuite({
+        proofId,
+        selectivePointers: [
+          '/credentialSubject'
+        ]
+      })
+    });
+    // setup ecdsa-sd-2023 suite for verifying selective disclosure VCs
+    const ecdsaSdVerifySuite = new DataIntegrityProof({
+      cryptosuite: createVerifyCryptosuite()
+    });
+
+    const verifiableCredential = await vc.issue({
+      credential: {...mockCredential},
+      suite: ecdsaSdSignSuite,
+      documentLoader,
+      proof: {id: proofId}
+    });
+    const derivedCredential = await vc.derive({
+      verifiableCredential,
+      suite: ecdsaSdDeriveSuite,
+      documentLoader
+    });
+    const result = await vc.verifyCredential({
+      credential: derivedCredential,
+      controller: assertionController,
+      suite: ecdsaSdVerifySuite,
+      documentLoader
+    });
+
+    if(result.error) {
+      throw result.error;
+    }
+    result.verified.should.be.true;
+  });
+
   it('should verify a vc with a positive status check', async () => {
     const verifiableCredential = await vc.issue({
       credential: mockCredential,
@@ -375,6 +420,52 @@ describe('verify API (credentials)', () => {
         throw result.error;
       }
       result.verified.should.be.true;
+    });
+    it('should verify a changed derived vc', async () => {
+      const proofId = `urn:uuid:${uuid()}`;
+      // setup ecdsa-sd-2023 suite for signing selective disclosure VCs
+      const ecdsaSdSignSuite = new DataIntegrityProof({
+        signer: ecdsaKeyPair.signer(), cryptosuite: createSignCryptosuite({
+          mandatoryPointers: [
+            '/issuanceDate',
+            '/issuer'
+          ]
+        })
+      });
+      ecdsaSdSignSuite.proof = {id: proofId};
+      // setup ecdsa-sd-2023 suite for deriving selective disclosure VCs
+      const ecdsaSdDeriveSuite = new DataIntegrityProof({
+        cryptosuite: createDiscloseCryptosuite({
+          proofId,
+          selectivePointers: [
+            '/credentialSubject'
+          ]
+        })
+      });
+      // setup ecdsa-sd-2023 suite for verifying selective disclosure VCs
+      const ecdsaSdVerifySuite = new DataIntegrityProof({
+        cryptosuite: createVerifyCryptosuite()
+      });
+
+      const verifiableCredential = await vc.issue({
+        credential: {...mockCredential},
+        suite: ecdsaSdSignSuite,
+        documentLoader
+      });
+      const derivedCredential = await vc.derive({
+        verifiableCredential,
+        suite: ecdsaSdDeriveSuite,
+        documentLoader
+      });
+      derivedCredential.credentialSubject.id = `urn:urn:${uuid()}`;
+      const result = await vc.verifyCredential({
+        credential: derivedCredential,
+        controller: assertionController,
+        suite: ecdsaSdVerifySuite,
+        documentLoader
+      });
+      result.verified.should.be.a('boolean');
+      result.verified.should.be.false;
     });
   });
 });
