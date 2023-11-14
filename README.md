@@ -246,7 +246,9 @@ const suite = new DataIntegrityProof({
   })
 });
 
-const derivedVC = await vc.derive({credential, suite, documentLoader});
+const derivedVC = await vc.derive({
+  verifiableCredential, suite, documentLoader
+});
 console.log(JSON.stringify(derivedVC, null, 2));
 ```
 
