@@ -1,5 +1,10 @@
 # @digitalbazaar/vc ChangeLog
 
+## 6.2.0 - 2023-11-dd
+
+### Added
+- Allow `credentialStatus` arrays in credential status check.
+
 ## 6.1.0 - 2023-11-13
 
 ### Added
