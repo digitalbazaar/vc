@@ -1,5 +1,10 @@
 # @digitalbazaar/vc ChangeLog
 
+## 7.0.0 - 2023-xx-xx
+
+### Changed
+- **BREAKING**: Require Node.js >=18.
+
 ## 6.2.0 - 2023-11-14
 
 ### Added
