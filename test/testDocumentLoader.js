@@ -6,31 +6,41 @@ import {
   invalidContexts,
   validContexts
 } from './contexts/index.js';
+import dataIntegrityContext from '@digitalbazaar/data-integrity-context';
 import jsigs from 'jsonld-signatures';
 import jsonld from 'jsonld';
+import multikeyContext from '@digitalbazaar/multikey-context';
 import {MultiLoader} from './MultiLoader.js';
 
-export const contexts = new Map();
+export const remoteDocuments = new Map();
+remoteDocuments.set(
+  dataIntegrityContext.constants.CONTEXT_URL,
+  dataIntegrityContext.contexts.get(
+    dataIntegrityContext.constants.CONTEXT_URL));
+remoteDocuments.set(
+  multikeyContext.constants.CONTEXT_URL,
+  multikeyContext.contexts.get(
+    multikeyContext.constants.CONTEXT_URL));
 
 // add the invalid contexts to the loader
 for(const key in invalidContexts) {
   const {url, value} = invalidContexts[key];
-  contexts.set(url, value);
+  remoteDocuments.set(url, value);
 }
 // add the valid contexts to the loader
 for(const key in validContexts) {
   const {url, value} = validContexts[key];
-  contexts.set(url, value);
+  remoteDocuments.set(url, value);
 }
 const {extendContextLoader} = jsigs;
 const {defaultDocumentLoader} = vc;
 
-const testContextLoader = extendContextLoader(async url => {
-  const context = contexts.get(url);
-  if(context) {
+const testDocumentLoader = extendContextLoader(async url => {
+  const doc = remoteDocuments.get(url);
+  if(doc) {
     return {
       contextUrl: null,
-      document: jsonld.clone(context),
+      document: jsonld.clone(doc),
       documentUrl: url
     };
   }
@@ -40,8 +50,7 @@ const testContextLoader = extendContextLoader(async url => {
 // documents are added to this documentLoader incrementally
 export const testLoader = new MultiLoader({
   documentLoader: [
-    testContextLoader
+    testDocumentLoader
   ]
 });
 export const documentLoader = testLoader.documentLoader.bind(testLoader);
-
