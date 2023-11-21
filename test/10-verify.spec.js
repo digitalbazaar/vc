@@ -188,7 +188,7 @@ for(const [version, mockCredential] of versionedCredentials) {
     });
 
     describe('vc.signPresentation()', () => {
-      it.only('should create a signed VP', async () => {
+      it('should create a signed VP', async () => {
         const presentation = vc.createPresentation({
           verifiableCredential: mockCredential,
           id: 'test:ebc6f1c2',
