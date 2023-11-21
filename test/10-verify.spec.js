@@ -1,9 +1,6 @@
 /*!
  * Copyright (c) 2019-2024 Digital Bazaar, Inc. All rights reserved.
  */
-import chai from 'chai';
-const should = chai.should();
-
 import * as bbs2023Cryptosuite from '@digitalbazaar/bbs-2023-cryptosuite';
 import * as Bls12381Multikey from '@digitalbazaar/bls12-381-multikey';
 import * as EcdsaMultikey from '@digitalbazaar/ecdsa-multikey';
@@ -18,7 +15,6 @@ import {
 import {assertionController} from './mocks/assertionController.js';
 import chai from 'chai';
 import {CredentialIssuancePurpose} from '../lib/CredentialIssuancePurpose.js';
-import {credentials} from './mocks/credential.js';
 import {DataIntegrityProof} from '@digitalbazaar/data-integrity';
 import {Ed25519Signature2018} from '@digitalbazaar/ed25519-signature-2018';
 import {
@@ -30,13 +26,8 @@ import jsonld from 'jsonld';
 import {mock as mockData} from './mocks/mock.data.js';
 import {v4 as uuid} from 'uuid';
 import {VeresOneDriver} from 'did-veres-one';
+import {versionedCredentials} from './mocks/credential.js';
 
-const remoteDocuments = new Map();
-const {
-  createDiscloseCryptosuite,
-  createSignCryptosuite,
-  createVerifyCryptosuite
-} = ecdsaSd2023Cryptosuite;
 
 const should = chai.should();
 
@@ -108,481 +99,482 @@ before(async () => {
     await bbsKeyPair.export({publicKey: true}));
 });
 
-describe('vc.issue()', () => {
-  it('should issue a verifiable credential with proof', async () => {
-    const credential = jsonld.clone(credentials.v2);
-    const verifiableCredential = await vc.issue({
-      credential,
-      suite,
-      documentLoader
-    });
-    verifiableCredential.should.exist;
-    verifiableCredential.should.be.an('object');
-    verifiableCredential.should.have.property('proof');
-    verifiableCredential.proof.should.be.an('object');
-  });
-
-  it('should issue an expired verifiable credential', async () => {
-    const keyPair = await Ed25519VerificationKey2018.generate();
-    const fp = Ed25519VerificationKey2018
-      .fingerprintFromPublicKey({publicKeyBase58: keyPair.publicKeyBase58});
-    keyPair.id = `did:key:${fp}#${fp}`;
-    const credential = jsonld.clone(credentials.v1);
-    credential.id = `urn:uuid:${uuid()}`;
-    credential.issuer = `did:key:${fp}`;
-    credential.expirationDate = '2020-05-31T19:21:25Z';
-    const verifiableCredential = await vc.issue({
-      credential,
-      suite: new Ed25519Signature2018({
-        key: keyPair
-      }),
-      // set `now` to expiration date, allowing the credential to be issued
-      // without failing the expired check
-      now: (new Date('2020-05-31T19:21:25Z')),
-      documentLoader
-    });
-    verifiableCredential.should.exist;
-    verifiableCredential.should.be.an('object');
-    verifiableCredential.should.have.property('proof');
-    verifiableCredential.proof.should.be.an('object');
-  });
-
-  it('should throw an error on missing verificationMethod', async () => {
-    const suite = new Ed25519Signature2018({
-      // Note no key id or verificationMethod passed to suite
-      key: await Ed25519VerificationKey2018.generate()
-    });
-    let error;
-    try {
-      await vc.issue({
-        credential: credentials.v2,
-        suite
+for(const [version, mockCredential] of versionedCredentials) {
+  describe(`Verifiable Credentiald Data Model ${version}`, async function() {
+    describe('vc.issue()', () => {
+      it('should issue a verifiable credential with proof', async () => {
+        const credential = jsonld.clone(mockCredential);
+        const verifiableCredential = await vc.issue({
+          credential,
+          suite,
+          documentLoader
+        });
+        verifiableCredential.should.exist;
+        verifiableCredential.should.be.an('object');
+        verifiableCredential.should.have.property('proof');
+        verifiableCredential.proof.should.be.an('object');
       });
-    } catch(e) {
-      error = e;
-    }
-
-    should.exist(error,
-      'Should throw error when "verificationMethod" property missing');
-    error.should.be.instanceof(TypeError);
-    error.message.should
-      .contain('"suite.verificationMethod" property is required.');
-  });
-  it('should add "issuanceDate" to verifiable credentials', async () => {
-    const credential = jsonld.clone(mockCredential);
-    delete credential.issuanceDate;
-    const now = new Date();
-    const expectedIssuanceDate = `${now.toISOString().slice(0, -5)}Z`;
-    const verifiableCredential = await vc.issue({
-      credential,
-      suite,
-      documentLoader,
-      now
-    });
-    verifiableCredential.should.exist;
-    verifiableCredential.should.be.an('object');
-    verifiableCredential.should.have.property('proof');
-    verifiableCredential.proof.should.be.an('object');
-    verifiableCredential.should.have.property(
-      'issuanceDate',
-      expectedIssuanceDate
-    );
-  });
-});
-
-describe('vc.createPresentation()', () => {
-  it('should create an unsigned presentation', () => {
-    const presentation = vc.createPresentation({
-      verifiableCredential: credentials.v2,
-      id: 'test:ebc6f1c2',
-      holder: 'did:ex:holder123'
-    });
-
-    presentation.type.should.eql(['VerifiablePresentation']);
-    presentation.should.have.property('verifiableCredential');
-    presentation.should.have.property('id', 'test:ebc6f1c2');
-    presentation.should.have.property('holder', 'did:ex:holder123');
-    presentation.should.not.have.property('proof');
-  });
-});
-
-describe('vc.signPresentation()', () => {
-  it('should create a signed VP', async () => {
-    const presentation = vc.createPresentation({
-      verifiableCredential: credentials.v2,
-      id: 'test:ebc6f1c2',
-      holder: 'did:ex:holder123'
-    });
-    const vp = await vc.signPresentation({
-      presentation,
-      suite, // from before() block
-      challenge: '12ec21',
-      documentLoader
-    });
-
-    vp.should.have.property('proof');
-    vp.proof.should.have.property('type', 'Ed25519Signature2018');
-    vp.proof.should.have.property('proofPurpose', 'authentication');
-    vp.proof.should.have.property('verificationMethod',
-      'https://example.edu/issuers/keys/1');
-    vp.proof.should.have.property('challenge', '12ec21');
-    vp.proof.should.have.property('created');
-    vp.proof.should.have.property('jws');
-  });
-});
-
-describe('verify API (credentials)', () => {
-  it('should verify a vc', async () => {
-    const verifiableCredential = await vc.issue({
-      credential: credentials.v2,
-      suite,
-      documentLoader
-    });
-    const result = await vc.verifyCredential({
-      credential: verifiableCredential,
-      controller: assertionController,
-      suite,
-      documentLoader
-    });
-
-    if(result.error) {
-      throw result.error;
-    }
-    result.verified.should.be.true;
-  });
-
-  it('should verify an ECDSA-SD derived vc', async () => {
-    const {
-      createDiscloseCryptosuite,
-      createSignCryptosuite,
-      createVerifyCryptosuite
-    } = ecdsaSd2023Cryptosuite;
-
-    const proofId = `urn:uuid:${uuid()}`;
-    // setup ecdsa-sd-2023 suite for signing selective disclosure VCs
-    const ecdsaSdSignSuite = new DataIntegrityProof({
-      signer: ecdsaKeyPair.signer(), cryptosuite: createSignCryptosuite({
-        mandatoryPointers: [
-          '/issuanceDate',
-          '/issuer'
-        ]
-      })
-    });
-    ecdsaSdSignSuite.proof = {id: proofId};
-    // setup ecdsa-sd-2023 suite for deriving selective disclosure VCs
-    const ecdsaSdDeriveSuite = new DataIntegrityProof({
-      cryptosuite: createDiscloseCryptosuite({
-        proofId,
-        selectivePointers: [
-          '/credentialSubject'
-        ]
-      })
-    });
-    // setup ecdsa-sd-2023 suite for verifying selective disclosure VCs
-    const ecdsaSdVerifySuite = new DataIntegrityProof({
-      cryptosuite: createVerifyCryptosuite()
-    });
-
-    const verifiableCredential = await vc.issue({
-      credential: {...credentials.v1},
-      suite: ecdsaSdSignSuite,
-      documentLoader
-    });
-    const derivedCredential = await vc.derive({
-      verifiableCredential,
-      suite: ecdsaSdDeriveSuite,
-      documentLoader
-    });
-    const result = await vc.verifyCredential({
-      credential: derivedCredential,
-      controller: assertionController,
-      suite: ecdsaSdVerifySuite,
-      documentLoader
-    });
-
-    if(result.error) {
-      throw result.error;
-    }
-    result.verified.should.be.true;
-  });
-
-  it('should verify a BBS derived vc', async () => {
-    const {
-      createDiscloseCryptosuite,
-      createSignCryptosuite,
-      createVerifyCryptosuite
-    } = bbs2023Cryptosuite;
-
-    // setup bbs-2023 suite for signing unlinkable VCs
-    const bbsSignSuite = new DataIntegrityProof({
-      signer: bbsKeyPair.signer(), cryptosuite: createSignCryptosuite({
-        mandatoryPointers: [
-          '/issuanceDate',
-          '/issuer'
-        ]
-      })
-    });
-    // setup bbs-2023 suite for deriving unlinkable VC proofs
-    const bbsDeriveSuite = new DataIntegrityProof({
-      cryptosuite: createDiscloseCryptosuite({
-        selectivePointers: [
-          '/credentialSubject'
-        ]
-      })
-    });
-    // setup bbs-2023 suite for verifying unlinkable VC proofs
-    const bbsVerifySuite = new DataIntegrityProof({
-      cryptosuite: createVerifyCryptosuite()
-    });
-
-    const credential = {...mockCredential};
-    delete credential.id;
-    delete credential.credentialSubject.id;
-    credential.issuanceDate = '2010-01-01T01:00:00Z';
-    const verifiableCredential = await vc.issue({
-      credential,
-      suite: bbsSignSuite,
-      documentLoader
-    });
-    const derivedCredential = await vc.derive({
-      verifiableCredential,
-      suite: bbsDeriveSuite,
-      documentLoader
-    });
-    const result = await vc.verifyCredential({
-      credential: derivedCredential,
-      controller: assertionController,
-      suite: bbsVerifySuite,
-      documentLoader
-    });
-
-    if(result.error) {
-      throw result.error;
-    }
-    result.verified.should.be.true;
-  });
-
-  it('should verify a vc with a positive status check', async () => {
-    const credential = jsonld.clone(mockCredential);
-    credential['@context'].push({
-      '@context': {
-        id: '@id',
-        type: '@type',
-        TestStatusList: {
-          '@id': 'https://example.edu/TestStatusList',
-          '@type': '@id'
-        }
+      if(version === '1.0') {
+        it('should issue an expired verifiable credential', async () => {
+          const keyPair = await Ed25519VerificationKey2018.generate();
+          const fp = Ed25519VerificationKey2018
+            .fingerprintFromPublicKey({
+              publicKeyBase58: keyPair.publicKeyBase58
+            });
+          keyPair.id = `did:key:${fp}#${fp}`;
+          const credential = jsonld.clone(mockCredential);
+          credential.id = `urn:uuid:${uuid()}`;
+          credential.issuer = `did:key:${fp}`;
+          credential.expirationDate = '2020-05-31T19:21:25Z';
+          const verifiableCredential = await vc.issue({
+            credential,
+            suite: new Ed25519Signature2018({
+              key: keyPair
+            }),
+            // set `now` to expiration date, allowing the credential
+            // to be issued
+            // without failing the expired check
+            now: (new Date('2020-05-31T19:21:25Z')),
+            documentLoader
+          });
+          verifiableCredential.should.exist;
+          verifiableCredential.should.be.an('object');
+          verifiableCredential.should.have.property('proof');
+          verifiableCredential.proof.should.be.an('object');
+        });
+        it('should add "issuanceDate" to verifiable credentials', async () => {
+          const credential = jsonld.clone(mockCredential);
+          delete credential.issuanceDate;
+          const now = new Date();
+          const expectedIssuanceDate = `${now.toISOString().slice(0, -5)}Z`;
+          const verifiableCredential = await vc.issue({
+            credential,
+            suite,
+            documentLoader,
+            now
+          });
+          verifiableCredential.should.exist;
+          verifiableCredential.should.be.an('object');
+          verifiableCredential.should.have.property('proof');
+          verifiableCredential.proof.should.be.an('object');
+          verifiableCredential.should.have.property(
+            'issuanceDate',
+            expectedIssuanceDate
+          );
+        });
       }
-    });
-    credential.credentialStatus = {
-      id: 'https://example.edu/status/24',
-      type: 'TestStatusList'
-    };
-    const verifiableCredential = await vc.issue({
-      credential,
-      suite,
-      documentLoader
-    });
-    const result = await vc.verifyCredential({
-      credential: verifiableCredential,
-      controller: assertionController,
-      suite,
-      documentLoader,
-      checkStatus: async () => ({verified: true})
+      it('should throw an error on missing verificationMethod', async () => {
+        const suite = new Ed25519Signature2018({
+          // Note no key id or verificationMethod passed to suite
+          key: await Ed25519VerificationKey2018.generate()
+        });
+        let error;
+        try {
+          await vc.issue({
+            credential: mockCredential,
+            suite
+          });
+        } catch(e) {
+          error = e;
+        }
+
+        should.exist(error,
+          'Should throw error when "verificationMethod" property missing');
+        error.should.be.instanceof(TypeError);
+        error.message.should
+          .contain('"suite.verificationMethod" property is required.');
+      });
     });
 
-    if(result.error) {
-      throw result.error;
-    }
-    result.verified.should.be.true;
-  });
+    describe('vc.createPresentation()', () => {
+      it('should create an unsigned presentation', () => {
+        const presentation = vc.createPresentation({
+          verifiableCredential: mockCredential,
+          id: 'test:ebc6f1c2',
+          holder: 'did:ex:holder123'
+        });
 
-  describe('negative test', async () => {
-    it('fails to verify if a context resolves to null', async () => {
-      const {credential, suite} = await _generateCredential();
-      credential['@context'].push(invalidContexts.nullDoc.url);
-      const results = await vc.verifyCredential({
-        suite,
-        credential,
-        documentLoader
+        presentation.type.should.eql(['VerifiablePresentation']);
+        presentation.should.have.property('verifiableCredential');
+        presentation.should.have.property('id', 'test:ebc6f1c2');
+        presentation.should.have.property('holder', 'did:ex:holder123');
+        presentation.should.not.have.property('proof');
       });
-      results.verified.should.be.a('boolean');
-      results.verified.should.be.false;
     });
-    it('fails to verify if a context contains an invalid id', async () => {
-      const {credential, suite} = await _generateCredential();
-      credential['@context'].push(invalidContexts.invalidId.url);
-      const results = await vc.verifyCredential({
-        suite,
-        credential,
-        documentLoader
+
+    describe('vc.signPresentation()', () => {
+      it.only('should create a signed VP', async () => {
+        const presentation = vc.createPresentation({
+          verifiableCredential: mockCredential,
+          id: 'test:ebc6f1c2',
+          holder: 'did:ex:holder123'
+        });
+        const vp = await vc.signPresentation({
+          presentation,
+          suite, // from before() block
+          challenge: '12ec21',
+          documentLoader
+        });
+
+        vp.should.have.property('proof');
+        vp.proof.should.have.property('type', 'Ed25519Signature2018');
+        vp.proof.should.have.property('proofPurpose', 'authentication');
+        vp.proof.should.have.property('verificationMethod',
+          'https://example.edu/issuers/keys/1');
+        vp.proof.should.have.property('challenge', '12ec21');
+        vp.proof.should.have.property('created');
+        vp.proof.should.have.property('jws');
       });
-      results.verified.should.be.a('boolean');
-      results.verified.should.be.false;
     });
-    it('fails to verify if a context has a null version', async () => {
-      const {credential, suite} = await _generateCredential();
-      credential['@context'].push(invalidContexts.nullVersion.url);
-      const results = await vc.verifyCredential({
-        suite,
-        credential,
-        documentLoader
+
+    describe('verify API (credentials)', () => {
+      it('should verify a vc', async () => {
+        const verifiableCredential = await vc.issue({
+          credential: mockCredential,
+          suite,
+          documentLoader
+        });
+        const result = await vc.verifyCredential({
+          credential: verifiableCredential,
+          controller: assertionController,
+          suite,
+          documentLoader
+        });
+
+        if(result.error) {
+          throw result.error;
+        }
+        result.verified.should.be.true;
       });
-      results.verified.should.be.a('boolean');
-      results.verified.should.be.false;
-    });
-    it('fails to verify if a context has a null @id', async () => {
-      const {credential, suite} = await _generateCredential();
-      credential['@context'].push(invalidContexts.nullId.url);
-      const results = await vc.verifyCredential({
-        suite,
-        credential,
-        documentLoader
+
+      it('should verify an ECDSA-SD derived vc', async () => {
+        const {
+          createDiscloseCryptosuite,
+          createSignCryptosuite,
+          createVerifyCryptosuite
+        } = ecdsaSd2023Cryptosuite;
+        const proofId = `urn:uuid:${uuid()}`;
+        // setup ecdsa-sd-2023 suite for signing selective disclosure VCs
+        const ecdsaSdSignSuite = new DataIntegrityProof({
+          signer: ecdsaKeyPair.signer(), cryptosuite: createSignCryptosuite({
+            mandatoryPointers: [
+              '/issuer'
+            ]
+          })
+        });
+        ecdsaSdSignSuite.proof = {id: proofId};
+        // setup ecdsa-sd-2023 suite for deriving selective disclosure VCs
+        const ecdsaSdDeriveSuite = new DataIntegrityProof({
+          cryptosuite: createDiscloseCryptosuite({
+            proofId,
+            selectivePointers: [
+              '/credentialSubject'
+            ]
+          })
+        });
+        // setup ecdsa-sd-2023 suite for verifying selective disclosure VCs
+        const ecdsaSdVerifySuite = new DataIntegrityProof({
+          cryptosuite: createVerifyCryptosuite()
+        });
+
+        const verifiableCredential = await vc.issue({
+          credential: {...mockCredential},
+          suite: ecdsaSdSignSuite,
+          documentLoader
+        });
+        const derivedCredential = await vc.derive({
+          verifiableCredential,
+          suite: ecdsaSdDeriveSuite,
+          documentLoader
+        });
+        const result = await vc.verifyCredential({
+          credential: derivedCredential,
+          controller: assertionController,
+          suite: ecdsaSdVerifySuite,
+          documentLoader
+        });
+
+        if(result.error) {
+          throw result.error;
+        }
+        result.verified.should.be.true;
       });
-      results.verified.should.be.a('boolean');
-      results.verified.should.be.false;
-    });
-    it('fails to verify if a context has a null @type', async () => {
-      const {credential, suite} = await _generateCredential();
-      credential['@context'].push(invalidContexts.nullType.url);
-      const results = await vc.verifyCredential({
-        suite,
-        credential,
-        documentLoader
+
+      it('should verify a BBS derived vc', async () => {
+        const {
+          createDiscloseCryptosuite,
+          createSignCryptosuite,
+          createVerifyCryptosuite
+        } = bbs2023Cryptosuite;
+    
+        // setup bbs-2023 suite for signing unlinkable VCs
+        const bbsSignSuite = new DataIntegrityProof({
+          signer: bbsKeyPair.signer(), cryptosuite: createSignCryptosuite({
+            mandatoryPointers: [
+              '/issuer'
+            ]
+          })
+        });
+        // setup bbs-2023 suite for deriving unlinkable VC proofs
+        const bbsDeriveSuite = new DataIntegrityProof({
+          cryptosuite: createDiscloseCryptosuite({
+            selectivePointers: [
+              '/credentialSubject'
+            ]
+          })
+        });
+        // setup bbs-2023 suite for verifying unlinkable VC proofs
+        const bbsVerifySuite = new DataIntegrityProof({
+          cryptosuite: createVerifyCryptosuite()
+        });
+    
+        const credential = {...mockCredential};
+        delete credential.id;
+        delete credential.credentialSubject.id;
+        const verifiableCredential = await vc.issue({
+          credential,
+          suite: bbsSignSuite,
+          documentLoader
+        });
+        const derivedCredential = await vc.derive({
+          verifiableCredential,
+          suite: bbsDeriveSuite,
+          documentLoader
+        });
+        const result = await vc.verifyCredential({
+          credential: derivedCredential,
+          controller: assertionController,
+          suite: bbsVerifySuite,
+          documentLoader
+        });
+    
+        if(result.error) {
+          throw result.error;
+        }
+        result.verified.should.be.true;
       });
-      results.verified.should.be.a('boolean');
-      results.verified.should.be.false;
-    });
-    it('fails to verify if a context links to a missing doc', async () => {
-      const {credential, suite} = await _generateCredential();
-      credential['@context'].push('https://fsad.digitalbazaar.com');
-      const results = await vc.verifyCredential({
-        suite,
-        credential,
-        documentLoader
-      });
-      results.verified.should.be.a('boolean');
-      results.verified.should.be.false;
-    });
-    it('fails to verify if a context has an invalid url', async () => {
-      const {credential, suite} = await _generateCredential();
-      credential['@context'].push('htps://fsad.digitalbazaar.');
-      const results = await vc.verifyCredential({
-        suite,
-        credential,
-        documentLoader
-      });
-      results.verified.should.be.a('boolean');
-      results.verified.should.be.false;
-    });
-    it('should fail to verify a vc with a negative status check', async () => {
-      const credential = jsonld.clone(mockCredential);
-      credential['@context'].push({
-        '@context': {
-          id: '@id',
-          type: '@type',
-          TestStatusList: {
-            '@id': 'https://example.edu/TestStatusList',
-            '@type': '@id'
+
+      it('should verify a vc with a positive status check', async () => {
+        const credential = jsonld.clone(mockCredential);
+        credential['@context'].push({
+          '@context': {
+            id: '@id',
+            type: '@type',
+            TestStatusList: {
+              '@id': 'https://example.edu/TestStatusList',
+              '@type': '@id'
+            }
           }
+        });
+        credential.credentialStatus = {
+          id: 'https://example.edu/status/24',
+          type: 'TestStatusList'
+        };
+        const verifiableCredential = await vc.issue({
+          credential,
+          suite,
+          documentLoader
+        });
+        const result = await vc.verifyCredential({
+          credential: verifiableCredential,
+          controller: assertionController,
+          suite,
+          documentLoader,
+          checkStatus: async () => ({verified: true})
+        });
+
+        if(result.error) {
+          throw result.error;
         }
-      });
-      credential.credentialStatus = {
-        id: 'https://example.edu/status/24',
-        type: 'TestStatusList'
-      };
-      const verifiableCredential = await vc.issue({
-        credential,
-        suite,
-        documentLoader
-      });
-      const result = await vc.verifyCredential({
-        credential: verifiableCredential,
-        controller: assertionController,
-        suite,
-        documentLoader,
-        checkStatus: async () => ({verified: false})
+        result.verified.should.be.true;
       });
 
-      if(result.error) {
-        throw result.error;
-      }
-      result.verified.should.be.false;
-    });
-    it('should not run "checkStatus" on a vc without a ' +
-      '"credentialStatus" property', async () => {
-      const credential = jsonld.clone(mockCredential);
-      const verifiableCredential = await vc.issue({
-        credential,
-        suite,
-        documentLoader
-      });
-      const result = await vc.verifyCredential({
-        credential: verifiableCredential,
-        controller: assertionController,
-        suite,
-        documentLoader,
-        // ensure any checkStatus call will fail verification
-        checkStatus: async () => ({verified: false})
-      });
-      if(result.error) {
-        throw result.error;
-      }
-      result.verified.should.be.true;
-    });
-    it('should fail to verify a changed ECDSA-SD derived vc', async () => {
-      const {
-        createDiscloseCryptosuite,
-        createSignCryptosuite,
-        createVerifyCryptosuite
-      } = ecdsaSd2023Cryptosuite;
+      describe('negative test', async () => {
+        it('fails to verify if a context resolves to null', async () => {
+          const {credential, suite} = await _generateCredential(mockCredential);
+          credential['@context'].push(invalidContexts.nullDoc.url);
+          const results = await vc.verifyCredential({
+            suite,
+            credential,
+            documentLoader
+          });
+          results.verified.should.be.a('boolean');
+          results.verified.should.be.false;
+        });
+        it('fails to verify if a context contains an invalid id', async () => {
+          const {credential, suite} = await _generateCredential(mockCredential);
+          credential['@context'].push(invalidContexts.invalidId.url);
+          const results = await vc.verifyCredential({
+            suite,
+            credential,
+            documentLoader
+          });
+          results.verified.should.be.a('boolean');
+          results.verified.should.be.false;
+        });
+        it('fails to verify if a context has a null version', async () => {
+          const {credential, suite} = await _generateCredential(mockCredential);
+          credential['@context'].push(invalidContexts.nullVersion.url);
+          const results = await vc.verifyCredential({
+            suite,
+            credential,
+            documentLoader
+          });
+          results.verified.should.be.a('boolean');
+          results.verified.should.be.false;
+        });
+        it('fails to verify if a context has a null @id', async () => {
+          const {credential, suite} = await _generateCredential(mockCredential);
+          credential['@context'].push(invalidContexts.nullId.url);
+          const results = await vc.verifyCredential({
+            suite,
+            credential,
+            documentLoader
+          });
+          results.verified.should.be.a('boolean');
+          results.verified.should.be.false;
+        });
+        it('fails to verify if a context has a null @type', async () => {
+          const {credential, suite} = await _generateCredential(mockCredential);
+          credential['@context'].push(invalidContexts.nullType.url);
+          const results = await vc.verifyCredential({
+            suite,
+            credential,
+            documentLoader
+          });
+          results.verified.should.be.a('boolean');
+          results.verified.should.be.false;
+        });
+        it('fails to verify if a context links to a missing doc', async () => {
+          const {credential, suite} = await _generateCredential(mockCredential);
+          credential['@context'].push('https://fsad.digitalbazaar.com');
+          const results = await vc.verifyCredential({
+            suite,
+            credential,
+            documentLoader
+          });
+          results.verified.should.be.a('boolean');
+          results.verified.should.be.false;
+        });
+        it('fails to verify if a context has an invalid url', async () => {
+          const {credential, suite} = await _generateCredential(mockCredential);
+          credential['@context'].push('htps://fsad.digitalbazaar.');
+          const results = await vc.verifyCredential({
+            suite,
+            credential,
+            documentLoader
+          });
+          results.verified.should.be.a('boolean');
+          results.verified.should.be.false;
+        });
+        it('should fail to verify a vc with a negative status check',
+          async () => {
+            const credential = jsonld.clone(mockCredential);
+            credential['@context'].push({
+              '@context': {
+                id: '@id',
+                type: '@type',
+                TestStatusList: {
+                  '@id': 'https://example.edu/TestStatusList',
+                  '@type': '@id'
+                }
+              }
+            });
+            credential.credentialStatus = {
+              id: 'https://example.edu/status/24',
+              type: 'TestStatusList'
+            };
+            const verifiableCredential = await vc.issue({
+              credential,
+              suite,
+              documentLoader
+            });
+            const result = await vc.verifyCredential({
+              credential: verifiableCredential,
+              controller: assertionController,
+              suite,
+              documentLoader,
+              checkStatus: async () => ({verified: false})
+            });
 
-      const proofId = `urn:uuid:${uuid()}`;
-      // setup ecdsa-sd-2023 suite for signing selective disclosure VCs
-      const ecdsaSdSignSuite = new DataIntegrityProof({
-        signer: ecdsaKeyPair.signer(), cryptosuite: createSignCryptosuite({
-          mandatoryPointers: [
-            '/issuanceDate',
-            '/issuer'
-          ]
-        })
-      });
-      ecdsaSdSignSuite.proof = {id: proofId};
-      // setup ecdsa-sd-2023 suite for deriving selective disclosure VCs
-      const ecdsaSdDeriveSuite = new DataIntegrityProof({
-        cryptosuite: createDiscloseCryptosuite({
-          proofId,
-          selectivePointers: [
-            '/credentialSubject'
-          ]
-        })
-      });
-      // setup ecdsa-sd-2023 suite for verifying selective disclosure VCs
-      const ecdsaSdVerifySuite = new DataIntegrityProof({
-        cryptosuite: createVerifyCryptosuite()
-      });
+            if(result.error) {
+              throw result.error;
+            }
+            result.verified.should.be.false;
+          });
+        it('should not run "checkStatus" on a vc without a ' +
+          '"credentialStatus" property', async () => {
+          const credential = jsonld.clone(mockCredential);
+          const verifiableCredential = await vc.issue({
+            credential,
+            suite,
+            documentLoader
+          });
+          const result = await vc.verifyCredential({
+            credential: verifiableCredential,
+            controller: assertionController,
+            suite,
+            documentLoader,
+            // ensure any checkStatus call will fail verification
+            checkStatus: async () => ({verified: false})
+          });
+          if(result.error) {
+            throw result.error;
+          }
+          result.verified.should.be.true;
+        });
+        it('should fail to verify a changed ECDSA-SD derived vc', async () => {
+          const {
+            createDiscloseCryptosuite,
+            createSignCryptosuite,
+            createVerifyCryptosuite
+          } = ecdsaSd2023Cryptosuite;
+          const proofId = `urn:uuid:${uuid()}`;
+          // setup ecdsa-sd-2023 suite for signing selective disclosure VCs
+          const ecdsaSdSignSuite = new DataIntegrityProof({
+            signer: ecdsaKeyPair.signer(), cryptosuite: createSignCryptosuite({
+              mandatoryPointers: [
+                '/issuanceDate',
+                '/issuer'
+              ]
+            })
+          });
+          ecdsaSdSignSuite.proof = {id: proofId};
+          // setup ecdsa-sd-2023 suite for deriving selective disclosure VCs
+          const ecdsaSdDeriveSuite = new DataIntegrityProof({
+            cryptosuite: createDiscloseCryptosuite({
+              proofId,
+              selectivePointers: [
+                '/credentialSubject'
+              ]
+            })
+          });
+          // setup ecdsa-sd-2023 suite for verifying selective disclosure VCs
+          const ecdsaSdVerifySuite = new DataIntegrityProof({
+            cryptosuite: createVerifyCryptosuite()
+          });
 
-      const verifiableCredential = await vc.issue({
-        credential: {...credentials.v1},
-        suite: ecdsaSdSignSuite,
-        documentLoader
-      });
-      const derivedCredential = await vc.derive({
-        verifiableCredential,
-        suite: ecdsaSdDeriveSuite,
-        documentLoader
-      });
-      derivedCredential.credentialSubject.id = `urn:uuid:${uuid()}`;
-      const result = await vc.verifyCredential({
-        credential: derivedCredential,
-        controller: assertionController,
-        suite: ecdsaSdVerifySuite,
-        documentLoader
-      });
-      result.verified.should.be.a('boolean');
-      result.verified.should.be.false;
-    });
-    it('should fail to verify a changed BBS derived vc', async () => {
+          const verifiableCredential = await vc.issue({
+            credential: {...mockCredential},
+            suite: ecdsaSdSignSuite,
+            documentLoader
+          });
+          const derivedCredential = await vc.derive({
+            verifiableCredential,
+            suite: ecdsaSdDeriveSuite,
+            documentLoader
+          });
+          derivedCredential.credentialSubject.id = `urn:uuid:${uuid()}`;
+          const result = await vc.verifyCredential({
+            credential: derivedCredential,
+            controller: assertionController,
+            suite: ecdsaSdVerifySuite,
+            documentLoader
+          });
+          result.verified.should.be.a('boolean');
+          result.verified.should.be.false;
+        });
+          it('should fail to verify a changed BBS derived vc', async () => {
       const {
         createDiscloseCryptosuite,
         createSignCryptosuite,
@@ -631,261 +623,284 @@ describe('verify API (credentials)', () => {
       result.verified.should.be.a('boolean');
       result.verified.should.be.false;
     });
-  });
-});
-
-describe('verify API (presentations)', () => {
-  it('verifies a valid signed presentation', async () => {
-    const challenge = uuid();
-
-    const {presentation, suite, documentLoader} =
-      await _generatePresentation({challenge});
-
-    const result = await vc.verify({
-      challenge,
-      suite,
-      documentLoader,
-      presentation
-    });
-
-    if(result.error) {
-      const firstError = [].concat(result.error)[0];
-      throw firstError;
-    }
-    result.verified.should.be.a('boolean');
-    result.verified.should.be.true;
-  });
-
-  it('verifies an unsigned presentation', async () => {
-    const {presentation, suite: vcSuite, documentLoader} =
-      await _generatePresentation({unsigned: true});
-
-    const result = await vc.verify({
-      documentLoader,
-      presentation,
-      suite: vcSuite,
-      unsignedPresentation: true
-    });
-
-    if(result.error) {
-      const firstError = [].concat(result.error)[0];
-      throw firstError;
-    }
-    result.verified.should.be.a('boolean');
-    result.verified.should.be.true;
-  });
-});
-
-describe('test for multiple credentials', async () => {
-  const credentialsCount = [5, 25, 50, 100];
-
-  for(const count of credentialsCount) {
-    it(`cause error when credentials are tampered [${count}]`, async () => {
-      const challenge = uuid();
-      const {presentation, suite: vcSuite, documentLoader} =
-        await _generatePresentation({challenge, credentialsCount: count});
-
-      // tampering with the first two credentials id
-      presentation.verifiableCredential[0].id = 'test:some_fake_id';
-      presentation.verifiableCredential[1].id = 'test:some_other_fake_id';
-
-      const result = await vc.verify({
-        documentLoader,
-        presentation,
-        suite: vcSuite,
-        unsignedPresentation: true
       });
-      const credentialResults = result.credentialResults;
-      const credentialOne = result.credentialResults[0];
-      const credentialTwo = result.credentialResults[1];
-      const firstErrorMsg = result.credentialResults[0].error.errors[0].message;
-
-      result.verified.should.be.a('boolean');
-      result.verified.should.be.false;
-
-      credentialOne.verified.should.be.a('boolean');
-      credentialOne.verified.should.be.false;
-      credentialOne.credentialId.should.be.a('string');
-      credentialOne.credentialId.should.equal('test:some_fake_id');
-
-      credentialTwo.verified.should.be.a('boolean');
-      credentialTwo.verified.should.be.false;
-      credentialTwo.credentialId.should.be.a('string');
-      credentialTwo.credentialId.should.equal('test:some_other_fake_id');
-
-      for(let i = 2; i < credentialResults.length; ++i) {
-        const credential = credentialResults[i];
-        credential.verified.should.be.a('boolean');
-        credential.verified.should.be.true;
-        should.exist(credential.credentialId);
-        credential.credentialId.should.be.a('string');
-      }
-
-      firstErrorMsg.should.contain('Invalid signature.');
     });
 
-    it('should not cause error when credentials are correct', async () => {
-      const challenge = uuid();
-      const {presentation, suite: vcSuite, documentLoader} =
-        await _generatePresentation({challenge, credentialsCount: count});
+    describe('verify API (presentations)', () => {
+      it('verifies a valid signed presentation', async () => {
+        const challenge = uuid();
 
-      const result = await vc.verify({
-        documentLoader,
-        presentation,
-        suite: vcSuite,
-        unsignedPresentation: true
+        const {presentation, suite, documentLoader} =
+          await _generatePresentation({challenge, mockCredential});
+
+        const result = await vc.verify({
+          challenge,
+          suite,
+          documentLoader,
+          presentation
+        });
+
+        if(result.error) {
+          const firstError = [].concat(result.error)[0];
+          throw firstError;
+        }
+        result.verified.should.be.a('boolean');
+        result.verified.should.be.true;
       });
-      const credentialResults = result.credentialResults;
 
-      result.verified.should.be.a('boolean');
-      result.verified.should.be.true;
+      it('verifies an unsigned presentation', async () => {
+        const {presentation, suite: vcSuite, documentLoader} =
+          await _generatePresentation({unsigned: true, mockCredential});
 
-      for(const credential of credentialResults) {
-        credential.verified.should.be.a('boolean');
-        credential.verified.should.be.true;
-        should.exist(credential.credentialId);
-        credential.credentialId.should.be.a('string');
+        const result = await vc.verify({
+          documentLoader,
+          presentation,
+          suite: vcSuite,
+          unsignedPresentation: true
+        });
+
+        if(result.error) {
+          const firstError = [].concat(result.error)[0];
+          throw firstError;
+        }
+        result.verified.should.be.a('boolean');
+        result.verified.should.be.true;
+      });
+    });
+
+    describe('test for multiple credentials', async () => {
+      const credentialsCount = [5, 25, 50, 100];
+
+      for(const count of credentialsCount) {
+        it(`cause error when credentials are tampered [${count}]`, async () => {
+          const challenge = uuid();
+          const {presentation, suite: vcSuite, documentLoader} =
+            await _generatePresentation({
+              challenge,
+              credentialsCount: count,
+              mockCredential
+            });
+
+          // tampering with the first two credentials id
+          presentation.verifiableCredential[0].id = 'test:some_fake_id';
+          presentation.verifiableCredential[1].id = 'test:some_other_fake_id';
+
+          const result = await vc.verify({
+            documentLoader,
+            presentation,
+            suite: vcSuite,
+            unsignedPresentation: true
+          });
+          const credentialResults = result.credentialResults;
+          const credentialOne = result.credentialResults[0];
+          const credentialTwo = result.credentialResults[1];
+          const firstErrorMsg = result.credentialResults[0].error.errors[0]
+            .message;
+
+          result.verified.should.be.a('boolean');
+          result.verified.should.be.false;
+
+          credentialOne.verified.should.be.a('boolean');
+          credentialOne.verified.should.be.false;
+          credentialOne.credentialId.should.be.a('string');
+          credentialOne.credentialId.should.equal('test:some_fake_id');
+
+          credentialTwo.verified.should.be.a('boolean');
+          credentialTwo.verified.should.be.false;
+          credentialTwo.credentialId.should.be.a('string');
+          credentialTwo.credentialId.should.equal('test:some_other_fake_id');
+
+          for(let i = 2; i < credentialResults.length; ++i) {
+            const credential = credentialResults[i];
+            credential.verified.should.be.a('boolean');
+            credential.verified.should.be.true;
+            should.exist(credential.credentialId);
+            credential.credentialId.should.be.a('string');
+          }
+
+          firstErrorMsg.should.contain('Invalid signature.');
+        });
+
+        it('should not cause error when credentials are correct', async () => {
+          const challenge = uuid();
+          const {presentation, suite: vcSuite, documentLoader} =
+            await _generatePresentation({
+              challenge,
+              credentialsCount: count,
+              mockCredential
+            });
+
+          const result = await vc.verify({
+            documentLoader,
+            presentation,
+            suite: vcSuite,
+            unsignedPresentation: true
+          });
+          const credentialResults = result.credentialResults;
+
+          result.verified.should.be.a('boolean');
+          result.verified.should.be.true;
+
+          for(const credential of credentialResults) {
+            credential.verified.should.be.a('boolean');
+            credential.verified.should.be.true;
+            should.exist(credential.credentialId);
+            credential.credentialId.should.be.a('string');
+          }
+        });
       }
     });
-  }
-});
 
-describe('_checkCredential', () => {
-  it('should reject a credentialSubject.id that is not a URI', () => {
-    const credential = jsonld.clone(mockData.credentials.alpha);
-    credential.issuer = 'http://example.edu/credentials/58473';
-    credential.credentialSubject.id = '12345';
-    let error;
-    try {
-      vc._checkCredential({credential});
-    } catch(e) {
-      error = e;
-    }
-    should.exist(error,
-      'Should throw error when "credentialSubject.id" is not a URI');
-    error.should.be.instanceof(TypeError);
-    error.message.should
-      .contain('"credentialSubject.id" must be a URI');
-  });
+    describe('_checkCredential', () => {
+      it('should reject a credentialSubject.id that is not a URI', () => {
+        const credential = jsonld.clone(mockData.credentials.alpha);
+        credential.issuer = 'http://example.edu/credentials/58473';
+        credential.credentialSubject.id = '12345';
+        let error;
+        try {
+          vc._checkCredential({credential});
+        } catch(e) {
+          error = e;
+        }
+        should.exist(error,
+          'Should throw error when "credentialSubject.id" is not a URI');
+        error.should.be.instanceof(TypeError);
+        error.message.should
+          .contain('"credentialSubject.id" must be a URI');
+      });
 
-  it('should reject an issuer that is not a URI', () => {
-    const credential = jsonld.clone(mockData.credentials.alpha);
-    credential.issuer = '12345';
-    let error;
-    try {
-      vc._checkCredential({credential});
-    } catch(e) {
-      error = e;
-    }
-    should.exist(error,
-      'Should throw error when "credentialSubject.id" is not a URI');
-    error.should.be.instanceof(TypeError);
-    error.message.should
-      .contain('"issuer" must be a URI');
-  });
+      it('should reject an issuer that is not a URI', () => {
+        const credential = jsonld.clone(mockData.credentials.alpha);
+        credential.issuer = '12345';
+        let error;
+        try {
+          vc._checkCredential({credential});
+        } catch(e) {
+          error = e;
+        }
+        should.exist(error,
+          'Should throw error when "credentialSubject.id" is not a URI');
+        error.should.be.instanceof(TypeError);
+        error.message.should
+          .contain('"issuer" must be a URI');
+      });
 
-  it('should reject an evidence id that is not a URI', () => {
-    const credential = jsonld.clone(mockData.credentials.alpha);
-    credential.issuer = 'did:example:12345';
-    credential.evidence = '12345';
-    let error;
-    try {
-      vc._checkCredential({credential});
-    } catch(e) {
-      error = e;
-    }
-    should.exist(error,
-      'Should throw error when "evidence" is not a URI');
-    error.should.be.instanceof(TypeError);
-    error.message.should
-      .contain('"evidence" must be a URI');
-  });
+      it('should reject an evidence id that is not a URI', () => {
+        const credential = jsonld.clone(mockData.credentials.alpha);
+        credential.issuer = 'did:example:12345';
+        credential.evidence = '12345';
+        let error;
+        try {
+          vc._checkCredential({credential});
+        } catch(e) {
+          error = e;
+        }
+        should.exist(error,
+          'Should throw error when "evidence" is not a URI');
+        error.should.be.instanceof(TypeError);
+        error.message.should
+          .contain('"evidence" must be a URI');
+      });
 
-  it('should reject if "expirationDate" has passed', () => {
-    const credential = jsonld.clone(mockData.credentials.alpha);
-    credential.issuer = 'did:example:12345';
-    // set expirationDate to an expired date.
-    credential.expirationDate = '2020-05-31T19:21:25Z';
-    let error;
-    try {
-      vc._checkCredential({credential});
-    } catch(e) {
-      error = e;
-    }
-    should.exist(error,
-      'Should throw error when "expirationDate" has passed');
-    error.message.should
-      .contain('Credential has expired.');
-  });
+      it('should reject if "expirationDate" has passed', () => {
+        const credential = jsonld.clone(mockData.credentials.alpha);
+        credential.issuer = 'did:example:12345';
+        // set expirationDate to an expired date.
+        credential.expirationDate = '2020-05-31T19:21:25Z';
+        let error;
+        try {
+          vc._checkCredential({credential});
+        } catch(e) {
+          error = e;
+        }
+        should.exist(error,
+          'Should throw error when "expirationDate" has passed');
+        error.message.should
+          .contain('Credential has expired.');
+      });
+      if(version === '1.0') {
+        it('should reject if "now" is before "issuanceDate"', () => {
+          const credential = jsonld.clone(mockCredential);
+          credential.issuer = 'did:example:12345';
+          credential.issuanceDate = '2022-10-31T19:21:25Z';
+          const now = '2022-06-30T19:21:25Z';
+          let error;
+          try {
+            vc._checkCredential({credential, now});
+          } catch(e) {
+            error = e;
+          }
+          should.exist(error,
+            'Should throw error when "now" is before "issuanceDate"');
+          error.message.should.contain(
+            'The current date time (2022-06-30T19:21:25.000Z) is before the ' +
+            '"issuanceDate" (2022-10-31T19:21:25.000Z).');
+        });
 
-  it('should reject if "now" is before "issuanceDate"', () => {
-    const credential = jsonld.clone(credentials.v1);
-    credential.issuer = 'did:example:12345';
-    credential.issuanceDate = '2022-10-31T19:21:25Z';
-    const now = '2022-06-30T19:21:25Z';
-    let error;
-    try {
-      vc._checkCredential({credential, now});
-    } catch(e) {
-      error = e;
-    }
-    should.exist(error,
-      'Should throw error when "now" is before "issuanceDate"');
-    error.message.should.contain(
-      'The current date time (2022-06-30T19:21:25.000Z) is before the ' +
-      '"issuanceDate" (2022-10-31T19:21:25.000Z).');
-  });
-  it('should reject if "credentialSubject" is empty', () => {
-    const credential = jsonld.clone(credentials.v1);
-    credential.credentialSubject = {};
-    credential.issuer = 'did:example:12345';
-    credential.issuanceDate = '2022-10-31T19:21:25Z';
-    let error;
-    try {
-      vc._checkCredential({credential});
-    } catch(e) {
-      error = e;
-    }
-    should.exist(error,
-      'Should throw error when "credentialSubject" is empty.');
-    error.message.should.contain(
-      '"credentialSubject" must make a claim.');
-  });
-  it('should reject if a "credentialSubject" is empty', () => {
-    const credential = jsonld.clone(credentials.v1);
-    credential.credentialSubject = [{}, {id: 'did:key:zFoo'}];
-    credential.issuer = 'did:example:12345';
-    credential.issuanceDate = '2022-10-31T19:21:25Z';
-    let error;
-    try {
-      vc._checkCredential({credential});
-    } catch(e) {
-      error = e;
-    }
-    should.exist(error,
-      'Should throw error when "credentialSubject" is empty.');
-    error.message.should.contain(
-      '"credentialSubject" must make a claim.');
-  });
+      }
+      it('should reject if "credentialSubject" is empty', () => {
+        const credential = jsonld.clone(mockCredential);
+        credential.credentialSubject = {};
+        credential.issuer = 'did:example:12345';
+        if(version === '1.0') {
+          credential.issuanceDate = '2022-10-31T19:21:25Z';
+        }
+        let error;
+        try {
+          vc._checkCredential({credential});
+        } catch(e) {
+          error = e;
+        }
+        should.exist(error,
+          'Should throw error when "credentialSubject" is empty.');
+        error.message.should.contain(
+          '"credentialSubject" must make a claim.');
+      });
+      it('should reject if a "credentialSubject" is empty', () => {
+        const credential = jsonld.clone(mockCredential);
+        credential.credentialSubject = [{}, {id: 'did:key:zFoo'}];
+        credential.issuer = 'did:example:12345';
+        if(version === '1.0') {
+          credential.issuanceDate = '2022-10-31T19:21:25Z';
+        }
+        let error;
+        try {
+          vc._checkCredential({credential});
+        } catch(e) {
+          error = e;
+        }
+        should.exist(error,
+          'Should throw error when "credentialSubject" is empty.');
+        error.message.should.contain(
+          '"credentialSubject" must make a claim.');
+      });
 
-  it('should accept multiple credentialSubjects', () => {
-    const credential = jsonld.clone(credentials.v1);
-    credential.credentialSubject = [{id: 'did:key:zFoo'}, {name: 'did key'}];
-    credential.issuer = 'did:example:12345';
-    credential.issuanceDate = '2022-10-31T19:21:25Z';
-    let error;
-    try {
-      vc._checkCredential({credential});
-    } catch(e) {
-      error = e;
-    }
-    should.not.exist(error,
-      'Should not throw error when multiple credentialSubjects.');
-  });
-});
+      it('should accept multiple credentialSubjects', () => {
+        const credential = jsonld.clone(mockCredential);
+        credential.credentialSubject = [
+          {id: 'did:key:zFoo'},
+          {name: 'did key'}
+        ];
+        credential.issuer = 'did:example:12345';
+        if(version === '1.0') {
+          credential.issuanceDate = '2022-10-31T19:21:25Z';
+        }
+        let error;
+        try {
+          vc._checkCredential({credential});
+        } catch(e) {
+          error = e;
+        }
+        should.not.exist(error,
+          'Should not throw error when multiple credentialSubjects.');
+      });
+    });
 
-async function _generateCredential() {
-  const mockCredential = jsonld.clone(mockData.credentials.alpha);
+  });
+}
+
+async function _generateCredential(_mockCredential) {
+  const mockCredential = jsonld.clone(_mockCredential);
   const {didDocument, documentLoader} = await _loadDid();
   mockCredential.issuer = didDocument.didDocument.id;
   mockCredential.id = `http://example.edu/credentials/${uuid()}`;
@@ -905,7 +920,7 @@ async function _generateCredential() {
 }
 
 async function _generatePresentation({
-  challenge, unsigned = false, credentialsCount = 1
+  challenge, unsigned = false, credentialsCount = 1, mockCredential
 }) {
   const {didDocument, documentLoader: didLoader} = await _loadDid();
   testLoader.addLoader(didLoader);
@@ -913,11 +928,12 @@ async function _generatePresentation({
 
   // generate multiple credentials
   for(let i = 0; i < credentialsCount; i++) {
-    const {credential} = await _generateCredential();
+    const {credential} = await _generateCredential(mockCredential);
     credentials.push(credential);
   }
 
-  const {documentLoader: dlc, suite: vcSuite} = await _generateCredential();
+  const {documentLoader: dlc, suite: vcSuite} = await _generateCredential(
+    mockCredential);
   testLoader.addLoader(dlc);
 
   const presentation = vc.createPresentation(
