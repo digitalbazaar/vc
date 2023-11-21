@@ -12,14 +12,13 @@ import * as ecdsaSd2023Cryptosuite from
 import * as vc from '../lib/index.js';
 import {
   documentLoader,
-  contexts as remoteDocuments,
+  remoteDocuments,
   testLoader
-} from './testContextLoader.js';
+} from './testDocumentLoader.js';
 import {assertionController} from './mocks/assertionController.js';
 import chai from 'chai';
 import {CredentialIssuancePurpose} from '../lib/CredentialIssuancePurpose.js';
 import {credentials} from './mocks/credential.js';
-import dataIntegrityContext from '@digitalbazaar/data-integrity-context';
 import {DataIntegrityProof} from '@digitalbazaar/data-integrity';
 import {Ed25519Signature2018} from '@digitalbazaar/ed25519-signature-2018';
 import {
@@ -29,7 +28,6 @@ import {invalidContexts} from './contexts/index.js';
 import jsigs from 'jsonld-signatures';
 import jsonld from 'jsonld';
 import {mock as mockData} from './mocks/mock.data.js';
-import multikeyContext from '@digitalbazaar/multikey-context';
 import {v4 as uuid} from 'uuid';
 import {VeresOneDriver} from 'did-veres-one';
 
@@ -40,19 +38,7 @@ const {
   createVerifyCryptosuite
 } = ecdsaSd2023Cryptosuite;
 
-remoteDocuments.set(
-  dataIntegrityContext.constants.CONTEXT_URL,
-  dataIntegrityContext.contexts.get(
-    dataIntegrityContext.constants.CONTEXT_URL));
-remoteDocuments.set(
-  multikeyContext.constants.CONTEXT_URL,
-  multikeyContext.contexts.get(
-    multikeyContext.constants.CONTEXT_URL));
 const should = chai.should();
-for(const key in invalidContexts) {
-  const {url, value} = invalidContexts[key];
-  remoteDocuments.set(url, value);
-}
 
 // do ed25519 setup...
 let suite;
