@@ -215,12 +215,12 @@ for(const [version, mockCredential] of versionedCredentials) {
 
       it('should verify a derived vc', async () => {
         const proofId = `urn:uuid:${uuid()}`;
+        const mandatoryPointers = (version === '1.0') ?
+          ['/issuer', '/issuanceDate'] : ['/issuer'];
         // setup ecdsa-sd-2023 suite for signing selective disclosure VCs
         const ecdsaSdSignSuite = new DataIntegrityProof({
           signer: ecdsaKeyPair.signer(), cryptosuite: createSignCryptosuite({
-            mandatoryPointers: [
-              '/issuer'
-            ]
+            mandatoryPointers
           })
         });
         ecdsaSdSignSuite.proof = {id: proofId};
@@ -381,13 +381,12 @@ for(const [version, mockCredential] of versionedCredentials) {
           });
         it('should verify a changed derived vc', async () => {
           const proofId = `urn:uuid:${uuid()}`;
+          const mandatoryPointers = (version === '1.0') ?
+            ['/issuer', '/issuanceDate'] : ['/issuer'];
           // setup ecdsa-sd-2023 suite for signing selective disclosure VCs
           const ecdsaSdSignSuite = new DataIntegrityProof({
             signer: ecdsaKeyPair.signer(), cryptosuite: createSignCryptosuite({
-              mandatoryPointers: [
-                '/issuanceDate',
-                '/issuer'
-              ]
+              mandatoryPointers
             })
           });
           ecdsaSdSignSuite.proof = {id: proofId};
@@ -531,7 +530,6 @@ for(const [version, mockCredential] of versionedCredentials) {
               credentialsCount: count,
               mockCredential
             });
-
           const result = await vc.verify({
             documentLoader,
             presentation,
