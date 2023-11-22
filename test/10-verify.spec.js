@@ -171,7 +171,7 @@ for(const [version, mockCredential] of versionedCredentials) {
         let error;
         try {
           await vc.issue({
-            credential: mockCredential,
+            credential: jsonld.clone(mockCredential),
             suite
           });
         } catch(e) {
@@ -189,7 +189,7 @@ for(const [version, mockCredential] of versionedCredentials) {
     describe('vc.createPresentation()', () => {
       it('should create an unsigned presentation', () => {
         const presentation = vc.createPresentation({
-          verifiableCredential: mockCredential,
+          verifiableCredential: jsonld.clone(mockCredential),
           id: 'test:ebc6f1c2',
           holder: 'did:ex:holder123'
         });
@@ -205,7 +205,7 @@ for(const [version, mockCredential] of versionedCredentials) {
     describe('vc.signPresentation()', () => {
       it('should create a signed VP', async () => {
         const presentation = vc.createPresentation({
-          verifiableCredential: mockCredential,
+          verifiableCredential: jsonld.clone(mockCredential),
           id: 'test:ebc6f1c2',
           holder: 'did:ex:holder123'
         });
@@ -230,7 +230,7 @@ for(const [version, mockCredential] of versionedCredentials) {
     describe('verify API (credentials)', () => {
       it('should verify a vc', async () => {
         const verifiableCredential = await vc.issue({
-          credential: mockCredential,
+          credential: jsonld.clone(mockCredential),
           suite,
           documentLoader
         });
@@ -278,7 +278,7 @@ for(const [version, mockCredential] of versionedCredentials) {
         });
 
         const verifiableCredential = await vc.issue({
-          credential: {...mockCredential},
+          credential: jsonld.clone(mockCredential),
           suite: ecdsaSdSignSuite,
           documentLoader
         });
@@ -554,7 +554,7 @@ for(const [version, mockCredential] of versionedCredentials) {
           });
 
           const verifiableCredential = await vc.issue({
-            credential: {...mockCredential},
+            credential: jsonld.clone(mockCredential),
             suite: ecdsaSdSignSuite,
             documentLoader
           });
@@ -930,8 +930,9 @@ async function _generatePresentation({
     credentials.push(credential);
   }
 
-  const {documentLoader: dlc, suite: vcSuite} = await _generateCredential(
-    mockCredential);
+  const {
+    documentLoader: dlc,
+    suite: vcSuite} = await _generateCredential(mockCredential);
   testLoader.addLoader(dlc);
 
   const presentation = vc.createPresentation(
@@ -951,8 +952,11 @@ async function _generatePresentation({
     documentLoader: testLoader.documentLoader.bind(testLoader)
   });
 
-  return {presentation: vp, suite: [vcSuite, vpSuite],
-    documentLoader: testLoader.documentLoader.bind(testLoader)};
+  return {
+    presentation: vp,
+    suite: [vcSuite, vpSuite],
+    documentLoader: testLoader.documentLoader.bind(testLoader)
+  };
 }
 
 async function _loadDid() {
