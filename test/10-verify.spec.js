@@ -85,7 +85,7 @@ before(async () => {
 });
 
 for(const [version, mockCredential] of versionedCredentials) {
-  describe(`Verifiable Credential Data Model ${version}`, async function() {
+  describe(`Verifiable Credentials Data Model ${version}`, async function() {
     describe('vc.issue()', () => {
       it('should issue a verifiable credential with proof', async () => {
         const credential = jsonld.clone(mockCredential);
