@@ -560,8 +560,10 @@ async function _generatePresentation({
   const {documentLoader: dlc, suite: vcSuite} = await _generateCredential();
   testLoader.addLoader(dlc);
 
-  const presentation = vc.createPresentation(
-    {verifiableCredential: credentials});
+  const presentation = vc.createPresentation({
+    verifiableCredential: credentials,
+    version
+  });
 
   if(unsigned) {
     return {presentation, suite: vcSuite,
