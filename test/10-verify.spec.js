@@ -28,7 +28,6 @@ import {v4 as uuid} from 'uuid';
 import {VeresOneDriver} from 'did-veres-one';
 import {versionedCredentials} from './mocks/credential.js';
 
-
 const should = chai.should();
 
 // do ed25519 setup...
@@ -99,6 +98,7 @@ before(async () => {
     await bbsKeyPair.export({publicKey: true}));
 });
 
+// run tests on each version of VCs
 for(const [version, mockCredential] of versionedCredentials) {
   describe(`Verifiable Credentials Data Model ${version}`, async function() {
     describe('vc.issue()', () => {
@@ -114,7 +114,7 @@ for(const [version, mockCredential] of versionedCredentials) {
         verifiableCredential.should.have.property('proof');
         verifiableCredential.proof.should.be.an('object');
       });
-      if(version === '1.0') {
+      if(version === 1.0) {
         it('should issue an expired verifiable credential', async () => {
           const keyPair = await Ed25519VerificationKey2018.generate();
           const fp = Ed25519VerificationKey2018
@@ -207,7 +207,8 @@ for(const [version, mockCredential] of versionedCredentials) {
         const presentation = vc.createPresentation({
           verifiableCredential: jsonld.clone(mockCredential),
           id: 'test:ebc6f1c2',
-          holder: 'did:ex:holder123'
+          holder: 'did:ex:holder123',
+          version
         });
         const vp = await vc.signPresentation({
           presentation,
@@ -254,7 +255,7 @@ for(const [version, mockCredential] of versionedCredentials) {
           createVerifyCryptosuite
         } = ecdsaSd2023Cryptosuite;
         const proofId = `urn:uuid:${uuid()}`;
-        const mandatoryPointers = (version === '1.0') ?
+        const mandatoryPointers = (version === 1.0) ?
           ['/issuer', '/issuanceDate'] : ['/issuer'];
         // setup ecdsa-sd-2023 suite for signing selective disclosure VCs
         const ecdsaSdSignSuite = new DataIntegrityProof({
@@ -306,13 +307,13 @@ for(const [version, mockCredential] of versionedCredentials) {
           createSignCryptosuite,
           createVerifyCryptosuite
         } = bbs2023Cryptosuite;
-    
+        const mandatoryPointers = (version === 1.0) ?
+          ['/issuer', '/issuanceDate'] : ['/issuer'];
+
         // setup bbs-2023 suite for signing unlinkable VCs
         const bbsSignSuite = new DataIntegrityProof({
           signer: bbsKeyPair.signer(), cryptosuite: createSignCryptosuite({
-            mandatoryPointers: [
-              '/issuer'
-            ]
+            mandatoryPointers
           })
         });
         // setup bbs-2023 suite for deriving unlinkable VC proofs
@@ -327,7 +328,7 @@ for(const [version, mockCredential] of versionedCredentials) {
         const bbsVerifySuite = new DataIntegrityProof({
           cryptosuite: createVerifyCryptosuite()
         });
-    
+
         const credential = {...mockCredential};
         delete credential.id;
         delete credential.credentialSubject.id;
@@ -347,7 +348,7 @@ for(const [version, mockCredential] of versionedCredentials) {
           suite: bbsVerifySuite,
           documentLoader
         });
-    
+
         if(result.error) {
           throw result.error;
         }
@@ -530,7 +531,7 @@ for(const [version, mockCredential] of versionedCredentials) {
             createVerifyCryptosuite
           } = ecdsaSd2023Cryptosuite;
           const proofId = `urn:uuid:${uuid()}`;
-          const mandatoryPointers = (version === '1.0') ?
+          const mandatoryPointers = (version === 1.0) ?
             ['/issuer', '/issuanceDate'] : ['/issuer'];
           // setup ecdsa-sd-2023 suite for signing selective disclosure VCs
           const ecdsaSdSignSuite = new DataIntegrityProof({
@@ -573,55 +574,54 @@ for(const [version, mockCredential] of versionedCredentials) {
           result.verified.should.be.a('boolean');
           result.verified.should.be.false;
         });
-          it('should fail to verify a changed BBS derived vc', async () => {
-      const {
-        createDiscloseCryptosuite,
-        createSignCryptosuite,
-        createVerifyCryptosuite
-      } = bbs2023Cryptosuite;
+        it('should fail to verify a changed BBS derived vc', async () => {
+          const {
+            createDiscloseCryptosuite,
+            createSignCryptosuite,
+            createVerifyCryptosuite
+          } = bbs2023Cryptosuite;
+          const mandatoryPointers = (version === 1.0) ?
+            ['/issuer', '/issuanceDate'] : ['/issuer'];
 
-      // setup bbs-2023 suite for signing unlinkable VCs
-      const bbsSignSuite = new DataIntegrityProof({
-        signer: bbsKeyPair.signer(), cryptosuite: createSignCryptosuite({
-          mandatoryPointers: [
-            '/issuanceDate',
-            '/issuer'
-          ]
-        })
-      });
-      // setup bbs-2023 suite for deriving unlinkable VC proofs
-      const bbsDeriveSuite = new DataIntegrityProof({
-        cryptosuite: createDiscloseCryptosuite({
-          selectivePointers: [
-            '/credentialSubject'
-          ]
-        })
-      });
-      // setup bbs-2023 suite for verifying unlinkable VC proofs
-      const bbsVerifySuite = new DataIntegrityProof({
-        cryptosuite: createVerifyCryptosuite()
-      });
+          // setup bbs-2023 suite for signing unlinkable VCs
+          const bbsSignSuite = new DataIntegrityProof({
+            signer: bbsKeyPair.signer(), cryptosuite: createSignCryptosuite({
+              mandatoryPointers
+            })
+          });
+          // setup bbs-2023 suite for deriving unlinkable VC proofs
+          const bbsDeriveSuite = new DataIntegrityProof({
+            cryptosuite: createDiscloseCryptosuite({
+              selectivePointers: [
+                '/credentialSubject'
+              ]
+            })
+          });
+          // setup bbs-2023 suite for verifying unlinkable VC proofs
+          const bbsVerifySuite = new DataIntegrityProof({
+            cryptosuite: createVerifyCryptosuite()
+          });
 
-      const verifiableCredential = await vc.issue({
-        credential: {...mockCredential},
-        suite: bbsSignSuite,
-        documentLoader
-      });
-      const derivedCredential = await vc.derive({
-        verifiableCredential,
-        suite: bbsDeriveSuite,
-        documentLoader
-      });
-      derivedCredential.credentialSubject.id = `urn:uuid:${uuid()}`;
-      const result = await vc.verifyCredential({
-        credential: derivedCredential,
-        controller: assertionController,
-        suite: bbsVerifySuite,
-        documentLoader
-      });
-      result.verified.should.be.a('boolean');
-      result.verified.should.be.false;
-    });
+          const verifiableCredential = await vc.issue({
+            credential: {...mockCredential},
+            suite: bbsSignSuite,
+            documentLoader
+          });
+          const derivedCredential = await vc.derive({
+            verifiableCredential,
+            suite: bbsDeriveSuite,
+            documentLoader
+          });
+          derivedCredential.credentialSubject.id = `urn:uuid:${uuid()}`;
+          const result = await vc.verifyCredential({
+            credential: derivedCredential,
+            controller: assertionController,
+            suite: bbsVerifySuite,
+            documentLoader
+          });
+          result.verified.should.be.a('boolean');
+          result.verified.should.be.false;
+        });
       });
     });
 
@@ -630,7 +630,7 @@ for(const [version, mockCredential] of versionedCredentials) {
         const challenge = uuid();
 
         const {presentation, suite, documentLoader} =
-          await _generatePresentation({challenge, mockCredential});
+          await _generatePresentation({challenge, mockCredential, version});
 
         const result = await vc.verify({
           challenge,
@@ -648,8 +648,15 @@ for(const [version, mockCredential] of versionedCredentials) {
       });
 
       it('verifies an unsigned presentation', async () => {
-        const {presentation, suite: vcSuite, documentLoader} =
-          await _generatePresentation({unsigned: true, mockCredential});
+        const {
+          presentation,
+          suite: vcSuite,
+          documentLoader
+        } = await _generatePresentation({
+          unsigned: true,
+          mockCredential,
+          version
+        });
 
         const result = await vc.verify({
           documentLoader,
@@ -677,7 +684,8 @@ for(const [version, mockCredential] of versionedCredentials) {
             await _generatePresentation({
               challenge,
               credentialsCount: count,
-              mockCredential
+              mockCredential,
+              version
             });
 
           // tampering with the first two credentials id
@@ -726,7 +734,8 @@ for(const [version, mockCredential] of versionedCredentials) {
             await _generatePresentation({
               challenge,
               credentialsCount: count,
-              mockCredential
+              mockCredential,
+              version
             });
           const result = await vc.verify({
             documentLoader,
@@ -816,7 +825,7 @@ for(const [version, mockCredential] of versionedCredentials) {
         error.message.should
           .contain('Credential has expired.');
       });
-      if(version === '1.0') {
+      if(version === 1.0) {
         it('should reject if "now" is before "issuanceDate"', () => {
           const credential = jsonld.clone(mockCredential);
           credential.issuer = 'did:example:12345';
@@ -840,7 +849,7 @@ for(const [version, mockCredential] of versionedCredentials) {
         const credential = jsonld.clone(mockCredential);
         credential.credentialSubject = {};
         credential.issuer = 'did:example:12345';
-        if(version === '1.0') {
+        if(version === 1.0) {
           credential.issuanceDate = '2022-10-31T19:21:25Z';
         }
         let error;
@@ -858,7 +867,7 @@ for(const [version, mockCredential] of versionedCredentials) {
         const credential = jsonld.clone(mockCredential);
         credential.credentialSubject = [{}, {id: 'did:key:zFoo'}];
         credential.issuer = 'did:example:12345';
-        if(version === '1.0') {
+        if(version === 1.0) {
           credential.issuanceDate = '2022-10-31T19:21:25Z';
         }
         let error;
@@ -880,7 +889,7 @@ for(const [version, mockCredential] of versionedCredentials) {
           {name: 'did key'}
         ];
         credential.issuer = 'did:example:12345';
-        if(version === '1.0') {
+        if(version === 1.0) {
           credential.issuanceDate = '2022-10-31T19:21:25Z';
         }
         let error;
@@ -918,7 +927,11 @@ async function _generateCredential(_mockCredential) {
 }
 
 async function _generatePresentation({
-  challenge, unsigned = false, credentialsCount = 1, mockCredential
+  challenge,
+  unsigned = false,
+  credentialsCount = 1,
+  mockCredential,
+  version
 }) {
   const {didDocument, documentLoader: didLoader} = await _loadDid();
   testLoader.addLoader(didLoader);
@@ -935,8 +948,10 @@ async function _generatePresentation({
     suite: vcSuite} = await _generateCredential(mockCredential);
   testLoader.addLoader(dlc);
 
-  const presentation = vc.createPresentation(
-    {verifiableCredential: credentials});
+  const presentation = vc.createPresentation({
+    verifiableCredential: credentials,
+    version
+  });
 
   if(unsigned) {
     return {presentation, suite: vcSuite,
