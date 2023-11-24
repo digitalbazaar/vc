@@ -712,7 +712,89 @@ for(const [version, mockCredential] of versionedCredentials) {
             'The current date time (2022-06-30T19:21:25.000Z) is before the ' +
             '"issuanceDate" (2022-10-31T19:21:25.000Z).');
         });
+      }
+      if(version === 2.0) {
+        it('should reject if "now" is before "validFrom"', () => {
+          const credential = jsonld.clone(mockCredential);
+          credential.issuer = 'did:example:12345';
+          credential.validFrom = '2022-10-31T19:21:25Z';
+          const now = '2022-06-30T19:21:25Z';
+          let error;
+          try {
+            vc._checkCredential({credential, now});
+          } catch(e) {
+            error = e;
+          }
+          should.exist(error,
+            'Should throw error when "now" is before "validFrom"');
+          error.message.should.contain(
+            `The current date time (${now}) is before the ` +
+            `"validFrom" (${credential.validFrom}).`);
+        });
+        it('should reject if "now" is after "validUntil"', () => {
+          const credential = jsonld.clone(mockCredential);
+          credential.issuer = 'did:example:12345';
+          credential.validUntil = '2022-06-30T19:21:25Z';
+          const now = '2022-10-30T19:21:25Z';
+          let error;
+          try {
+            vc._checkCredential({credential, now});
+          } catch(e) {
+            error = e;
+          }
+          should.exist(error,
+            'Should throw error when "now" is after "validUntil"');
+          error.message.should.contain(
+            `The current date time (${now}) is after the ` +
+            `"validUntil" (${credential.validUntil}).`);
+        });
+        it('should accept "validFrom"', () => {
+          const credential = jsonld.clone(mockCredential);
+          credential.issuer = 'did:example:12345';
+          credential.validFrom = '2022-06-30T19:21:25Z';
+          const now = '2022-10-30T19:21:25Z';
+          let error;
+          try {
+            vc._checkCredential({credential, now});
+          } catch(e) {
+            error = e;
+          }
+          should.not.exist(error,
+            'Should not throw error when "validFrom" is valid');
+        });
+        it('should accept "validUntil"', () => {
+          const credential = jsonld.clone(mockCredential);
+          credential.issuer = 'did:example:12345';
+          credential.validUntil = '2025-10-31T19:21:25Z';
+          const now = '2022-06-30T19:21:25Z';
+          let error;
+          try {
+            vc._checkCredential({credential, now});
+          } catch(e) {
+            error = e;
+          }
+          should.not.exist(error,
+            'Should not throw error when "issuanceDate" is valid');
+        });
 
+        it('should accept both "validFrom" and "validUntil" are valid', () => {
+          const credential = jsonld.clone(mockCredential);
+          credential.issuer = 'did:example:12345';
+          credential.validFrom = '2022-05-30T19:21:25Z';
+          credential.validUntil = '2025-05-30T19:21:25Z';
+          const now = '2022-06-30T19:21:25Z';
+          let error;
+          try {
+            vc._checkCredential({credential, now});
+          } catch(e) {
+            error = e;
+          }
+          should.exist(error,
+            'Should throw error when "now" is before "issuanceDate"');
+          error.message.should.contain(
+            'The current date time (2022-06-30T19:21:25.000Z) is before the ' +
+            '"issuanceDate" (2022-10-31T19:21:25.000Z).');
+        });
       }
       it('should reject if "credentialSubject" is empty', () => {
         const credential = mockCredential();
