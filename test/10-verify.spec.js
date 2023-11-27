@@ -100,6 +100,27 @@ for(const [version, mockCredential] of versionedCredentials) {
         verifiableCredential.should.have.property('proof');
         verifiableCredential.proof.should.be.an('object');
       });
+      it('should throw an error on missing verificationMethod', async () => {
+        const suite = new Ed25519Signature2018({
+          // Note no key id or verificationMethod passed to suite
+          key: await Ed25519VerificationKey2018.generate()
+        });
+        let error;
+        try {
+          await vc.issue({
+            credential: mockCredential(),
+            suite
+          });
+        } catch(e) {
+          error = e;
+        }
+
+        should.exist(error,
+          'Should throw error when "verificationMethod" property missing');
+        error.should.be.instanceof(TypeError);
+        error.message.should
+          .contain('"suite.verificationMethod" property is required.');
+      });
       if(version === 1.0) {
         it('should issue an expired verifiable credential', async () => {
           const keyPair = await Ed25519VerificationKey2018.generate();
@@ -149,29 +170,9 @@ for(const [version, mockCredential] of versionedCredentials) {
           );
         });
       }
-      it('should throw an error on missing verificationMethod', async () => {
-        const suite = new Ed25519Signature2018({
-          // Note no key id or verificationMethod passed to suite
-          key: await Ed25519VerificationKey2018.generate()
-        });
-        let error;
-        try {
-          await vc.issue({
-            credential: mockCredential(),
-            suite
-          });
-        } catch(e) {
-          error = e;
-        }
-        should.exist(error,
-          'Should throw error when "verificationMethod" property missing');
-        error.should.be.instanceof(TypeError);
-        error.message.should
-          .contain('"suite.verificationMethod" property is required.');
-      });
       if(version === 2.0) {
         it('should issue "validUntil" in the future', async () => {
-          const credential = jsonld.clone(mockCredential);
+          const credential = mockCredential();
           credential.issuer = 'did:example:12345';
           credential.validUntil = '2025-10-31T19:21:25Z';
           const now = '2022-06-30T19:21:25Z';
@@ -195,7 +196,7 @@ for(const [version, mockCredential] of versionedCredentials) {
           );
         });
         it('should issue "validUntil" in the past', async () => {
-          const credential = jsonld.clone(mockCredential);
+          const credential = mockCredential();
           credential.issuer = 'did:example:12345';
           credential.validUntil = '2025-10-31T19:21:25Z';
           const now = '2022-06-30T19:21:25Z';
@@ -219,7 +220,7 @@ for(const [version, mockCredential] of versionedCredentials) {
           );
         });
         it('should issue "validFrom" in the past', async () => {
-          const credential = jsonld.clone(mockCredential);
+          const credential = mockCredential();
           credential.issuer = 'did:example:12345';
           credential.validFrom = '2022-06-30T19:21:25Z';
           const now = '2022-10-30T19:21:25Z';
@@ -243,7 +244,7 @@ for(const [version, mockCredential] of versionedCredentials) {
           );
         });
         it('should issue "validFrom" in the future', async () => {
-          const credential = jsonld.clone(mockCredential);
+          const credential = mockCredential();
           credential.issuer = 'did:example:12345';
           credential.validFrom = '2022-10-30T19:21:25Z';
           const now = '2022-06-30T19:21:25Z';
@@ -264,6 +265,34 @@ for(const [version, mockCredential] of versionedCredentials) {
           should.exist(
             result,
             'Expected a VC with "validFrom" in the future to be issued'
+          );
+        });
+        it('should issue both "validFrom" and "validUntil"', async () => {
+          const credential = mockCredential();
+          credential.issuer = 'did:example:12345';
+          credential.validFrom = '2022-05-30T19:21:25Z';
+          credential.validUntil = '2025-05-30T19:21:25Z';
+          const now = '2022-06-30T19:21:25Z';
+          let error;
+          let verifiableCredential;
+          try {
+            verifiableCredential = await vc.issue({
+              credential,
+              suite,
+              documentLoader,
+              now
+            });
+          } catch(e) {
+            error = e;
+          }
+          should.not.exist(
+            error,
+            'Should not throw when issuing VC with both "validFrom" and' +
+              '"validUntil"'
+          );
+          should.exist(
+            verifiableCredential,
+            'Expected VC to be issued with both "validFrom" and "validUntil"'
           );
         });
       }
@@ -813,7 +842,7 @@ for(const [version, mockCredential] of versionedCredentials) {
       }
       if(version === 2.0) {
         it('should NOT verify "validFrom" in the future', () => {
-          const credential = jsonld.clone(mockCredential);
+          const credential = mockCredential();
           credential.issuer = 'did:example:12345';
           credential.validFrom = '2022-10-30T19:21:25Z';
           const now = '2022-06-30T19:21:25Z';
@@ -827,7 +856,7 @@ for(const [version, mockCredential] of versionedCredentials) {
             'Should throw error when verifying "validFrom" in future');
         });
         it('should verify "validFrom" in the past', () => {
-          const credential = jsonld.clone(mockCredential);
+          const credential = mockCredential();
           credential.issuer = 'did:example:12345';
           credential.validFrom = '2022-06-30T19:21:25Z';
           const now = '2022-10-30T19:21:25Z';
@@ -841,7 +870,7 @@ for(const [version, mockCredential] of versionedCredentials) {
             'Should not throw error when "validFrom" in past');
         });
         it('should NOT verify if "validUntil" in the past', () => {
-          const credential = jsonld.clone(mockCredential);
+          const credential = mockCredential();
           credential.issuer = 'did:example:12345';
           credential.validUntil = '2025-06-31T19:21:25Z';
           const now = '2022-10-30T19:21:25Z';
@@ -855,7 +884,7 @@ for(const [version, mockCredential] of versionedCredentials) {
             'Should throw error when "validUntil" in the past');
         });
         it('should verify if "validUntil" in the future', () => {
-          const credential = jsonld.clone(mockCredential);
+          const credential = mockCredential();
           credential.issuer = 'did:example:12345';
           credential.validUntil = '2025-10-31T19:21:25Z';
           const now = '2022-06-30T19:21:25Z';
@@ -868,36 +897,8 @@ for(const [version, mockCredential] of versionedCredentials) {
           should.not.exist(error,
             'Should not throw error when "issuanceDate" is valid');
         });
-        it('should issue both "validFrom" and "validUntil"', async () => {
-          const credential = jsonld.clone(mockCredential);
-          credential.issuer = 'did:example:12345';
-          credential.validFrom = '2022-05-30T19:21:25Z';
-          credential.validUntil = '2025-05-30T19:21:25Z';
-          const now = '2022-06-30T19:21:25Z';
-          let error;
-          let verifiableCredential;
-          try {
-            verifiableCredential = await vc.issue({
-              credential,
-              suite,
-              documentLoader,
-              now
-            });
-          } catch(e) {
-            error = e;
-          }
-          should.not.exist(
-            error,
-            'Should not throw when issuing VC with both "validFrom" and' +
-              '"validUntil"'
-          );
-          should.exist(
-            verifiableCredential,
-            'Expected VC to be issued with both "validFrom" and "validUntil"'
-          );
-        });
         it('should verify if "validFrom" is before "validUntil"', () => {
-          const credential = jsonld.clone(mockCredential);
+          const credential = mockCredential();
           credential.issuer = 'did:example:12345';
           credential.validFrom = '2022-05-30T19:21:25Z';
           credential.validUntil = '2025-05-30T19:21:25Z';
