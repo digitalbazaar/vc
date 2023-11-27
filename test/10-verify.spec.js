@@ -197,6 +197,64 @@ for(const [version, mockCredential] of versionedCredentials) {
         error.message.should
           .contain('"suite.verificationMethod" property is required.');
       });
+      if(version === 2.0) {
+        it('should issue "validUntil" in the future', () => {
+          const credential = jsonld.clone(mockCredential);
+          credential.issuer = 'did:example:12345';
+          credential.validUntil = '2025-10-31T19:21:25Z';
+          const now = '2022-06-30T19:21:25Z';
+          let error;
+          try {
+            vc.issue({credential, now});
+          } catch(e) {
+            error = e;
+          }
+          should.not.exist(error,
+            'Should not throw error when issuing "validUntil" in future');
+        });
+        it('should issue "validUntil" in the past', () => {
+          const credential = jsonld.clone(mockCredential);
+          credential.issuer = 'did:example:12345';
+          credential.validUntil = '2025-10-31T19:21:25Z';
+          const now = '2022-06-30T19:21:25Z';
+          let error;
+          try {
+            vc.issue({credential, now});
+          } catch(e) {
+            error = e;
+          }
+          should.not.exist(error,
+            'Should not throw error when issuing with "validUntil" in past');
+        });
+        it('should issue "validFrom" in the past', () => {
+          const credential = jsonld.clone(mockCredential);
+          credential.issuer = 'did:example:12345';
+          credential.validFrom = '2022-06-30T19:21:25Z';
+          const now = '2022-10-30T19:21:25Z';
+          let error;
+          try {
+            vc.issue({credential, now});
+          } catch(e) {
+            error = e;
+          }
+          should.not.exist(error,
+            'Should not throw error when issuing "validFrom" in past');
+        });
+        it('should issue "validFrom" in the future', () => {
+          const credential = jsonld.clone(mockCredential);
+          credential.issuer = 'did:example:12345';
+          credential.validFrom = '2022-10-30T19:21:25Z';
+          const now = '2022-06-30T19:21:25Z';
+          let error;
+          try {
+            vc.issue({credential, now});
+          } catch(e) {
+            error = e;
+          }
+          should.not.exist(error,
+            'Should not throw error when issuing "validFrom" in future');
+        });
+      }
     });
 
     describe('vc.createPresentation()', () => {
@@ -878,34 +936,6 @@ for(const [version, mockCredential] of versionedCredentials) {
         });
       }
       if(version === 2.0) {
-        it('should issue "validFrom" in the past', () => {
-          const credential = jsonld.clone(mockCredential);
-          credential.issuer = 'did:example:12345';
-          credential.validFrom = '2022-06-30T19:21:25Z';
-          const now = '2022-10-30T19:21:25Z';
-          let error;
-          try {
-            vc._checkCredential({credential, now});
-          } catch(e) {
-            error = e;
-          }
-          should.not.exist(error,
-            'Should not throw error when issuing "validFrom" in past');
-        });
-        it('should issue "validFrom" in the future', () => {
-          const credential = jsonld.clone(mockCredential);
-          credential.issuer = 'did:example:12345';
-          credential.validFrom = '2022-10-30T19:21:25Z';
-          const now = '2022-06-30T19:21:25Z';
-          let error;
-          try {
-            vc._checkCredential({credential, now});
-          } catch(e) {
-            error = e;
-          }
-          should.not.exist(error,
-            'Should not throw error when issuing "validFrom" in future');
-        });
         it('should NOT verify "validFrom" in the future', () => {
           const credential = jsonld.clone(mockCredential);
           credential.issuer = 'did:example:12345';
@@ -933,34 +963,6 @@ for(const [version, mockCredential] of versionedCredentials) {
           }
           should.not.exist(error,
             'Should not throw error when "validFrom" in past');
-        });
-        it('should issue "validUntil" in the future', () => {
-          const credential = jsonld.clone(mockCredential);
-          credential.issuer = 'did:example:12345';
-          credential.validUntil = '2025-10-31T19:21:25Z';
-          const now = '2022-06-30T19:21:25Z';
-          let error;
-          try {
-            vc._checkCredential({credential, now});
-          } catch(e) {
-            error = e;
-          }
-          should.not.exist(error,
-            'Should not throw error when issuing "validUntil" in future');
-        });
-        it('should issue "validUntil" in the past', () => {
-          const credential = jsonld.clone(mockCredential);
-          credential.issuer = 'did:example:12345';
-          credential.validUntil = '2025-10-31T19:21:25Z';
-          const now = '2022-06-30T19:21:25Z';
-          let error;
-          try {
-            vc._checkCredential({credential, now});
-          } catch(e) {
-            error = e;
-          }
-          should.not.exist(error,
-            'Should not throw error when issuing with "validUntil" in past');
         });
         it('should NOT verify if "validUntil" in the past', () => {
           const credential = jsonld.clone(mockCredential);
