@@ -841,7 +841,7 @@ for(const [version, mockCredential] of versionedCredentials) {
         });
       }
       if(version === 2.0) {
-        it('should NOT verify "validFrom" in the future', () => {
+        it('should reject "validFrom" in the future', () => {
           const credential = mockCredential();
           credential.issuer = 'did:example:12345';
           credential.validFrom = '2022-10-30T19:21:25Z';
@@ -855,7 +855,7 @@ for(const [version, mockCredential] of versionedCredentials) {
           should.exist(error,
             'Should throw error when verifying "validFrom" in future');
         });
-        it('should verify "validFrom" in the past', () => {
+        it('should reject "validFrom" in the past', () => {
           const credential = mockCredential();
           credential.issuer = 'did:example:12345';
           credential.validFrom = '2022-06-30T19:21:25Z';
@@ -869,7 +869,7 @@ for(const [version, mockCredential] of versionedCredentials) {
           should.not.exist(error,
             'Should not throw error when "validFrom" in past');
         });
-        it('should NOT verify if "validUntil" in the past', () => {
+        it('should reject "validUntil" in the past', () => {
           const credential = mockCredential();
           credential.issuer = 'did:example:12345';
           credential.validUntil = '2022-06-31T19:21:25Z';
@@ -883,7 +883,7 @@ for(const [version, mockCredential] of versionedCredentials) {
           should.exist(error,
             'Should throw error when "validUntil" in the past');
         });
-        it('should verify if "validUntil" in the future', () => {
+        it('should reject "validUntil" in the future', () => {
           const credential = mockCredential();
           credential.issuer = 'did:example:12345';
           credential.validUntil = '2025-10-31T19:21:25Z';
@@ -897,7 +897,7 @@ for(const [version, mockCredential] of versionedCredentials) {
           should.not.exist(error,
             'Should not throw error when "issuanceDate" is valid');
         });
-        it('should verify if "validFrom" is before "validUntil"', () => {
+        it('should accept if now is between "validFrom" & "validUntil"', () => {
           const credential = mockCredential();
           credential.issuer = 'did:example:12345';
           credential.validFrom = '2022-05-30T19:21:25Z';
@@ -912,6 +912,37 @@ for(const [version, mockCredential] of versionedCredentials) {
           should.not.exist(error,
             'Should NOT throw when now is between "validFrom" & "validUntil"');
         });
+        it('should reject if now is after "validFrom" & "validUntil"', () => {
+          const credential = mockCredential();
+          credential.issuer = 'did:example:12345';
+          credential.validFrom = '2022-05-30T19:21:25Z';
+          credential.validUntil = '2023-05-30T19:21:25Z';
+          const now = '2024-06-30T19:21:25Z';
+          let error;
+          try {
+            vc._checkCredential({credential, now});
+          } catch(e) {
+            error = e;
+          }
+          should.exist(error,
+            'Should throw when now is after "validFrom" & "validUntil"');
+        });
+        it('should reject if now is before "validFrom" & "validUntil"', () => {
+          const credential = mockCredential();
+          credential.issuer = 'did:example:12345';
+          credential.validFrom = '2024-05-30T19:21:25Z';
+          credential.validUntil = '2025-05-30T19:21:25Z';
+          const now = '2023-06-30T19:21:25Z';
+          let error;
+          try {
+            vc._checkCredential({credential, now});
+          } catch(e) {
+            error = e;
+          }
+          should.exist(error,
+            'Should throw when now is before "validFrom" & "validUntil"');
+        });
+
       }
       it('should reject if "credentialSubject" is empty', () => {
         const credential = mockCredential();
