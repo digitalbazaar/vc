@@ -205,9 +205,9 @@ for(const [version, mockCredential] of versionedCredentials) {
           credential.validUntil = '2025-10-31T19:21:25Z';
           const now = '2022-06-30T19:21:25Z';
           let error;
-          let result;
+          let verifiableCredential;
           try {
-            result = await vc.issue({
+            verifiableCredential = await vc.issue({
               credential,
               now,
               suite,
@@ -218,9 +218,14 @@ for(const [version, mockCredential] of versionedCredentials) {
           }
           should.not.exist(error,
             'Should not throw error when issuing "validUntil" in future');
-          should.exist(
-            result,
-            'Expected a VC with "validUntil" in the future to be issued'
+          verifiableCredential.should.exist;
+          verifiableCredential.should.be.an('object');
+          verifiableCredential.should.have.property('proof');
+          verifiableCredential.proof.should.be.an('object');
+          // ensure validUntil is present and has correct timestamp
+          verifiableCredential.should.have.property(
+            'validUntil',
+            credential.validUntil
           );
         });
         it('should issue "validUntil" in the past', async () => {
@@ -229,9 +234,9 @@ for(const [version, mockCredential] of versionedCredentials) {
           credential.validUntil = '2022-10-31T19:21:25Z';
           const now = '2025-06-30T19:21:25Z';
           let error;
-          let result;
+          let verifiableCredential;
           try {
-            result = await vc.issue({
+            verifiableCredential = await vc.issue({
               credential,
               now,
               suite,
@@ -242,9 +247,14 @@ for(const [version, mockCredential] of versionedCredentials) {
           }
           should.not.exist(error,
             'Should not throw error when issuing with "validUntil" in past');
-          should.exist(
-            result,
-            'Expected a VC with "validUntil" in the past to be issued'
+          verifiableCredential.should.exist;
+          verifiableCredential.should.be.an('object');
+          verifiableCredential.should.have.property('proof');
+          verifiableCredential.proof.should.be.an('object');
+          // ensure validUntil is present and has correct timestamp
+          verifiableCredential.should.have.property(
+            'validUntil',
+            credential.validUntil
           );
         });
         it('should issue "validFrom" in the past', async () => {
@@ -253,9 +263,9 @@ for(const [version, mockCredential] of versionedCredentials) {
           credential.validFrom = '2022-06-30T19:21:25Z';
           const now = '2022-10-30T19:21:25Z';
           let error;
-          let result;
+          let verifiableCredential;
           try {
-            result = await vc.issue({
+            verifiableCredential = await vc.issue({
               credential,
               now,
               suite,
@@ -266,9 +276,14 @@ for(const [version, mockCredential] of versionedCredentials) {
           }
           should.not.exist(error,
             'Should not throw error when issuing "validFrom" in past');
-          should.exist(
-            result,
-            'Expected a VC with "validFrom" in the past to be issued'
+          verifiableCredential.should.exist;
+          verifiableCredential.should.be.an('object');
+          verifiableCredential.should.have.property('proof');
+          verifiableCredential.proof.should.be.an('object');
+          // ensure validFrom is present and has correct timestamp
+          verifiableCredential.should.have.property(
+            'validFrom',
+            credential.validFrom
           );
         });
         it('should issue "validFrom" in the future', async () => {
@@ -277,9 +292,9 @@ for(const [version, mockCredential] of versionedCredentials) {
           credential.validFrom = '2022-10-30T19:21:25Z';
           const now = '2022-06-30T19:21:25Z';
           let error;
-          let result;
+          let verifiableCredential;
           try {
-            result = await vc.issue({
+            verifiableCredential = await vc.issue({
               credential,
               now,
               suite,
@@ -290,9 +305,14 @@ for(const [version, mockCredential] of versionedCredentials) {
           }
           should.not.exist(error,
             'Should not throw error when issuing "validFrom" in future');
-          should.exist(
-            result,
-            'Expected a VC with "validFrom" in the future to be issued'
+          verifiableCredential.should.exist;
+          verifiableCredential.should.be.an('object');
+          verifiableCredential.should.have.property('proof');
+          verifiableCredential.proof.should.be.an('object');
+          // ensure validFrom is present and has correct timestamp
+          verifiableCredential.should.have.property(
+            'validFrom',
+            credential.validFrom
           );
         });
         it('should issue both "validFrom" and "validUntil"', async () => {
@@ -318,9 +338,19 @@ for(const [version, mockCredential] of versionedCredentials) {
             'Should not throw when issuing VC with both "validFrom" and' +
               '"validUntil"'
           );
-          should.exist(
-            verifiableCredential,
-            'Expected VC to be issued with both "validFrom" and "validUntil"'
+          verifiableCredential.should.exist;
+          verifiableCredential.should.be.an('object');
+          verifiableCredential.should.have.property('proof');
+          verifiableCredential.proof.should.be.an('object');
+          // ensure validUntil & validAfter are present
+          // and have correct timestamps
+          verifiableCredential.should.have.property(
+            'validFrom',
+            credential.validFrom
+          );
+          verifiableCredential.should.have.property(
+            'validUntil',
+            credential.validUntil
           );
         });
       }
