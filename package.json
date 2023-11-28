@@ -71,9 +71,6 @@
       "text"
     ]
   },
-  "engines": {
-    "node": ">=14"
-  },
   "keywords": [
     "JSON",
     "Linked Data",

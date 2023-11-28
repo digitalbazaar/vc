@@ -1,5 +1,10 @@
 # @digitalbazaar/vc ChangeLog
 
+## 6.2.1 -
+
+### Removed
+- Removed `engines.node` from `package.json`.
+
 ## 6.2.0 - 2023-11-14
 
 ### Added
