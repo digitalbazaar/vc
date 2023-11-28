@@ -872,8 +872,8 @@ for(const [version, mockCredential] of versionedCredentials) {
         it('should NOT verify if "validUntil" in the past', () => {
           const credential = mockCredential();
           credential.issuer = 'did:example:12345';
-          credential.validUntil = '2025-06-31T19:21:25Z';
-          const now = '2022-10-30T19:21:25Z';
+          credential.validUntil = '2022-06-31T19:21:25Z';
+          const now = '2025-10-30T19:21:25Z';
           let error;
           try {
             vc._checkCredential({credential, now});
