@@ -5,6 +5,9 @@
 ### Removed
 - Removed `engines.node` from `package.json`.
 
+### Changed
+- Changed explicit node version in README to maintained versions.
+
 ## 6.2.0 - 2023-11-14
 
 ### Added

@@ -48,7 +48,7 @@ the following:
 
 ## Install
 
-- Browsers and Node.js 14+ are supported.
+- Browsers and [maintained versions of Node.js](https://nodejs.org/en/about/previous-releases) are supported.
 
 To install from NPM:
 
