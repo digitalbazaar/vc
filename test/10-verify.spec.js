@@ -1016,7 +1016,7 @@ for(const [version, mockCredential] of versionedCredentials) {
           } catch(e) {
             error = e;
           }
-          should.not.exist(error,
+          should.exist(error,
             'Should throw error when verifying "validFrom" in future');
         });
         it('should verify "validFrom" in the past', () => {
