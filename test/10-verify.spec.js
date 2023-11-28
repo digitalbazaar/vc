@@ -1073,11 +1073,8 @@ for(const [version, mockCredential] of versionedCredentials) {
           } catch(e) {
             error = e;
           }
-          should.exist(error,
-            'Should throw error when "now" is before "issuanceDate"');
-          error.message.should.contain(
-            'The current date time (2022-06-30T19:21:25.000Z) is before the ' +
-            '"issuanceDate" (2022-10-31T19:21:25.000Z).');
+          should.not.exist(error,
+            'Should NOT throw when now is between "validFrom" & "validUntil"');
         });
       }
       it('should reject if "credentialSubject" is empty', () => {
