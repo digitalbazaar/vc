@@ -1,5 +1,10 @@
 # @digitalbazaar/vc ChangeLog
 
+## 6.2.1 -
+
+### Fixed
+- Set `engines.node >= 18` to match requirements of dependencies.
+
 ## 6.2.0 - 2023-11-14
 
 ### Added
