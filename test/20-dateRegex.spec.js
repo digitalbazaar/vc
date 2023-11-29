@@ -75,5 +75,8 @@ describe('verifies RFC3339 Dates', function() {
     it('should not verify seconds greater than 60', function() {
       assertInvalid('2017-10-22T15:15:65Z');
     });
+    it('should not verify if no digits after decimal sign', function() {
+      assertInvalid('2019-03-26T14:00:00.');
+    });
   });
 });
