@@ -61,18 +61,18 @@ describe('verifies RFC3339 Dates', function() {
         assertInvalid('2019-03-26T14:00.9Z');
       });
     it('should not verify a day greater than 31 in a month', function() {
-      assertInvalid('2017-03-45T15:00:15Z');
+      assertInvalid('2017-03-32T15:00:15Z');
     });
     it('should not verify a month greater than 12 in a year', function() {
-      assertInvalid('2017-14-22T15:00:15Z');
+      assertInvalid('2017-13-22T15:00:15Z');
     });
-    it('should not verify an hour greater than 24', function() {
-      assertInvalid('2017-10-22T25:00:15Z');
+    it('should not verify an hour greater than 23', function() {
+      assertInvalid('2017-10-22T24:00:15Z');
     });
-    it('should not verify minutes greater than 60', function() {
+    it('should not verify minutes greater than 59', function() {
       assertInvalid('2017-10-22T15:75:15Z');
     });
-    it('should not verify seconds greater than 60', function() {
+    it('should not verify seconds greater than 59', function() {
       assertInvalid('2017-10-22T15:15:65Z');
     });
     it('should not verify if no digits after decimal sign', function() {
