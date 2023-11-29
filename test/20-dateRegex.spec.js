@@ -15,6 +15,12 @@ describe('verifies RFC3339 Dates', function() {
       const latest = new Date().toISOString();
       assertValid(latest);
     });
+    it('should verify a date with year 0000', function() {
+      assertValid('0000-01-01T09:37:45Z');
+    });
+    it('should verify a date with year 9999', function() {
+      assertValid('9999-01-01T09:37:45Z');
+    });
     it('should verify a date with lowercase time designator', function() {
       assertValid('2019-03-26t14:00Z');
     });
@@ -36,6 +42,9 @@ describe('verifies RFC3339 Dates', function() {
     it('should verify multi-digit fractional seconds', function() {
       assertValid('2019-03-26T14:00:00.4999Z');
     });
+    it('should verify leap days', function() {
+      assertValid('2024-02-29T14:00:00z');
+    });
   });
   describe('negative', function() {
     it('should not verify a date that uses "/" as a separator', function() {
@@ -44,8 +53,11 @@ describe('verifies RFC3339 Dates', function() {
     it('should not verify 2 digit years', function() {
       assertInvalid('17-09-27T22:07:22.563z');
     });
+    it('should not verify > 4 digit years', function() {
+      assertInvalid('99999-09-27T22:07:22.563z');
+    });
     it('should not verify 1 digit months', function() {
-      assertInvalid('2017-9-27T22:07:22.563z');
+      assertInvalid('2020-9-27T22:07:22.563z');
     });
     it('should not verify 1 digit days', function() {
       assertInvalid('2017-9-7T22:07:22.563z');
