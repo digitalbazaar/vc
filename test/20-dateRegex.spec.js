@@ -22,10 +22,10 @@ describe('verifies RFC3339 Dates', function() {
       assertValid('9999-01-01T09:37:45Z');
     });
     it('should verify a date with lowercase time designator', function() {
-      assertValid('2019-03-26t14:00Z');
+      assertValid('2019-03-26t14:00:15Z');
     });
     it('should verify a date with lowercase UTC designator', function() {
-      assertValid('2019-03-26T14:00z');
+      assertValid('2019-03-26T14:00:36z');
     });
     it('should verify 2 digit months starting with 0', function() {
       assertValid('2017-09-27T22:07:22.563z');
