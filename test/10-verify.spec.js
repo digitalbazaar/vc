@@ -1136,7 +1136,6 @@ for(const [version, mockCredential] of versionedCredentials) {
           should.exist(error,
             'Should throw when now is before "validFrom" & "validUntil"');
         });
-
       }
       it('should reject if "credentialSubject" is empty', () => {
         const credential = mockCredential();
