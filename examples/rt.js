@@ -67,6 +67,9 @@ async function main({credential, documentLoader}) {
   ecdsaKeyPair.id = didDocument.assertionMethod[0];
   ecdsaKeyPair.controller = didDocument.id;
 
+  // ensure issuer matches key controller
+  credential.issuer = ecdsaKeyPair.controller;
+
   // setup ecdsa-rdfc-2019 signing suite
   const signingSuite = new DataIntegrityProof({
     signer: ecdsaKeyPair.signer(),
@@ -100,7 +103,7 @@ async function main({credential, documentLoader}) {
   console.log('SIGNED CREDENTIAL:');
   console.log(JSON.stringify(verifiableCredential, null, 2));
   console.log('VERIFY RESULT:');
-  console.log(verifyResult);
+  console.log(JSON.stringify(verifyResult, null, 2));
 }
 
 // sample unsigned credential
