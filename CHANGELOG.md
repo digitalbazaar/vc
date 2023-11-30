@@ -5,7 +5,7 @@
 ### Added
 - **BREAKING**: Default issuance now uses VC 2.0 context.
 - Support for VC 2.0 credentials issuance and verification.
-- Support for VC 2.0 `validUntil` and `validAfter`.
+- Support for VC 2.0 `validUntil` and `validFrom`.
 - Support for VP 2.0 presentations issuance and verification.
 - Test vectors for VC 2.0 VCs.
 
