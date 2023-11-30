@@ -1,0 +1,120 @@
+/*!
+ * Copyright (c) 2019-2023 Digital Bazaar, Inc. All rights reserved.
+ */
+
+// Example round trip.
+// - generate example ECDSA did:key
+// - setup 'ecdsa-rdfc-2019 DataIntegrityProof
+// - setup document loader
+// - sign credential
+// - verify credential
+
+import * as EcdsaMultikey from '@digitalbazaar/ecdsa-multikey';
+import {cryptosuite as ecdsaRdfc2019Cryptosuite} from
+  '@digitalbazaar/ecdsa-rdfc-2019-cryptosuite';
+//import * as vc from '@digitalbazaar/vc';
+import * as vc from '../lib/index.js';
+import {DataIntegrityProof} from '@digitalbazaar/data-integrity';
+import {driver} from '@digitalbazaar/did-method-key';
+
+// document loader support
+import {securityLoader} from '@digitalbazaar/security-document-loader';
+
+//import secCtx from '@digitalbazaar/security-context';
+import diCtx from '@digitalbazaar/data-integrity-context';
+
+const loader = securityLoader();
+//loader.addStatic(
+//  secCtx.SECURITY_CONTEXT_V2_URL,
+//  secCtx.contexts.get(secCtx.SECURITY_CONTEXT_V2_URL)
+//);
+loader.addStatic(diCtx.CONTEXT_URL, diCtx.CONTEXT);
+// example static context
+loader.addStatic(
+  'https://example.com/ex/v1',
+  /* eslint-disable quotes, quote-props, max-len */
+  {
+    "@context": {
+      "ExampleCredential": "https://example.com/ex#Example",
+      "example": "https://example.com/ex#example"
+    }
+  }
+  /* eslint-enable quotes, quote-props, max-len */
+);
+
+const documentLoader = loader.build();
+
+async function main({credential, documentLoader}) {
+  // generate example ecdsa keypair
+  const didKeyDriverMultikey = driver();
+
+  didKeyDriverMultikey.use({
+    multibaseMultikeyHeader: 'zDna',
+    fromMultibase: EcdsaMultikey.from
+  });
+
+  const ecdsaKeyPair = await EcdsaMultikey.generate({curve: 'P-256'});
+
+  const {
+    didDocument, keyPairs, methodFor
+  } = await didKeyDriverMultikey.fromKeyPair({
+    verificationKeyPair: ecdsaKeyPair
+  });
+  ecdsaKeyPair.id = didDocument.assertionMethod[0];
+  ecdsaKeyPair.controller = didDocument.id;
+
+  // setup ecdsa-rdfc-2019 suite
+  const suite = new DataIntegrityProof({
+    signer: ecdsaKeyPair.signer(),
+    // date: '2023-01-01T01:01:01Z',
+    cryptosuite: ecdsaRdfc2019Cryptosuite
+  });
+
+  // setup documentLoader
+
+  // sign credential
+  const verifiableCredential = await vc.issue({
+    credential,
+    suite,
+    documentLoader
+  });
+  // verify signed credential
+  const verifyResult = await vc.verifyCredential({
+    credential: verifiableCredential,
+    suite,
+    documentLoader
+  });
+
+  console.log('INPUT CREDENTIAL:');
+  console.log(JSON.stringify(credential, null, 2));
+  console.log('SIGNED CREDENTIAL:');
+  console.log(JSON.stringify(verifiableCredential, null, 2));
+  console.log('VERIFY RESULT:');
+  console.log(verifyResult);
+}
+
+// sample unsigned credential
+const credential =
+// Use plain JSON style for data
+/* eslint-disable quotes, quote-props, max-len */
+{
+  "@context": [
+    "https://www.w3.org/2018/credentials/v1",
+    "https://example.com/ex/v1"
+  ],
+  "id": "https://example.com/credentials/1872",
+  "type": ["VerifiableCredential", "ExampleCredential"],
+  "issuer": "https://example.edu/issuers/565049",
+  "issuanceDate": "2010-01-01T19:23:24Z",
+  "credentialSubject": {
+    "id": "did:example:ebfeb1f712ebc6f1c276e12ec21",
+    "example": "Example Data"
+  }
+}
+/* eslint-enable quotes, quote-props, max-len */
+;
+
+await main({
+  credential,
+  documentLoader
+});
