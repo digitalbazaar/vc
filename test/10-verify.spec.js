@@ -1049,7 +1049,7 @@ for(const [version, mockCredential] of versionedCredentials) {
           should.exist(error,
             'Should throw error when verifying "validFrom" in future');
         });
-        it('should reject "validFrom" in the past', () => {
+        it('should accept "validFrom" in the past', () => {
           const credential = mockCredential();
           credential.issuer = 'did:example:12345';
           credential.validFrom = '2022-06-30T19:21:25Z';
@@ -1077,7 +1077,7 @@ for(const [version, mockCredential] of versionedCredentials) {
           should.exist(error,
             'Should throw error when "validUntil" in the past');
         });
-        it('should reject "validUntil" in the future', () => {
+        it('should accept "validUntil" in the future', () => {
           const credential = mockCredential();
           credential.issuer = 'did:example:12345';
           credential.validUntil = '2025-10-31T19:21:25Z';
