@@ -925,7 +925,7 @@ for(const [version, mockCredential] of versionedCredentials) {
             error = e;
           }
           should.not.exist(error,
-            'Should not throw error when "issuanceDate" is valid');
+            'Should not throw error when "validUntil" in the future');
         });
         it('should accept if now is between "validFrom" & "validUntil"', () => {
           const credential = mockCredential();
