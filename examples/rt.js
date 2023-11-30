@@ -17,7 +17,8 @@ import * as vc from '../lib/index.js';
 import {DataIntegrityProof} from '@digitalbazaar/data-integrity';
 import {driver} from '@digitalbazaar/did-method-key';
 
-// document loader support
+// setup document loader
+import {CachedResolver} from '@digitalbazaar/did-io';
 import {securityLoader} from '@digitalbazaar/security-document-loader';
 
 //import secCtx from '@digitalbazaar/security-context';
@@ -41,17 +42,20 @@ loader.addStatic(
   }
   /* eslint-enable quotes, quote-props, max-len */
 );
+const resolver = new CachedResolver();
+const didKeyDriverMultikey = driver();
+
+didKeyDriverMultikey.use({
+  multibaseMultikeyHeader: 'zDna',
+  fromMultibase: EcdsaMultikey.from
+});
+resolver.use(didKeyDriverMultikey);
+loader.setDidResolver(resolver);
 
 const documentLoader = loader.build();
 
 async function main({credential, documentLoader}) {
   // generate example ecdsa keypair
-  const didKeyDriverMultikey = driver();
-
-  didKeyDriverMultikey.use({
-    multibaseMultikeyHeader: 'zDna',
-    fromMultibase: EcdsaMultikey.from
-  });
 
   const ecdsaKeyPair = await EcdsaMultikey.generate({curve: 'P-256'});
 
@@ -63,8 +67,8 @@ async function main({credential, documentLoader}) {
   ecdsaKeyPair.id = didDocument.assertionMethod[0];
   ecdsaKeyPair.controller = didDocument.id;
 
-  // setup ecdsa-rdfc-2019 suite
-  const suite = new DataIntegrityProof({
+  // setup ecdsa-rdfc-2019 signing suite
+  const signingSuite = new DataIntegrityProof({
     signer: ecdsaKeyPair.signer(),
     // date: '2023-01-01T01:01:01Z',
     cryptosuite: ecdsaRdfc2019Cryptosuite
@@ -75,13 +79,19 @@ async function main({credential, documentLoader}) {
   // sign credential
   const verifiableCredential = await vc.issue({
     credential,
-    suite,
+    suite: signingSuite,
     documentLoader
   });
+
+  // setup ecdsa-rdfc-2019 verifying suite
+  const verifyingSuite = new DataIntegrityProof({
+    cryptosuite: ecdsaRdfc2019Cryptosuite
+  });
+
   // verify signed credential
   const verifyResult = await vc.verifyCredential({
     credential: verifiableCredential,
-    suite,
+    suite: verifyingSuite,
     documentLoader
   });
 
