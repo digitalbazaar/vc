@@ -25,21 +25,24 @@ describe('verifies XML Schema DateTime', function() {
     it('should accept a date with a negative 4 digit year', function() {
       assertDateTime('-9999-03-26T14:00:00Z', true);
     });
-    it('should accept a date with lowercase z', function() {
-      assertDateTime('2019-03-26T14:00:00z', true);
-    });
-    it('should accept a comma as a decimal sign', function() {
-      assertDateTime('2019-03-26T14:00:00,999Z', true);
-    });
     it('should accept 24:00 as an hour', function() {
       assertDateTime('2019-03-26T24:00:00Z', true);
+    });
+    it('should accept a positive offset', function() {
+      assertDateTime('2019-03-26T24:00:00+05:00', true);
+    });
+    it('should accept a negative offset', function() {
+      assertDateTime('2019-03-26T24:00:00-05:00', true);
+    });
+    it('should accept a date not ending in a z', function() {
+      assertDateTime('2019-03-26T14:00:00', true);
     });
   });
   describe('negative', function() {
     it('should not accept a date with lowercase t', function() {
       assertDateTime('2019-03-26t14:00:00Z', false);
     });
-    it('should not accept an invalid date', function() {
+    it('should not accept a date with "/" as a separator', function() {
       assertDateTime('2017/09/27', false);
     });
     it('should not accept 2 digit years', function() {
