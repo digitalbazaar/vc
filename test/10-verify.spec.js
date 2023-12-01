@@ -1119,7 +1119,7 @@ for(const [version, mockCredential] of versionedCredentials) {
             } catch(e) {
               error = e;
             }
-            should.not.exist(error, 'Should NOT throw when now is between' +
+            should.not.exist(error, 'Should NOT throw when now equals' +
             '"validFrom" & "validUntil"');
           });
         it('should reject if now is after "validFrom" & "validUntil"', () => {
