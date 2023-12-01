@@ -9,7 +9,7 @@ import * as vc from '../lib/index.js';
 const assertDateTime = (date, bool) =>
   vc.dateRegex.test(date).should.equal(bool);
 
-describe('verifies RFC3339 Dates', function() {
+describe('verifies XML Schema Dates', function() {
   it('verify a valid date', function() {
     const latest = new Date().toISOString();
     assertDateTime(latest, true);
