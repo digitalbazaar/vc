@@ -9,7 +9,7 @@ import * as vc from '../lib/index.js';
 const assertDateTime = (date, bool) =>
   vc.dateRegex.test(date).should.equal(bool);
 
-describe('verifies XML Schema Dates', function() {
+describe('verifies XML Schema DateTime', function() {
   describe('positive', function() {
     it('should accept an ISOString', function() {
       const latest = new Date().toISOString();
@@ -28,6 +28,9 @@ describe('verifies XML Schema Dates', function() {
     it('should accept a date with lowercase z', function() {
       assertDateTime('2019-03-26T14:00:00z', true);
     });
+    it('should accept a comma as a decimal sign', function() {
+      assertDateTime('2019-03-26T14:00:00,999Z', true);
+    });
   });
   describe('negative', function() {
     it('should not accept a date with lowercase t', function() {
@@ -38,6 +41,18 @@ describe('verifies XML Schema Dates', function() {
     });
     it('should not accept 2 digit years', function() {
       assertDateTime('17-09-27T22:07:22.563Z', false);
+    });
+    it('should not accept a basic ISO DateTime', function() {
+      assertDateTime('20190326T1400Z', false);
+    });
+    it('should not accept a 0 as a month', function() {
+      assertDateTime('2019-00-26T14:00:00Z', false);
+    });
+    it('should not accept a 0 as a day', function() {
+      assertDateTime('2019-01-00T14:00:00Z', false);
+    });
+    it('should not accept a time past midnight', function() {
+      assertDateTime('2019-03-25T24:01:00Z', false);
     });
   });
 });
