@@ -942,6 +942,22 @@ for(const [version, mockCredential] of versionedCredentials) {
           should.not.exist(error,
             'Should NOT throw when now is between "validFrom" & "validUntil"');
         });
+        it('should accept if "validFrom" & "validUntil" are the same time',
+          () => {
+            const credential = jsonld.clone(mockCredential);
+            credential.issuer = 'did:example:12345';
+            const now = '2022-06-30T19:21:25Z';
+            credential.validFrom = now;
+            credential.validUntil = now;
+            let error;
+            try {
+              vc._checkCredential({credential, now});
+            } catch(e) {
+              error = e;
+            }
+            should.not.exist(error, 'Should NOT throw when now is between' +
+            '"validFrom" & "validUntil"');
+          });
         it('should reject if now is after "validFrom" & "validUntil"', () => {
           const credential = mockCredential();
           credential.issuer = 'did:example:12345';
