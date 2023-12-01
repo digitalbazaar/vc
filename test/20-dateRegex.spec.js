@@ -31,6 +31,9 @@ describe('verifies XML Schema DateTime', function() {
     it('should accept a comma as a decimal sign', function() {
       assertDateTime('2019-03-26T14:00:00,999Z', true);
     });
+    it('should accept 24:00 as an hour', function() {
+      assertDateTime('2019-03-26T24:00:00Z', true);
+    });
   });
   describe('negative', function() {
     it('should not accept a date with lowercase t', function() {
