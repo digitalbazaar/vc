@@ -10,6 +10,7 @@
 
 ### Changed
 - **BREAKING**: Default issuance now uses VC 2.0 context.
+- **BREAKING**: DateTime validator is now an xml schema DateTime validator.
 
 ## 6.3.0 - 2024-05-17
 
