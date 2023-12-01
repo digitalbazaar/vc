@@ -45,11 +45,17 @@ describe('verifies XML Schema DateTime', function() {
     it('should not accept a basic ISO DateTime', function() {
       assertDateTime('20190326T1400Z', false);
     });
-    it('should not accept a 0 as a month', function() {
+    it('should not accept 00 as a month', function() {
       assertDateTime('2019-00-26T14:00:00Z', false);
     });
-    it('should not accept a 0 as a day', function() {
+    it('should not accept 13 as a month', function() {
+      assertDateTime('2019-00-26T14:00:00Z', false);
+    });
+    it('should not accept 00 as a day', function() {
       assertDateTime('2019-01-00T14:00:00Z', false);
+    });
+    it('should not accept 32 as a day', function() {
+      assertDateTime('2019-01-32T14:00:00Z', false);
     });
     it('should not accept a time past midnight', function() {
       assertDateTime('2019-03-25T24:01:00Z', false);
