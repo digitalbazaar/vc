@@ -4,6 +4,7 @@
 
 ### Added
 - **BREAKING**: Default issuance now uses VC 2.0 context.
+- **BREAKING**: DateTime validator is now an xml schema DateTime validator.
 - Support for VC 2.0 credentials issuance and verification.
 - Support for VC 2.0 `validUntil` and `validFrom`.
 - Support for VP 2.0 presentations issuance and verification.
