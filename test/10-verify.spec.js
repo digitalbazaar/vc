@@ -12,6 +12,7 @@ import {
 } from './testDocumentLoader.js';
 import {assertionController} from './mocks/assertionController.js';
 import chai from 'chai';
+import {createTimeStamp} from './helpers.js';
 import {CredentialIssuancePurpose} from '../lib/CredentialIssuancePurpose.js';
 import {DataIntegrityProof} from '@digitalbazaar/data-integrity';
 import {Ed25519Signature2018} from '@digitalbazaar/ed25519-signature-2018';
@@ -154,14 +155,16 @@ for(const [version, mockCredential] of versionedCredentials) {
         it('should issue "validUntil" in the future', async () => {
           const credential = jsonld.clone(mockCredential);
           credential.issuer = 'did:example:12345';
-          credential.validUntil = '2025-10-31T19:21:25Z';
-          const now = '2022-06-30T19:21:25Z';
+          const validUntil = new Date();
+          // set validUntil one year in the future
+          validUntil.setFullYear(validUntil.getFullYear() + 1);
+          // turn it into an ISO Time Stamp
+          credential.validUntil = createTimeStamp({date: validUntil});
           let error;
           let verifiableCredential;
           try {
             verifiableCredential = await vc.issue({
               credential,
-              now,
               suite,
               documentLoader
             });
@@ -183,14 +186,16 @@ for(const [version, mockCredential] of versionedCredentials) {
         it('should issue "validUntil" in the past', async () => {
           const credential = jsonld.clone(mockCredential);
           credential.issuer = 'did:example:12345';
-          credential.validUntil = '2022-10-31T19:21:25Z';
-          const now = '2025-06-30T19:21:25Z';
+          const validUntil = new Date();
+          // set validUntil one year in the past
+          validUntil.setFullYear(validUntil.getFullYear() - 1);
+          // turn it into an ISO Time Stamp
+          credential.validUntil = createTimeStamp({date: validUntil});
           let error;
           let verifiableCredential;
           try {
             verifiableCredential = await vc.issue({
               credential,
-              now,
               suite,
               documentLoader
             });
@@ -212,14 +217,14 @@ for(const [version, mockCredential] of versionedCredentials) {
         it('should issue "validFrom" in the past', async () => {
           const credential = jsonld.clone(mockCredential);
           credential.issuer = 'did:example:12345';
-          credential.validFrom = '2022-06-30T19:21:25Z';
-          const now = '2022-10-30T19:21:25Z';
+          const validFrom = new Date();
+          validFrom.setFullYear(validFrom.getFullYear() - 1);
+          credential.validFrom = createTimeStamp({date: validFrom});
           let error;
           let verifiableCredential;
           try {
             verifiableCredential = await vc.issue({
               credential,
-              now,
               suite,
               documentLoader
             });
@@ -241,14 +246,14 @@ for(const [version, mockCredential] of versionedCredentials) {
         it('should issue "validFrom" in the future', async () => {
           const credential = jsonld.clone(mockCredential);
           credential.issuer = 'did:example:12345';
-          credential.validFrom = '2022-10-30T19:21:25Z';
-          const now = '2022-06-30T19:21:25Z';
+          const validFrom = new Date();
+          validFrom.setFullYear(validFrom.getFullYear() + 1);
+          credential.validFrom = createTimeStamp({date: validFrom});
           let error;
           let verifiableCredential;
           try {
             verifiableCredential = await vc.issue({
               credential,
-              now,
               suite,
               documentLoader
             });
@@ -270,17 +275,19 @@ for(const [version, mockCredential] of versionedCredentials) {
         it('should issue both "validFrom" and "validUntil"', async () => {
           const credential = jsonld.clone(mockCredential);
           credential.issuer = 'did:example:12345';
-          credential.validFrom = '2022-05-30T19:21:25Z';
-          credential.validUntil = '2025-05-30T19:21:25Z';
-          const now = '2022-06-30T19:21:25Z';
+          const validFrom = new Date();
+          validFrom.setFullYear(validFrom.getFullYear() - 1);
+          credential.validFrom = createTimeStamp({date: validFrom});
+          const validUntil = new Date();
+          validUntil.setFullYear(validFrom.getFullYear() + 1);
+          credential.validUntil = createTimeStamp({date: validUntil});
           let error;
           let verifiableCredential;
           try {
             verifiableCredential = await vc.issue({
               credential,
               suite,
-              documentLoader,
-              now
+              documentLoader
             });
           } catch(e) {
             error = e;
