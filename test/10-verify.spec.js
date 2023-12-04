@@ -851,7 +851,7 @@ for(const [version, mockCredential] of versionedCredentials) {
           const credential = mockCredential();
           credential.issuer = 'did:example:12345';
           credential.issuanceDate = createSkewedTimeStamp({skewYear: 1});
-          const now = createSkewedTimeStamp({skewYear: 0});
+          const now = new Date();
           let error;
           try {
             vc._checkCredential({credential, now});
@@ -861,7 +861,7 @@ for(const [version, mockCredential] of versionedCredentials) {
           should.exist(error,
             'Should throw error when "now" is before "issuanceDate"');
           error.message.should.contain(
-            `The current date time (${now}) is before the ` +
+            `The current date time (${now.toISOString()}) is before the ` +
             `"issuanceDate" (${credential.issuanceDate}).`);
         });
       }
