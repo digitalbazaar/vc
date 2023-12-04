@@ -1034,14 +1034,18 @@ for(const [version, mockCredential] of versionedCredentials) {
           const credential = mockCredential();
           credential.issuer = 'did:example:12345';
           credential.validFrom = createSkewedTimeStamp({skewYear: 1});
+          const now = new Date();
           let error;
           try {
-            vc._checkCredential({credential});
+            vc._checkCredential({credential, now});
           } catch(e) {
             error = e;
           }
           should.exist(error,
             'Should throw error when "validFrom" in future');
+          error.message.should.contain(
+            `The current date time (${now.toISOString()}) is before ` +
+            `"validFrom" (${credential.validFrom})`);
         });
         it('should accept "validFrom" in the past', () => {
           const credential = mockCredential();
@@ -1060,14 +1064,18 @@ for(const [version, mockCredential] of versionedCredentials) {
           const credential = mockCredential();
           credential.issuer = 'did:example:12345';
           credential.validUntil = createSkewedTimeStamp({skewYear: -1});
+          const now = new Date();
           let error;
           try {
-            vc._checkCredential({credential});
+            vc._checkCredential({credential, now});
           } catch(e) {
             error = e;
           }
           should.exist(error,
             'Should throw error when "validUntil" in the past');
+          error.message.should.contain(
+            `The current date time (${now.toISOString()}) is after ` +
+            `"validUntil" (${credential.validUntil})`);
         });
         it('should accept "validUntil" in the future', () => {
           const credential = mockCredential();
@@ -1117,20 +1125,25 @@ for(const [version, mockCredential] of versionedCredentials) {
           credential.issuer = 'did:example:12345';
           credential.validFrom = createSkewedTimeStamp({skewYear: -2});
           credential.validUntil = createSkewedTimeStamp({skewYear: -1});
+          const now = new Date();
           let error;
           try {
-            vc._checkCredential({credential});
+            vc._checkCredential({credential, now});
           } catch(e) {
             error = e;
           }
           should.exist(error,
             'Should throw when now is after "validFrom" & "validUntil"');
+          error.message.should.contain(
+            `The current date time (${now.toISOString()}) is after ` +
+            `"validUntil" (${credential.validUntil}).`);
         });
         it('should reject if now is before "validFrom" & "validUntil"', () => {
           const credential = mockCredential();
           credential.issuer = 'did:example:12345';
           credential.validFrom = createSkewedTimeStamp({skewYear: 1});
           credential.validUntil = createSkewedTimeStamp({skewYear: 2});
+          const now = new Date();
           let error;
           try {
             vc._checkCredential({credential});
@@ -1139,6 +1152,10 @@ for(const [version, mockCredential] of versionedCredentials) {
           }
           should.exist(error,
             'Should throw when now is before "validFrom" & "validUntil"');
+          error.message.should.contain(
+            `The current date time (${now.toISOString()}) is before ` +
+            `"validFrom" (${credential.validFrom}).`
+          );
         });
       }
       it('should reject if "credentialSubject" is empty', () => {
