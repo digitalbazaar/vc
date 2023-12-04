@@ -816,7 +816,7 @@ for(const [version, mockCredential] of versionedCredentials) {
             error = e;
           }
           should.exist(error,
-            'Should throw error when verifying "validFrom" in future');
+            'Should throw error when "validFrom" in future');
         });
         it('should accept "validFrom" in the past', () => {
           const credential = jsonld.clone(mockCredential);
