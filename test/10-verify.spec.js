@@ -14,7 +14,7 @@ import {
 } from './testDocumentLoader.js';
 import {assertionController} from './mocks/assertionController.js';
 import chai from 'chai';
-import {createTimeStamp} from './helpers.js';
+import {createSkewedTimeStamp} from './helpers.js';
 import {CredentialIssuancePurpose} from '../lib/CredentialIssuancePurpose.js';
 import {DataIntegrityProof} from '@digitalbazaar/data-integrity';
 import {Ed25519Signature2018} from '@digitalbazaar/ed25519-signature-2018';
@@ -203,11 +203,8 @@ for(const [version, mockCredential] of versionedCredentials) {
         it('should issue "validUntil" in the future', async () => {
           const credential = mockCredential();
           credential.issuer = 'did:example:12345';
-          const validUntil = new Date();
           // set validUntil one year in the future
-          validUntil.setFullYear(validUntil.getFullYear() + 1);
-          // turn it into an ISO Time Stamp
-          credential.validUntil = createTimeStamp({date: validUntil});
+          credential.validUntil = createSkewedTimeStamp({skewYear: 1});
           let error;
           let verifiableCredential;
           try {
@@ -234,11 +231,8 @@ for(const [version, mockCredential] of versionedCredentials) {
         it('should issue "validUntil" in the past', async () => {
           const credential = mockCredential();
           credential.issuer = 'did:example:12345';
-          const validUntil = new Date();
           // set validUntil one year in the past
-          validUntil.setFullYear(validUntil.getFullYear() - 1);
-          // turn it into an ISO Time Stamp
-          credential.validUntil = createTimeStamp({date: validUntil});
+          credential.validUntil = createSkewedTimeStamp({skewYear: -1});
           let error;
           let verifiableCredential;
           try {
@@ -265,9 +259,7 @@ for(const [version, mockCredential] of versionedCredentials) {
         it('should issue "validFrom" in the past', async () => {
           const credential = mockCredential();
           credential.issuer = 'did:example:12345';
-          const validFrom = new Date();
-          validFrom.setFullYear(validFrom.getFullYear() - 1);
-          credential.validFrom = createTimeStamp({date: validFrom});
+          credential.validFrom = createSkewedTimeStamp({skewYear: -1});
           let error;
           let verifiableCredential;
           try {
@@ -294,9 +286,7 @@ for(const [version, mockCredential] of versionedCredentials) {
         it('should issue "validFrom" in the future', async () => {
           const credential = mockCredential();
           credential.issuer = 'did:example:12345';
-          const validFrom = new Date();
-          validFrom.setFullYear(validFrom.getFullYear() + 1);
-          credential.validFrom = createTimeStamp({date: validFrom});
+          credential.validFrom = createSkewedTimeStamp({skewYear: 1});
           let error;
           let verifiableCredential;
           try {
@@ -323,12 +313,8 @@ for(const [version, mockCredential] of versionedCredentials) {
         it('should issue both "validFrom" and "validUntil"', async () => {
           const credential = mockCredential();
           credential.issuer = 'did:example:12345';
-          const validFrom = new Date();
-          validFrom.setFullYear(validFrom.getFullYear() - 1);
-          credential.validFrom = createTimeStamp({date: validFrom});
-          const validUntil = new Date();
-          validUntil.setFullYear(validFrom.getFullYear() + 1);
-          credential.validUntil = createTimeStamp({date: validUntil});
+          credential.validFrom = createSkewedTimeStamp({skewYear: -1});
+          credential.validUntil = createSkewedTimeStamp({skewYear: 1});
           let error;
           let verifiableCredential;
           try {
@@ -1023,11 +1009,14 @@ for(const [version, mockCredential] of versionedCredentials) {
           .contain('Credential has expired.');
       });
       if(version === 1.0) {
+        // we submit with second precission,
+        // but throw with millisecond precision
+        const getISOString = stamp => new Date(stamp).toISOString();
         it('should reject if "now" is before "issuanceDate"', () => {
           const credential = mockCredential();
           credential.issuer = 'did:example:12345';
-          credential.issuanceDate = '2022-10-31T19:21:25Z';
-          const now = '2022-06-30T19:21:25Z';
+          credential.issuanceDate = createSkewedTimeStamp({skewYear: 1});
+          const now = createSkewedTimeStamp({skewYear: 0});
           let error;
           try {
             vc._checkCredential({credential, now});
@@ -1037,19 +1026,18 @@ for(const [version, mockCredential] of versionedCredentials) {
           should.exist(error,
             'Should throw error when "now" is before "issuanceDate"');
           error.message.should.contain(
-            'The current date time (2022-06-30T19:21:25.000Z) is before the ' +
-            '"issuanceDate" (2022-10-31T19:21:25.000Z).');
+            `The current date time (${getISOString(now)}) is before the ` +
+            `"issuanceDate" (${getISOString(credential.issuanceDate)}).`);
         });
       }
       if(version === 2.0) {
         it('should reject "validFrom" in the future', () => {
           const credential = mockCredential();
           credential.issuer = 'did:example:12345';
-          credential.validFrom = '2022-10-30T19:21:25Z';
-          const now = '2022-06-30T19:21:25Z';
+          credential.validFrom = createSkewedTimeStamp({skewYear: 1});
           let error;
           try {
-            vc._checkCredential({credential, now});
+            vc._checkCredential({credential});
           } catch(e) {
             error = e;
           }
@@ -1059,11 +1047,10 @@ for(const [version, mockCredential] of versionedCredentials) {
         it('should accept "validFrom" in the past', () => {
           const credential = mockCredential();
           credential.issuer = 'did:example:12345';
-          credential.validFrom = '2022-06-30T19:21:25Z';
-          const now = '2022-10-30T19:21:25Z';
+          credential.validFrom = createSkewedTimeStamp({skewYear: -1});
           let error;
           try {
-            vc._checkCredential({credential, now});
+            vc._checkCredential({credential});
           } catch(e) {
             error = e;
           }
@@ -1073,11 +1060,10 @@ for(const [version, mockCredential] of versionedCredentials) {
         it('should reject "validUntil" in the past', () => {
           const credential = mockCredential();
           credential.issuer = 'did:example:12345';
-          credential.validUntil = '2022-06-31T19:21:25Z';
-          const now = '2025-10-30T19:21:25Z';
+          credential.validUntil = createSkewedTimeStamp({skewYear: -1});
           let error;
           try {
-            vc._checkCredential({credential, now});
+            vc._checkCredential({credential});
           } catch(e) {
             error = e;
           }
@@ -1087,11 +1073,10 @@ for(const [version, mockCredential] of versionedCredentials) {
         it('should accept "validUntil" in the future', () => {
           const credential = mockCredential();
           credential.issuer = 'did:example:12345';
-          credential.validUntil = '2025-10-31T19:21:25Z';
-          const now = '2022-06-30T19:21:25Z';
+          credential.validUntil = createSkewedTimeStamp({skewYear: 1});
           let error;
           try {
-            vc._checkCredential({credential, now});
+            vc._checkCredential({credential});
           } catch(e) {
             error = e;
           }
@@ -1101,12 +1086,11 @@ for(const [version, mockCredential] of versionedCredentials) {
         it('should accept if now is between "validFrom" & "validUntil"', () => {
           const credential = mockCredential();
           credential.issuer = 'did:example:12345';
-          credential.validFrom = '2022-05-30T19:21:25Z';
-          credential.validUntil = '2025-05-30T19:21:25Z';
-          const now = '2022-06-30T19:21:25Z';
+          credential.validFrom = createSkewedTimeStamp({skewYear: -1});
+          credential.validUntil = createSkewedTimeStamp({skewYear: 1});
           let error;
           try {
-            vc._checkCredential({credential, now});
+            vc._checkCredential({credential});
           } catch(e) {
             error = e;
           }
@@ -1117,7 +1101,7 @@ for(const [version, mockCredential] of versionedCredentials) {
           () => {
             const credential = jsonld.clone(mockCredential);
             credential.issuer = 'did:example:12345';
-            const now = '2022-06-30T19:21:25Z';
+            const now = createSkewedTimeStamp({skewYear: 0});
             credential.validFrom = now;
             credential.validUntil = now;
             let error;
@@ -1132,12 +1116,11 @@ for(const [version, mockCredential] of versionedCredentials) {
         it('should reject if now is after "validFrom" & "validUntil"', () => {
           const credential = mockCredential();
           credential.issuer = 'did:example:12345';
-          credential.validFrom = '2022-05-30T19:21:25Z';
-          credential.validUntil = '2023-05-30T19:21:25Z';
-          const now = '2024-06-30T19:21:25Z';
+          credential.validFrom = createSkewedTimeStamp({skewYear: -2});
+          credential.validUntil = createSkewedTimeStamp({skewYear: -1});
           let error;
           try {
-            vc._checkCredential({credential, now});
+            vc._checkCredential({credential});
           } catch(e) {
             error = e;
           }
@@ -1147,12 +1130,11 @@ for(const [version, mockCredential] of versionedCredentials) {
         it('should reject if now is before "validFrom" & "validUntil"', () => {
           const credential = mockCredential();
           credential.issuer = 'did:example:12345';
-          credential.validFrom = '2024-05-30T19:21:25Z';
-          credential.validUntil = '2025-05-30T19:21:25Z';
-          const now = '2023-06-30T19:21:25Z';
+          credential.validFrom = createSkewedTimeStamp({skewYear: 1});
+          credential.validUntil = createSkewedTimeStamp({skewYear: 2});
           let error;
           try {
-            vc._checkCredential({credential, now});
+            vc._checkCredential({credential});
           } catch(e) {
             error = e;
           }
