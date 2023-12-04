@@ -58,7 +58,7 @@ describe('verifies XML Schema DateTime', function() {
       assertDateTime('2019-00-26T14:00:00Z', false);
     });
     it('should not accept 13 as a month', function() {
-      assertDateTime('2019-00-26T14:00:00Z', false);
+      assertDateTime('2019-13-26T14:00:00Z', false);
     });
     it('should not accept 00 as a day', function() {
       assertDateTime('2019-01-00T14:00:00Z', false);
