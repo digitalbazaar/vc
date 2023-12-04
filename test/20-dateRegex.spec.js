@@ -39,6 +39,9 @@ describe('verifies XML Schema DateTime', function() {
     });
   });
   describe('negative', function() {
+    it('should not accept an empty string', function() {
+      assertDateTime('', false);
+    });
     it('should not accept a date with lowercase t', function() {
       assertDateTime('2019-03-26t14:00:00Z', false);
     });
