@@ -116,7 +116,7 @@ for(const [version, mockCredential] of versionedCredentials) {
         }
 
         should.exist(error,
-          'Should throw error when "verificationMethod" property missing');
+          'Should throw error when "verificationMethod" property is missing');
         error.should.be.instanceof(TypeError);
         error.message.should
           .contain('"suite.verificationMethod" property is required.');
