@@ -780,7 +780,6 @@ for(const [version, mockCredential] of versionedCredentials) {
       if(version === 1.0) {
         // we submit with second precission,
         // but throw with millisecond precision
-        const getISOString = stamp => new Date(stamp).toISOString();
         it('should reject if "now" is before "issuanceDate"', () => {
           const credential = jsonld.clone(mockCredential);
           credential.issuer = 'did:example:12345';
@@ -795,8 +794,8 @@ for(const [version, mockCredential] of versionedCredentials) {
           should.exist(error,
             'Should throw error when "now" is before "issuanceDate"');
           error.message.should.contain(
-            `The current date time (${getISOString(now)}) is before the ` +
-            `"issuanceDate" (${getISOString(credential.issuanceDate)}).`);
+            `The current date time (${now}) is before the ` +
+            `"issuanceDate" (${credential.issuanceDate}).`);
         });
       }
       if(version === 2.0) {
