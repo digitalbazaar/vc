@@ -65,7 +65,7 @@ Version skipped to match upstream.
 ## 6.2.1 - 2023-xx-xx
 
 ### Changed
-- Changed to `engines.node >=18` to support newer keys & suites.
+- Changed `engines.node >=18` to support newer keys & suites.
 
 ## 6.2.0 - 2023-11-14
 
