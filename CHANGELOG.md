@@ -1,9 +1,9 @@
 # @digitalbazaar/vc ChangeLog
 
-## 7.0.0 - 2023-xx-xx
+## 6.2.1 - 2023-xx-xx
 
 ### Changed
-- **BREAKING**: Require Node.js >=18.
+- Changed to `engines.node >=18` to support newer keys & suites.
 
 ## 6.2.0 - 2023-11-14
 
