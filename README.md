@@ -50,7 +50,7 @@ the following:
 
 ## Install
 
-- Browsers and Node.js 14+ are supported.
+- Browsers and Node.js 18+ are supported.
 
 To install from NPM:
 
