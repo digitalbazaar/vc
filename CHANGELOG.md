@@ -9,6 +9,7 @@
 - Support for VC 2.0 `validUntil` and `validFrom`.
 - Support for VP 2.0 presentations issuance and verification.
 - Test vectors for VC 2.0 VCs.
+- Example roundtrip issue/verify script.
 
 ## 6.2.0 - 2023-11-14
 
