@@ -178,7 +178,6 @@ for(const [version, mockCredential] of versionedCredentials) {
           id: 'test:ebc6f1c2',
           holder: 'did:ex:holder123'
         });
-
         presentation.type.should.eql(['VerifiablePresentation']);
         presentation.should.have.property('verifiableCredential');
         presentation.should.have.property('id', 'test:ebc6f1c2');
