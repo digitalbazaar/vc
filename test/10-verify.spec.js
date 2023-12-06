@@ -470,27 +470,27 @@ describe('verify API (credentials)', () => {
       }
       result.verified.should.be.false;
     });
-    it('should not run "checkStatus" on a vc without a "credentialStatus" property',
-      async () => {
-        const credential = jsonld.clone(mockCredential);
-        const verifiableCredential = await vc.issue({
-          credential,
-          suite,
-          documentLoader
-        });
-        const result = await vc.verifyCredential({
-          credential: verifiableCredential,
-          controller: assertionController,
-          suite,
-          documentLoader,
-          // ensure any checkStatus call will fail verification
-          checkStatus: async () => ({verified: false})
-        });
-        if(result.error) {
-          throw result.error;
-        }
-        result.verified.should.be.true;
+    it('should not run "checkStatus" on a vc without a ' +
+      '"credentialStatus" property', async () => {
+      const credential = jsonld.clone(mockCredential);
+      const verifiableCredential = await vc.issue({
+        credential,
+        suite,
+        documentLoader
       });
+      const result = await vc.verifyCredential({
+        credential: verifiableCredential,
+        controller: assertionController,
+        suite,
+        documentLoader,
+        // ensure any checkStatus call will fail verification
+        checkStatus: async () => ({verified: false})
+      });
+      if(result.error) {
+        throw result.error;
+      }
+      result.verified.should.be.true;
+    });
     it('should fail to verify a changed derived vc', async () => {
       const proofId = `urn:uuid:${uuid()}`;
       // setup ecdsa-sd-2023 suite for signing selective disclosure VCs
