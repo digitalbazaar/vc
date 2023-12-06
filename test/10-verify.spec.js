@@ -420,7 +420,7 @@ describe('verify API (credentials)', () => {
       }
       result.verified.should.be.true;
     });
-    it('should verify a changed derived vc', async () => {
+    it('should fail to verify a changed derived vc', async () => {
       const proofId = `urn:uuid:${uuid()}`;
       // setup ecdsa-sd-2023 suite for signing selective disclosure VCs
       const ecdsaSdSignSuite = new DataIntegrityProof({
