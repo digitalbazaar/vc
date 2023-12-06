@@ -519,7 +519,6 @@ for(const [version, mockCredential] of versionedCredentials) {
         result.verified.should.be.a('boolean');
         result.verified.should.be.true;
       });
-
       it('verifies an unsigned presentation', async () => {
         const {
           presentation,
