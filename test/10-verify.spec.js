@@ -165,7 +165,7 @@ describe('vc.issue()', () => {
     const credential = jsonld.clone(mockCredential);
     delete credential.issuanceDate;
     const now = new Date();
-    const expectedIssuanceDate = now.toISOString().slice(0, -5) + 'Z';
+    const expectedIssuanceDate = `${now.toISOString().slice(0, -5)}Z`;
     const verifiableCredential = await vc.issue({
       credential,
       suite,
