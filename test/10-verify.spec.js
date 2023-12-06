@@ -599,7 +599,6 @@ for(const [version, mockCredential] of versionedCredentials) {
 
           firstErrorMsg.should.contain('Invalid signature.');
         });
-
         it('should not cause error when credentials are correct', async () => {
           const challenge = uuid();
           const {presentation, suite: vcSuite, documentLoader} =
