@@ -216,7 +216,6 @@ for(const [version, mockCredential] of versionedCredentials) {
           challenge: '12ec21',
           documentLoader
         });
-
         vp.should.have.property('proof');
         vp.proof.should.have.property('type', 'Ed25519Signature2018');
         vp.proof.should.have.property('proofPurpose', 'authentication');
