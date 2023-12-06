@@ -324,8 +324,23 @@ describe('verify API (credentials)', () => {
   });
 
   it('should verify a vc with a positive status check', async () => {
+    const credential = jsonld.clone(mockCredential);
+    credential['@context'].push({
+      '@context': {
+        id: '@id',
+        type: '@type',
+        TestStatusList: {
+          '@id': 'https://example.edu/TestStatusList',
+          '@type': '@id'
+        }
+      }
+    });
+    credential.credentialStatus = {
+      id: 'https://example.edu/status/24',
+      type: 'TestStatusList'
+    };
     const verifiableCredential = await vc.issue({
-      credential: mockCredential,
+      credential,
       suite,
       documentLoader
     });
@@ -422,8 +437,23 @@ describe('verify API (credentials)', () => {
       results.verified.should.be.false;
     });
     it('should fail to verify a vc with a negative status check', async () => {
+      const credential = jsonld.clone(mockCredential);
+      credential['@context'].push({
+        '@context': {
+          id: '@id',
+          type: '@type',
+          TestStatusList: {
+            '@id': 'https://example.edu/TestStatusList',
+            '@type': '@id'
+          }
+        }
+      });
+      credential.credentialStatus = {
+        id: 'https://example.edu/status/24',
+        type: 'TestStatusList'
+      };
       const verifiableCredential = await vc.issue({
-        credential: mockCredential,
+        credential,
         suite,
         documentLoader
       });
@@ -438,7 +468,7 @@ describe('verify API (credentials)', () => {
       if(result.error) {
         throw result.error;
       }
-      result.verified.should.be.true;
+      result.verified.should.be.false;
     });
     it('should fail to verify a changed derived vc', async () => {
       const proofId = `urn:uuid:${uuid()}`;
