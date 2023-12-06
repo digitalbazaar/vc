@@ -477,7 +477,7 @@ describe('verify API (credentials)', () => {
         {id: 'revocation_status', valid: false}
       ]);
     });
-    it('should not run checkStatus on a vc with out a credentialStatus',
+    it('should not run "checkStatus" on a vc without a "credentialStatus" property',
       async () => {
         const credential = jsonld.clone(mockCredential);
         const verifiableCredential = await vc.issue({
