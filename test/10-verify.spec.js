@@ -190,6 +190,27 @@ describe('vc.issue()', () => {
     error.message.should
       .contain('"suite.verificationMethod" property is required.');
   });
+  it('should add issuanceDate to verifiable credentials', async () => {
+    const credential = jsonld.clone(mockCredential);
+    delete credential.issuanceDate;
+    const now = new Date();
+    const jsonDate = now.toJSON();
+    const expectedIssuanceDate = `${jsonDate.slice(0, jsonDate.length - 5)}Z`;
+    const verifiableCredential = await vc.issue({
+      credential,
+      suite,
+      documentLoader,
+      now
+    });
+    verifiableCredential.should.exist;
+    verifiableCredential.should.be.an('object');
+    verifiableCredential.should.have.property('proof');
+    verifiableCredential.proof.should.be.an('object');
+    verifiableCredential.should.have.property(
+      'issuanceDate',
+      expectedIssuanceDate
+    );
+  });
 });
 
 describe('vc.createPresentation()', () => {
