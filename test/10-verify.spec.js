@@ -161,7 +161,7 @@ describe('vc.issue()', () => {
     error.message.should
       .contain('"suite.verificationMethod" property is required.');
   });
-  it('should add issuanceDate to verifiable credentials', async () => {
+  it('should add "issuanceDate" to verifiable credentials', async () => {
     const credential = jsonld.clone(mockCredential);
     delete credential.issuanceDate;
     const now = new Date();
