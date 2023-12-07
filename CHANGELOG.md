@@ -65,9 +65,9 @@ Version skipped to match upstream.
 ## 7.0.0 -
 
 ### Added
-- Add support for VC 2.0 credentials issuance and verification.
-- Add support for VP 2.0 presentations issuance and verification.
-- Add Test vectors for VC 2.0 VCs.
+- Add support for VC 2.0 Verifiable Credentials issuance and verification.
+- Add support for VC 2.0 Verifiable Presentations issuance and verification.
+- Add Test vectors for VC 2.0 VCs & VPs.
 
 ### Changed
 - **BREAKING**: Default issuance now uses VC 2.0 context.
