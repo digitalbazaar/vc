@@ -8,7 +8,7 @@ import {
 } from './contexts/index.js';
 import dataIntegrityContext from '@digitalbazaar/data-integrity-context';
 import jsigs from 'jsonld-signatures';
-import jsonld from 'jsonld';
+import {klona} from 'klona';
 import multikeyContext from '@digitalbazaar/multikey-context';
 import {MultiLoader} from './MultiLoader.js';
 
@@ -40,7 +40,7 @@ const testDocumentLoader = extendContextLoader(async url => {
   if(doc) {
     return {
       contextUrl: null,
-      document: jsonld.clone(doc),
+      document: klona(doc),
       documentUrl: url
     };
   }
