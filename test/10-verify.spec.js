@@ -103,7 +103,7 @@ for(const [version, mockCredential] of versionedCredentials) {
   describe(`Verifiable Credentials Data Model ${version}`, async function() {
     describe('vc.issue()', () => {
       it('should issue a verifiable credential with proof', async () => {
-        const credential = jsonld.clone(mockCredential);
+        const credential = mockCredential();
         const verifiableCredential = await vc.issue({
           credential,
           suite,
@@ -122,7 +122,7 @@ for(const [version, mockCredential] of versionedCredentials) {
               publicKeyBase58: keyPair.publicKeyBase58
             });
           keyPair.id = `did:key:${fp}#${fp}`;
-          const credential = jsonld.clone(mockCredential);
+          const credential = mockCredential();
           credential.id = `urn:uuid:${uuid()}`;
           credential.issuer = `did:key:${fp}`;
           credential.expirationDate = '2020-05-31T19:21:25Z';
@@ -143,7 +143,7 @@ for(const [version, mockCredential] of versionedCredentials) {
           verifiableCredential.proof.should.be.an('object');
         });
         it('should add "issuanceDate" to verifiable credentials', async () => {
-          const credential = jsonld.clone(mockCredential);
+          const credential = mockCredential();
           delete credential.issuanceDate;
           const now = new Date();
           const expectedIssuanceDate = `${now.toISOString().slice(0, -5)}Z`;
@@ -171,7 +171,7 @@ for(const [version, mockCredential] of versionedCredentials) {
         let error;
         try {
           await vc.issue({
-            credential: jsonld.clone(mockCredential),
+            credential: mockCredential(),
             suite
           });
         } catch(e) {
@@ -188,7 +188,7 @@ for(const [version, mockCredential] of versionedCredentials) {
     describe('vc.createPresentation()', () => {
       it('should create an unsigned presentation', () => {
         const presentation = vc.createPresentation({
-          verifiableCredential: jsonld.clone(mockCredential),
+          verifiableCredential: mockCredential(),
           id: 'test:ebc6f1c2',
           holder: 'did:ex:holder123'
         });
@@ -203,7 +203,7 @@ for(const [version, mockCredential] of versionedCredentials) {
     describe('vc.signPresentation()', () => {
       it('should create a signed VP', async () => {
         const presentation = vc.createPresentation({
-          verifiableCredential: jsonld.clone(mockCredential),
+          verifiableCredential: mockCredential(),
           id: 'test:ebc6f1c2',
           holder: 'did:ex:holder123',
           version
@@ -228,7 +228,7 @@ for(const [version, mockCredential] of versionedCredentials) {
     describe('verify API (credentials)', () => {
       it('should verify a vc', async () => {
         const verifiableCredential = await vc.issue({
-          credential: jsonld.clone(mockCredential),
+          credential: mockCredential(),
           suite,
           documentLoader
         });
@@ -276,7 +276,7 @@ for(const [version, mockCredential] of versionedCredentials) {
         });
 
         const verifiableCredential = await vc.issue({
-          credential: jsonld.clone(mockCredential),
+          credential: mockCredential(),
           suite: ecdsaSdSignSuite,
           documentLoader
         });
@@ -353,7 +353,7 @@ for(const [version, mockCredential] of versionedCredentials) {
       });
 
       it('should verify a vc with a positive status check', async () => {
-        const credential = jsonld.clone(mockCredential);
+        const credential = mockCredential();
         credential['@context'].push({
           '@context': {
             id: '@id',
@@ -467,7 +467,7 @@ for(const [version, mockCredential] of versionedCredentials) {
         });
         it('should fail to verify a vc with a negative status check',
           async () => {
-            const credential = jsonld.clone(mockCredential);
+            const credential = mockCredential();
             credential['@context'].push({
               '@context': {
                 id: '@id',
@@ -502,7 +502,7 @@ for(const [version, mockCredential] of versionedCredentials) {
           });
         it('should not run "checkStatus" on a vc without a ' +
           '"credentialStatus" property', async () => {
-          const credential = jsonld.clone(mockCredential);
+          const credential = mockCredential();
           const verifiableCredential = await vc.issue({
             credential,
             suite,
@@ -552,7 +552,7 @@ for(const [version, mockCredential] of versionedCredentials) {
           });
 
           const verifiableCredential = await vc.issue({
-            credential: jsonld.clone(mockCredential),
+            credential: mockCredential(),
             suite: ecdsaSdSignSuite,
             documentLoader
           });
@@ -822,7 +822,7 @@ for(const [version, mockCredential] of versionedCredentials) {
       });
       if(version === 1.0) {
         it('should reject if "now" is before "issuanceDate"', () => {
-          const credential = jsonld.clone(mockCredential);
+          const credential = mockCredential();
           credential.issuer = 'did:example:12345';
           credential.issuanceDate = '2022-10-31T19:21:25Z';
           const now = '2022-06-30T19:21:25Z';
@@ -841,7 +841,7 @@ for(const [version, mockCredential] of versionedCredentials) {
 
       }
       it('should reject if "credentialSubject" is empty', () => {
-        const credential = jsonld.clone(mockCredential);
+        const credential = mockCredential();
         credential.credentialSubject = {};
         credential.issuer = 'did:example:12345';
         if(version === 1.0) {
@@ -859,7 +859,7 @@ for(const [version, mockCredential] of versionedCredentials) {
           '"credentialSubject" must make a claim.');
       });
       it('should reject if a "credentialSubject" is empty', () => {
-        const credential = jsonld.clone(mockCredential);
+        const credential = mockCredential();
         credential.credentialSubject = [{}, {id: 'did:key:zFoo'}];
         credential.issuer = 'did:example:12345';
         if(version === 1.0) {
@@ -878,7 +878,7 @@ for(const [version, mockCredential] of versionedCredentials) {
       });
 
       it('should accept multiple credentialSubjects', () => {
-        const credential = jsonld.clone(mockCredential);
+        const credential = mockCredential();
         credential.credentialSubject = [
           {id: 'did:key:zFoo'},
           {name: 'did key'}
@@ -902,7 +902,7 @@ for(const [version, mockCredential] of versionedCredentials) {
 }
 
 async function _generateCredential(_mockCredential) {
-  const mockCredential = jsonld.clone(_mockCredential);
+  const mockCredential = _mockCredential();
   const {didDocument, documentLoader} = await _loadDid();
   mockCredential.issuer = didDocument.didDocument.id;
   mockCredential.id = `http://example.edu/credentials/${uuid()}`;
