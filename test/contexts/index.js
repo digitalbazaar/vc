@@ -1,10 +1,10 @@
 import {
-  constants as credentialConstants,
+  constants as credentialsConstants,
   contexts as credentialsContexts
 } from 'credentials-context';
 import {
   contexts as credentialsV2Contexts,
-  constants as credentialV2Constants
+  constants as credentialsV2Constants
 } from '@digitalbazaar/credentials-v2-context';
 import {
   constants as didConstants,
@@ -32,8 +32,8 @@ import {nullType} from './null_type.js';
 import {nullVersion} from './null_version.js';
 
 const {CONTEXT_URL: ED25519_CONTEXT_URL} = ed25519Constants;
-const {CREDENTIALS_CONTEXT_V1_URL} = credentialConstants;
-const {CONTEXT_URL: CREDENTIALS_CONTEXT_V2_URL} = credentialV2Constants;
+const {CREDENTIALS_CONTEXT_V1_URL} = credentialsConstants;
+const {CONTEXT_URL: CREDENTIALS_CONTEXT_V2_URL} = credentialsV2Constants;
 const {DID_CONTEXT_URL} = didConstants;
 const {VERES_ONE_CONTEXT_V1_URL} = v1Constants;
 
