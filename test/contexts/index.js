@@ -1,10 +1,13 @@
+/*!
+* Copyright (c) 2019-2023 Digital Bazaar, Inc. All rights reserved.
+*/
 import {
   constants as credentialsConstants,
   contexts as credentialsContexts
 } from 'credentials-context';
 import {
+  constants as credentialsV2Constants,
   contexts as credentialsV2Contexts,
-  constants as credentialsV2Constants
 } from '@digitalbazaar/credentials-v2-context';
 import {
   constants as didConstants,
