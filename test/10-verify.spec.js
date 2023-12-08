@@ -765,6 +765,34 @@ for(const [version, mockCredential] of versionedCredentials) {
             credential.credentialId.should.be.a('string');
           }
         });
+        it.only('should not cause error when credentials have mixed contexts',
+          async () => {
+            const challenge = uuid();
+            const {presentation, suite: vcSuite, documentLoader} =
+              await _generatePresentation({
+                challenge,
+                credentialsCount: count,
+                mockCredential: mockData.credentials.mixed,
+                version
+              });
+            const result = await vc.verify({
+              documentLoader,
+              presentation,
+              suite: vcSuite,
+              unsignedPresentation: true
+            });
+            const credentialResults = result.credentialResults;
+
+            result.verified.should.be.a('boolean');
+            result.verified.should.be.true;
+
+            for(const credential of credentialResults) {
+              credential.verified.should.be.a('boolean');
+              credential.verified.should.be.true;
+              should.exist(credential.credentialId);
+              credential.credentialId.should.be.a('string');
+            }
+          });
       }
     });
 
