@@ -23,8 +23,6 @@ import {
 } from '@digitalbazaar/ed25519-verification-key-2018';
 import {invalidContexts} from './contexts/index.js';
 import jsigs from 'jsonld-signatures';
-import {klona} from 'klona';
-import {mock as mockData} from './mocks/mock.data.js';
 import {v4 as uuid} from 'uuid';
 import {VeresOneDriver} from 'did-veres-one';
 import {versionedCredentials} from './mocks/credential.js';
@@ -943,7 +941,7 @@ for(const [version, mockCredential] of versionedCredentials) {
 
     describe('_checkCredential', () => {
       it('should reject a credentialSubject.id that is not a URI', () => {
-        const credential = klona(mockData.credentials.alpha);
+        const credential = mockCredential();
         credential.issuer = 'http://example.edu/credentials/58473';
         credential.credentialSubject.id = '12345';
         let error;
@@ -960,7 +958,7 @@ for(const [version, mockCredential] of versionedCredentials) {
       });
 
       it('should reject an issuer that is not a URI', () => {
-        const credential = klona(mockData.credentials.alpha);
+        const credential = mockCredential();
         credential.issuer = '12345';
         let error;
         try {
@@ -976,7 +974,7 @@ for(const [version, mockCredential] of versionedCredentials) {
       });
 
       it('should reject an evidence id that is not a URI', () => {
-        const credential = klona(mockData.credentials.alpha);
+        const credential = mockCredential();
         credential.issuer = 'did:example:12345';
         credential.evidence = '12345';
         let error;
@@ -992,25 +990,23 @@ for(const [version, mockCredential] of versionedCredentials) {
           .contain('"evidence" must be a URI');
       });
 
-      it('should reject if "expirationDate" has passed', () => {
-        const credential = klona(mockData.credentials.alpha);
-        credential.issuer = 'did:example:12345';
-        // set expirationDate to an expired date.
-        credential.expirationDate = '2020-05-31T19:21:25Z';
-        let error;
-        try {
-          vc._checkCredential({credential});
-        } catch(e) {
-          error = e;
-        }
-        should.exist(error,
-          'Should throw error when "expirationDate" has passed');
-        error.message.should
-          .contain('Credential has expired.');
-      });
       if(version === 1.0) {
-        // we submit with second precission,
-        // but throw with millisecond precision
+        it('should reject if "expirationDate" has passed', () => {
+          const credential = mockCredential();
+          credential.issuer = 'did:example:12345';
+          // set expirationDate to an expired date.
+          credential.expirationDate = '2020-05-31T19:21:25Z';
+          let error;
+          try {
+            vc._checkCredential({credential, mode: 'verify'});
+          } catch(e) {
+            error = e;
+          }
+          should.exist(error,
+            'Should throw error when "expirationDate" has passed');
+          error.message.should
+            .contain('Credential has expired.');
+        });
         it('should reject if "now" is before "issuanceDate"', () => {
           const credential = mockCredential();
           credential.issuer = 'did:example:12345';
