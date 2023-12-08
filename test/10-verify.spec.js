@@ -1106,7 +1106,7 @@ for(const [version, mockCredential] of versionedCredentials) {
         });
         it('should accept if "validFrom" & "validUntil" are the same time',
           () => {
-            const credential = jsonld.clone(mockCredential);
+            const credential = mockCredential();
             credential.issuer = 'did:example:12345';
             const now = createSkewedTimeStamp({skewYear: 0});
             credential.validFrom = now;
