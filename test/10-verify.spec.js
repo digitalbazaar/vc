@@ -972,6 +972,40 @@ for(const [version, mockCredential] of versionedCredentials) {
           .contain('"issuer" must be a URI');
       });
 
+      it('should reject credentialStatus that is not a URI', () => {
+        const credential = mockCredential();
+        credential.credentialStatus = {
+          id: 'not-a-url',
+          type: 'urn:type'
+        };
+        let error;
+        try {
+          vc._checkCredential({credential});
+        } catch(e) {
+          error = e;
+        }
+        should.exist(error,
+          'Should throw error when "evidence" is not a URI');
+        error.should.be.instanceof(TypeError);
+        error.message.should
+          .contain('"credentialStatus.id" must be a URI');
+      });
+
+      it('should accept "credentialStatus" with no "id"', () => {
+        const credential = mockCredential();
+        credential.credentialStatus = {
+          type: 'urn:type'
+        };
+        let error;
+        try {
+          vc._checkCredential({credential});
+        } catch(e) {
+          error = e;
+        }
+        should.not.exist(error,
+          'Should not throw error when "credentialStatus.id" is absent');
+      });
+
       it('should reject an evidence id that is not a URI', () => {
         const credential = mockCredential();
         credential.issuer = 'did:example:12345';
