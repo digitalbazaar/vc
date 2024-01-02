@@ -10,5 +10,5 @@
 export function createSkewedTimeStamp({date = new Date(), skewYear}) {
   date.setFullYear(date.getFullYear() + skewYear);
   const isoString = date.toISOString();
-  return `${isoString.substring(0, isoString.length - 5)}Z`;;
+  return `${isoString.substring(0, isoString.length - 5)}Z`;
 }
