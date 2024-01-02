@@ -113,7 +113,6 @@ for(const [version, mockCredential] of versionedCredentials) {
         } catch(e) {
           error = e;
         }
-
         should.exist(error,
           'Should throw error when "verificationMethod" property is missing');
         error.should.be.instanceof(TypeError);
