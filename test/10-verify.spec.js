@@ -1,9 +1,11 @@
 /*!
- * Copyright (c) 2019-2023 Digital Bazaar, Inc. All rights reserved.
+ * Copyright (c) 2019-2024 Digital Bazaar, Inc. All rights reserved.
  */
 import chai from 'chai';
 const should = chai.should();
 
+import * as bbs2023Cryptosuite from '@digitalbazaar/bbs-2023-cryptosuite';
+import * as Bls12381Multikey from '@digitalbazaar/bls12-381-multikey';
 import * as EcdsaMultikey from '@digitalbazaar/ecdsa-multikey';
 import * as ecdsaSd2023Cryptosuite from
   '@digitalbazaar/ecdsa-sd-2023-cryptosuite';
@@ -33,12 +35,6 @@ import multikeyContext from '@digitalbazaar/multikey-context';
 import {MultiLoader} from './MultiLoader.js';
 import {v4 as uuid} from 'uuid';
 import {VeresOneDriver} from 'did-veres-one';
-
-const {
-  createDiscloseCryptosuite,
-  createSignCryptosuite,
-  createVerifyCryptosuite
-} = ecdsaSd2023Cryptosuite;
 
 const remoteDocuments = new Map();
 remoteDocuments.set(vcExamplesV1CtxUrl, vcExamplesV1Ctx);
@@ -128,6 +124,24 @@ before(async () => {
   remoteDocuments.set(
     'https://example.edu/issuers/keys/2',
     await ecdsaKeyPair.export({publicKey: true}));
+});
+
+// do BBS setup...
+let bbsKeyPair;
+before(async () => {
+  // set up the BBS key pair that will be signing and verifying
+  bbsKeyPair = await Bls12381Multikey.generateBbsKeyPair({
+    algorithm: 'BBS-BLS12-381-SHA-256',
+    id: 'https://example.edu/issuers/keys/3',
+    controller: 'https://example.edu/issuers/565049'
+  });
+
+  // add the key to the controller doc (authorizes its use for assertion)
+  assertionController.assertionMethod.push(bbsKeyPair.id);
+  // register the key document with documentLoader
+  remoteDocuments.set(
+    'https://example.edu/issuers/keys/3',
+    await bbsKeyPair.export({publicKey: true}));
 });
 
 describe('vc.issue()', () => {
@@ -274,7 +288,13 @@ describe('verify API (credentials)', () => {
     result.verified.should.be.true;
   });
 
-  it('should verify a derived vc', async () => {
+  it('should verify an ECDSA-SD derived vc', async () => {
+    const {
+      createDiscloseCryptosuite,
+      createSignCryptosuite,
+      createVerifyCryptosuite
+    } = ecdsaSd2023Cryptosuite;
+
     const proofId = `urn:uuid:${uuid()}`;
     // setup ecdsa-sd-2023 suite for signing selective disclosure VCs
     const ecdsaSdSignSuite = new DataIntegrityProof({
@@ -314,6 +334,62 @@ describe('verify API (credentials)', () => {
       credential: derivedCredential,
       controller: assertionController,
       suite: ecdsaSdVerifySuite,
+      documentLoader
+    });
+
+    if(result.error) {
+      throw result.error;
+    }
+    result.verified.should.be.true;
+  });
+
+  it('should verify a BBS derived vc', async () => {
+    const {
+      createDiscloseCryptosuite,
+      createSignCryptosuite,
+      createVerifyCryptosuite
+    } = bbs2023Cryptosuite;
+
+    // setup bbs-2023 suite for signing unlinkable VCs
+    const bbsSignSuite = new DataIntegrityProof({
+      signer: bbsKeyPair.signer(), cryptosuite: createSignCryptosuite({
+        mandatoryPointers: [
+          '/issuanceDate',
+          '/issuer'
+        ]
+      })
+    });
+    // setup bbs-2023 suite for deriving unlinkable VC proofs
+    const bbsDeriveSuite = new DataIntegrityProof({
+      cryptosuite: createDiscloseCryptosuite({
+        selectivePointers: [
+          '/credentialSubject'
+        ]
+      })
+    });
+    // setup bbs-2023 suite for verifying unlinkable VC proofs
+    const bbsVerifySuite = new DataIntegrityProof({
+      cryptosuite: createVerifyCryptosuite()
+    });
+
+    const credential = {...mockCredential};
+    delete credential.id;
+    delete credential.credentialSubject.id;
+    credential.issuanceDate = '2010-01-01T01:00:00Z';
+    const verifiableCredential = await vc.issue({
+      credential,
+      suite: bbsSignSuite,
+      documentLoader
+    });
+    const derivedCredential = await vc.derive({
+      verifiableCredential,
+      suite: bbsDeriveSuite,
+      documentLoader
+    });
+    const result = await vc.verifyCredential({
+      credential: derivedCredential,
+      controller: assertionController,
+      suite: bbsVerifySuite,
       documentLoader
     });
 
@@ -491,7 +567,13 @@ describe('verify API (credentials)', () => {
       }
       result.verified.should.be.true;
     });
-    it('should fail to verify a changed derived vc', async () => {
+    it('should fail to verify a changed ECDSA-SD derived vc', async () => {
+      const {
+        createDiscloseCryptosuite,
+        createSignCryptosuite,
+        createVerifyCryptosuite
+      } = ecdsaSd2023Cryptosuite;
+
       const proofId = `urn:uuid:${uuid()}`;
       // setup ecdsa-sd-2023 suite for signing selective disclosure VCs
       const ecdsaSdSignSuite = new DataIntegrityProof({
@@ -532,6 +614,55 @@ describe('verify API (credentials)', () => {
         credential: derivedCredential,
         controller: assertionController,
         suite: ecdsaSdVerifySuite,
+        documentLoader
+      });
+      result.verified.should.be.a('boolean');
+      result.verified.should.be.false;
+    });
+    it('should fail to verify a changed BBS derived vc', async () => {
+      const {
+        createDiscloseCryptosuite,
+        createSignCryptosuite,
+        createVerifyCryptosuite
+      } = bbs2023Cryptosuite;
+
+      // setup bbs-2023 suite for signing unlinkable VCs
+      const bbsSignSuite = new DataIntegrityProof({
+        signer: bbsKeyPair.signer(), cryptosuite: createSignCryptosuite({
+          mandatoryPointers: [
+            '/issuanceDate',
+            '/issuer'
+          ]
+        })
+      });
+      // setup bbs-2023 suite for deriving unlinkable VC proofs
+      const bbsDeriveSuite = new DataIntegrityProof({
+        cryptosuite: createDiscloseCryptosuite({
+          selectivePointers: [
+            '/credentialSubject'
+          ]
+        })
+      });
+      // setup bbs-2023 suite for verifying unlinkable VC proofs
+      const bbsVerifySuite = new DataIntegrityProof({
+        cryptosuite: createVerifyCryptosuite()
+      });
+
+      const verifiableCredential = await vc.issue({
+        credential: {...mockCredential},
+        suite: bbsSignSuite,
+        documentLoader
+      });
+      const derivedCredential = await vc.derive({
+        verifiableCredential,
+        suite: bbsDeriveSuite,
+        documentLoader
+      });
+      derivedCredential.credentialSubject.id = `urn:uuid:${uuid()}`;
+      const result = await vc.verifyCredential({
+        credential: derivedCredential,
+        controller: assertionController,
+        suite: bbsVerifySuite,
         documentLoader
       });
       result.verified.should.be.a('boolean');
