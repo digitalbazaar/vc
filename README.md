@@ -122,15 +122,18 @@ Pre-requisites:
 
 * You have a private key (with id and controller) and corresponding suite
 * You have are using a cryptosuite that supports selective disclosure, such
-  as `ecdsa-sd-2023`
+  as `ecdsa-sd-2023` or `bbs-2023`
 * If you're using a custom `@context`, make sure it's resolvable
 * (Recommended) You have a strategy for where to publish your Controller
   Document and Public Key
 
+Issuing using `ecdsa-sd-2023`:
+
 ```js
-import * as vc from '@digitalbazaar/vc';
+import * as EcdsaMultikey from '@digitalbazaar/ecdsa-multikey';
 import * as ecdsaSd2023Cryptosuite from
   '@digitalbazaar/ecdsa-sd-2023-cryptosuite';
+import * as vc from '@digitalbazaar/vc';
 import {DataIntegrityProof} from '@digitalbazaar/data-integrity';
 
 const ecdsaKeyPair = await EcdsaMultikey.generate({
@@ -176,6 +179,56 @@ const signedVC = await vc.issue({credential, suite, documentLoader});
 console.log(JSON.stringify(signedVC, null, 2));
 ```
 
+Issuing using `bbs-2023`:
+
+```js
+import * as bbs2023Cryptosuite from '@digitalbazaar/bbs-2023-cryptosuite';
+import * as bls12381Multikey from '@digitalbazaar/bls12-381-multikey';
+import * as vc from '@digitalbazaar/vc';
+import {DataIntegrityProof} from '@digitalbazaar/data-integrity';
+
+const bbsKeyPair = await bls12381Multikey.generate({
+  algorithm: 'BBS-BLS12-381-SHA-256';
+  id: 'https://example.edu/issuers/keys/3',
+  controller: 'https://example.edu/issuers/565049'
+});
+
+// sample unsigned credential
+const credential = {
+  "@context": [
+    "https://www.w3.org/2018/credentials/v1",
+    "https://www.w3.org/2018/credentials/examples/v1"
+  ],
+  // omit `id` to enable unlinkable disclosure
+  "type": ["VerifiableCredential", "AlumniCredential"],
+  "issuer": "https://example.edu/issuers/565049",
+  // use less precise date that is shared by a sufficiently large group
+  // of VCs to enable unlinkable disclosure
+  "issuanceDate": "2010-01-01T01:00:00Z",
+  "credentialSubject": {
+    // omit `id` to enable unlinkable disclosure
+    "alumniOf": "Example University"
+  }
+};
+
+// setup bbs-2023 suite for signing unlinkable selective disclosure VCs
+const suite = new DataIntegrityProof({
+  signer: bbsKeyPair.signer(),
+  cryptosuite: createSignCryptosuite({
+    // require the `issuer` and `issuanceDate` fields to always be disclosed
+    // by the holder (presenter)
+    mandatoryPointers: [
+      '/issuanceDate',
+      '/issuer'
+    ]
+  })
+});
+// note: do not include a proof ID to enable unlinkable selective disclosure
+
+const signedVC = await vc.issue({credential, suite, documentLoader});
+console.log(JSON.stringify(signedVC, null, 2));
+```
+
 ### Deriving a Selective Disclosure Verifiable Credential
 
 Note: This step is performed as a holder of a verifiable credential, not as
@@ -184,13 +237,16 @@ an issuer.
 Pre-requisites:
 
 * You have a verifiable credential that was issued using a cryptosuite that
-  supports selective disclosure, such as `ecdsa-sd-2023`
+  supports selective disclosure, such as `ecdsa-sd-2023` or `bbs-2023`
 * If you're using a custom `@context`, make sure it's resolvable
 
+Deriving using `ecdsa-sd-2023`:
+
 ```js
-import * as vc from '@digitalbazaar/vc';
+import * as EcdsaMultikey from '@digitalbazaar/ecdsa-multikey';
 import * as ecdsaSd2023Cryptosuite from
   '@digitalbazaar/ecdsa-sd-2023-cryptosuite';
+import * as vc from '@digitalbazaar/vc';
 import {DataIntegrityProof} from '@digitalbazaar/data-integrity';
 
 const {
@@ -199,8 +255,8 @@ const {
   createVerifyCryptosuite
 } = ecdsaSd2023Cryptosuite;
 
-// sample signed credential
-const credential = {
+// sample VC
+const verifiableCredential = {
   "@context": [
     "https://www.w3.org/2018/credentials/v1",
     "https://www.w3.org/2018/credentials/examples/v1",
@@ -234,6 +290,75 @@ const suite = new DataIntegrityProof({
   cryptosuite: createDiscloseCryptosuite({
     // the ID of the base proof to convert to a disclosure proof
     proofId: 'urn:uuid:da088899-3439-41ea-a580-af3f1cf98cd3',
+    // selectively disclose the entire credential subject; different JSON
+    // pointers could be provided to selectively disclose different information;
+    // the issuer will have mandatory fields that will be automatically
+    // disclosed such as the `issuer` and `issuanceDate` fields
+    selectivePointers: [
+      '/credentialSubject'
+    ]
+  })
+});
+
+const derivedVC = await vc.derive({
+  verifiableCredential, suite, documentLoader
+});
+console.log(JSON.stringify(derivedVC, null, 2));
+```
+
+Deriving using `bbs-2023`:
+
+```js
+import * as bbs2023Cryptosuite from '@digitalbazaar/bbs-2023-cryptosuite';
+import * as bls12381Multikey from '@digitalbazaar/bls12-381-multikey';
+import * as vc from '@digitalbazaar/vc';
+import {DataIntegrityProof} from '@digitalbazaar/data-integrity';
+
+const {
+  createDiscloseCryptosuite,
+  createSignCryptosuite,
+  createVerifyCryptosuite
+} = bbs2023Cryptosuite;
+
+// sample BBS key pair
+const bbsKeyPair = {
+  "@context": "https://w3id.org/security/multikey/v1",
+  "id": "https://example.edu/issuers/keys/3",
+  "type": "Multikey",
+  "controller": "https://example.edu/issuers/565049",
+  "publicKeyMultibase": "zUC7LWtcV5GK9RRemm7wdcSF2cqAz2zL8SJD5f1yHFcTkUvGGcQ6mH4PiMmYjRE2qy5u8fuDhYAnd8uKzZ8eTaeD6U1UdxwHJ19A8wEjqiBkEkw9uwn42DY4bkUch3oYf6uQJr4",
+  "secretKeyMultibase": "z488v2JUe42rQXeUVkStpgze5k5LnR7T9Brgr8gCHTNTrWoC"
+};
+
+// sample VC
+const verifiableCredential = {
+  "@context": [
+    "https://www.w3.org/2018/credentials/v1",
+    "https://www.w3.org/2018/credentials/examples/v1",
+    "https://w3id.org/security/data-integrity/v2"
+  ],
+  "type": [
+    "VerifiableCredential",
+    "AlumniCredential"
+  ],
+  "issuer": "https://example.edu/issuers/565049",
+  "issuanceDate": "2010-01-01T01:00:00Z",
+  "credentialSubject": {
+    "alumniOf": "<span lang=\"en\">Example University</span>"
+  },
+  "proof": {
+    "type": "DataIntegrityProof",
+    "verificationMethod": "https://example.edu/issuers/keys/3",
+    "cryptosuite": "bbs-2023",
+    "proofPurpose": "assertionMethod",
+    "proofValue": "u2V0ChFhQkQ0ZCCmtsB-9ZuTmz-T3Fsw5nW-luvenX11-MMZrzWOStol7qWNdLKDHP0fLePeebIb4JbgMSzI6TXfxM7RKLyu07rNujokPl_Cp2LNCszlYYLjbKSE-AZ9hlkhGaJMrzVU69HRIF4uWbAFUsF9wZOcvcrTYKYmP4ngWqulvk_d66BChi7B5HUqT9_aEZztLICHj5QSVlNFFAV8kHstSqyXtwR03gkuym9oiM2rrARR0eVggVi_dWshn1PNUlNobrYFtBXaa4jvRztcj5ZNJCEjfw6OCbS9pc3N1YW5jZURhdGVnL2lzc3Vlcg"
+  }
+};
+
+// note no `signer` needed; the selective disclosure credential will be
+// derived from the base proof already provided by the issuer
+const suite = new DataIntegrityProof({
+  cryptosuite: createDiscloseCryptosuite({
     // selectively disclose the entire credential subject; different JSON
     // pointers could be provided to selectively disclose different information;
     // the issuer will have mandatory fields that will be automatically
