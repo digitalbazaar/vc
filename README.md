@@ -255,6 +255,16 @@ const {
   createVerifyCryptosuite
 } = ecdsaSd2023Cryptosuite;
 
+// sample ecdsa key pair used to issue the sample VC
+const keyPair = {
+  "@context": "https://w3id.org/security/multikey/v1",
+  "id": "https://example.edu/issuers/keys/2",
+  "type": "Multikey",
+  "controller": "https://example.edu/issuers/565049",
+  "publicKeyMultibase": "zDnaeWJjGpXnQAbEpRur3kSWFapGZbwGnFCkzyhiq7nDeXXrM",
+  "secretKeyMultibase": "z42trzSpncjWFaB9cKE2Gg5hxtbuAQa5mVJgGwjrugHMacdM"
+};
+
 // sample VC
 const verifiableCredential = {
   "@context": [
@@ -274,13 +284,13 @@ const verifiableCredential = {
     "alumniOf": "<span lang=\"en\">Example University</span>"
   },
   "proof": {
-    "id": "urn:uuid:2ef8c7ce-a4da-44b4-ba7f-3d43eaf1e50c",
+    "id": "urn:uuid:318d9dce-bc7b-40b9-a956-c9160bf910db",
     "type": "DataIntegrityProof",
-    "created": "2023-11-13T22:58:06Z",
+    "created": "2024-01-12T21:53:11Z",
     "verificationMethod": "https://example.edu/issuers/keys/2",
     "cryptosuite": "ecdsa-sd-2023",
     "proofPurpose": "assertionMethod",
-    "proofValue": "u2V0AhVhAtYPKUQxwULXzMdsAfqtipsiX6YEPURYSBFYxoFY-v0vCPyAs1Ckyy61Wtk3xZWyBGNaEr3w0wQiJHHd5B9uR-1gjgCQCVtFPMk-ECi0CJFYv_GTjCChf8St0FQjuExTAnwP0-ipYIOHSun3YqabOfNe2DYFkHBTZa0Csf1a7YUDW8hhsOHqTglhA8aqnyanT-Ybo2-aHBTcI-UmHX0iluGb2IxoHLLhQoOPm2rDW0eB04Fa2Dh6WMKoOl_Bz3wZZDGQ31XoGrQvgIlhAo8qspvC-QQ-xI3KADiA12sO5LRsZ7hl9ozoJEECVsDOKlxWd-dhices5b2ZQIiiRE9XxxJx8YuwCMoD2bRLbOIJtL2lzc3VhbmNlRGF0ZWcvaXNzdWVy"
+    "proofValue": "u2V0AhVhAsl6PQKYE15R0O5Qd267ntwHGNH6JRvZ1y8A-fTCQLUoupP8SCZzzmyc0a1AnabHEVKhpHtYV8j9Kapp-fHFBtFgjgCQCIMn2L1R7D5VPnNn_2foxdj8qvsuUTGFqA34YBkguzCpYILfJ-qNQpn6_dJGpkG24FynqbHpnzoHWVJc2kiLqEKHRglhAUmZtstR9MOLrZjcR8J303MXFvRiE6J3bbaPT1_I9-6578-Wj-eydv2TEGBq_dmsjxsOh4_2Va0etw8CXXMAzaVhA9fr7_Sl9D67AfvLhkJTZ0uJCAXcbL2MaS-DmoC7K-ABxroL1_wj119J8yTMlazxzYBwYkihrdp4ZWJZxraX9tIJtL2lzc3VhbmNlRGF0ZWcvaXNzdWVy"
   }
 };
 
@@ -320,7 +330,7 @@ const {
   createVerifyCryptosuite
 } = bbs2023Cryptosuite;
 
-// sample BBS key pair
+// sample BBS key pair used to issue sample VC below
 const bbsKeyPair = {
   "@context": "https://w3id.org/security/multikey/v1",
   "id": "https://example.edu/issuers/keys/3",
