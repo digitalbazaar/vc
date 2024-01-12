@@ -142,6 +142,18 @@ const ecdsaKeyPair = await EcdsaMultikey.generate({
   controller: 'https://example.edu/issuers/565049'
 });
 
+// sample exported key pair
+/*
+{
+  "@context": "https://w3id.org/security/multikey/v1",
+  "id": "https://example.edu/issuers/keys/2",
+  "type": "Multikey",
+  "controller": "https://example.edu/issuers/565049",
+  "publicKeyMultibase": "zDnaeWJjGpXnQAbEpRur3kSWFapGZbwGnFCkzyhiq7nDeXXrM",
+  "secretKeyMultibase": "z42trzSpncjWFaB9cKE2Gg5hxtbuAQa5mVJgGwjrugHMacdM"
+}
+*/
+
 // sample unsigned credential
 const credential = {
   "@context": [
@@ -192,6 +204,18 @@ const bbsKeyPair = await bls12381Multikey.generate({
   id: 'https://example.edu/issuers/keys/3',
   controller: 'https://example.edu/issuers/565049'
 });
+
+// sample exported key pair
+/*
+{
+  "@context": "https://w3id.org/security/multikey/v1",
+  "id": "https://example.edu/issuers/keys/3",
+  "type": "Multikey",
+  "controller": "https://example.edu/issuers/565049",
+  "publicKeyMultibase": "zUC7LWtcV5GK9RRemm7wdcSF2cqAz2zL8SJD5f1yHFcTkUvGGcQ6mH4PiMmYjRE2qy5u8fuDhYAnd8uKzZ8eTaeD6U1UdxwHJ19A8wEjqiBkEkw9uwn42DY4bkUch3oYf6uQJr4",
+  "secretKeyMultibase": "z488v2JUe42rQXeUVkStpgze5k5LnR7T9Brgr8gCHTNTrWoC"
+}
+*/
 
 // sample unsigned credential
 const credential = {
@@ -254,16 +278,6 @@ const {
   createSignCryptosuite,
   createVerifyCryptosuite
 } = ecdsaSd2023Cryptosuite;
-
-// sample ecdsa key pair used to issue the sample VC
-const keyPair = {
-  "@context": "https://w3id.org/security/multikey/v1",
-  "id": "https://example.edu/issuers/keys/2",
-  "type": "Multikey",
-  "controller": "https://example.edu/issuers/565049",
-  "publicKeyMultibase": "zDnaeWJjGpXnQAbEpRur3kSWFapGZbwGnFCkzyhiq7nDeXXrM",
-  "secretKeyMultibase": "z42trzSpncjWFaB9cKE2Gg5hxtbuAQa5mVJgGwjrugHMacdM"
-};
 
 // sample VC
 const verifiableCredential = {
@@ -329,16 +343,6 @@ const {
   createSignCryptosuite,
   createVerifyCryptosuite
 } = bbs2023Cryptosuite;
-
-// sample BBS key pair used to issue sample VC below
-const bbsKeyPair = {
-  "@context": "https://w3id.org/security/multikey/v1",
-  "id": "https://example.edu/issuers/keys/3",
-  "type": "Multikey",
-  "controller": "https://example.edu/issuers/565049",
-  "publicKeyMultibase": "zUC7LWtcV5GK9RRemm7wdcSF2cqAz2zL8SJD5f1yHFcTkUvGGcQ6mH4PiMmYjRE2qy5u8fuDhYAnd8uKzZ8eTaeD6U1UdxwHJ19A8wEjqiBkEkw9uwn42DY4bkUch3oYf6uQJr4",
-  "secretKeyMultibase": "z488v2JUe42rQXeUVkStpgze5k5LnR7T9Brgr8gCHTNTrWoC"
-};
 
 // sample VC
 const verifiableCredential = {
