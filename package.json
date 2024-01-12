@@ -33,7 +33,7 @@
     "jsonld-signatures": "^11.2.1"
   },
   "devDependencies": {
-    "@digitalbazaar/bbs-2023-cryptosuite": "digitalbazaar/bbs-2023-cryptosuite#refactor",
+    "@digitalbazaar/bbs-2023-cryptosuite": "digitalbazaar/bbs-2023-cryptosuite#main",
     "@digitalbazaar/bls12-381-multikey": "^1.1.1",
     "@digitalbazaar/credentials-examples-context": "^1.0.0",
     "@digitalbazaar/data-integrity": "^2.0.0",
