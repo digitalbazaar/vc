@@ -332,7 +332,7 @@ for(const [version, mockCredential] of versionedCredentials) {
           verifiableCredential.should.be.an('object');
           verifiableCredential.should.have.property('proof');
           verifiableCredential.proof.should.be.an('object');
-          // ensure validUntil & validAfter are present
+          // ensure validFrom & validUntil are present
           // and have correct timestamps
           verifiableCredential.should.have.property(
             'validFrom',
