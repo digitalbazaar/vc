@@ -212,8 +212,8 @@ const bbsKeyPair = await bls12381Multikey.generate({
   "id": "https://example.edu/issuers/keys/3",
   "type": "Multikey",
   "controller": "https://example.edu/issuers/565049",
-  "publicKeyMultibase": "zUC7LWtcV5GK9RRemm7wdcSF2cqAz2zL8SJD5f1yHFcTkUvGGcQ6mH4PiMmYjRE2qy5u8fuDhYAnd8uKzZ8eTaeD6U1UdxwHJ19A8wEjqiBkEkw9uwn42DY4bkUch3oYf6uQJr4",
-  "secretKeyMultibase": "z488v2JUe42rQXeUVkStpgze5k5LnR7T9Brgr8gCHTNTrWoC"
+  "publicKeyMultibase": "zUC72jQrt2BfyE57AVgHgThKCsH6HNo85X9SLNpAJaHb42cNDXhsRWL2KkrFtaiztPbbZjfDVQnQQMw2nMqAPUHnaQ3xEr7kUmcnBgv7S2wQSbRbr7mqsP153nU7yMh3ZN4ZryL",
+  "secretKeyMultibase": "z488y1niFCWnaV2i86q1raaa7qwBWZ6WTLeS1W1PrsbcsoNg"
 }
 */
 
@@ -365,7 +365,7 @@ const verifiableCredential = {
     "verificationMethod": "https://example.edu/issuers/keys/3",
     "cryptosuite": "bbs-2023",
     "proofPurpose": "assertionMethod",
-    "proofValue": "u2V0ChFhQkQ0ZCCmtsB-9ZuTmz-T3Fsw5nW-luvenX11-MMZrzWOStol7qWNdLKDHP0fLePeebIb4JbgMSzI6TXfxM7RKLyu07rNujokPl_Cp2LNCszlYYLjbKSE-AZ9hlkhGaJMrzVU69HRIF4uWbAFUsF9wZOcvcrTYKYmP4ngWqulvk_d66BChi7B5HUqT9_aEZztLICHj5QSVlNFFAV8kHstSqyXtwR03gkuym9oiM2rrARR0eVggVi_dWshn1PNUlNobrYFtBXaa4jvRztcj5ZNJCEjfw6OCbS9pc3N1YW5jZURhdGVnL2lzc3Vlcg"
+    "proofValue": "u2V0ChVhQp1smqO-Qmc-1KpNkShjevTeylTdVlpH_RNXeJ_cNniErWPbEWILvsoH5mYjnun5ibZHq0m7BEIaLv8sfMtLfcmgPj6tbAFwDWvEcbRWg7CFYQGWqCAnvTpL_Aao3aVCg5svdzFuvKqnvneA0UwaN0lagvGpWT7fCDGgcYPyNPKaCX94Xo06aTcSwOXgyGUbtN1xYYIU6t5wv20lVdESfzkYOFXTxIZa1HSBAZYWDyEgQ3A3ajzWX5qeFc3cwmnnrGUfJYwawgGLQAY3vBi3LTM2i3jCOPvxCEJALPIjK4tEmWb6uFjT4PWLlIEeTtYj_0yEv91ggsm9vw1PPlK6q8wQiw2i2joZ-OKkvHz7rDSxPYfmQNrqCbS9pc3N1YW5jZURhdGVnL2lzc3Vlcg"
   }
 };
 
