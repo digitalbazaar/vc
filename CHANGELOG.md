@@ -67,7 +67,7 @@ Version skipped to match upstream.
 ### Added
 - Add support for VC 2.0 Verifiable Credentials issuance and verification.
 - Add support for VC 2.0 Verifiable Presentations issuance and verification.
-- Add support for VC 2.0 `validUntil` and `validAfter`.
+- Add support for VC 2.0 `validFrom` and `validUntil`.
 - Add Test vectors for VC 2.0 VCs & VPs.
 
 ### Changed
