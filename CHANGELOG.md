@@ -1,5 +1,10 @@
 # @digitalcredentials/vc ChangeLog
 
+## 6.0.1 -
+### Changed
+- Update to use latest OBv3 context in tests
+- Add a test for verifying a 2018-signed VC.
+
 ## 6.0.0 - 2023-06-16
 ### Changed
 - **BREAKING**: Add a fallback/override for legacy OBv3 VCs.

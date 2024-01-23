@@ -17,7 +17,7 @@
     "@digitalcredentials/ed25519-signature-2020": "^3.0.2",
     "@digitalcredentials/jsonld": "^6.0.0",
     "@digitalcredentials/jsonld-signatures": "^9.3.2",
-    "@digitalcredentials/open-badges-context": "^2.0.1",
+    "@digitalcredentials/open-badges-context": "^2.1.0",
     "@digitalcredentials/vc-status-list": "^5.0.2",
     "credentials-context": "^2.0.0",
     "fix-esm": "^1.0.1"
@@ -30,7 +30,7 @@
     "@babel/runtime": "^7.13.9",
     "@digitalbazaar/ed25519-signature-2018": "^2.0.1",
     "@digitalbazaar/ed25519-verification-key-2018": "^3.0.0",
-    "@digitalcredentials/security-document-loader": "^3.1.0",
+    "@digitalcredentials/security-document-loader": "^3.2.0",
     "babel-loader": "^8.2.2",
     "chai": "^4.3.3",
     "cross-env": "^7.0.3",

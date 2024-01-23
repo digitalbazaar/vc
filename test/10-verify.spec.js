@@ -23,6 +23,7 @@ const realContexts = require('../lib/contexts');
 const invalidContexts = require('./contexts');
 const mockCredential = require('./mocks/credential');
 const legacyOBv3Credential = require('./mocks/credential-legacy-obv3');
+const mockVC2018 = require('./mocks/credential-2018');
 const assertionController = require('./mocks/assertionController');
 const mockDidDoc = require('./mocks/didDocument');
 const mockDidKeys = require('./mocks/didKeys');
@@ -170,6 +171,27 @@ describe('verify API (credentials)', () => {
     });
 
     if(result.error) {
+      throw result.error;
+    }
+    result.verified.should.be.true;
+
+    result.results[0].log.should.eql([
+      {id: 'expiration', valid: true},
+      {id: 'valid_signature', valid: true},
+      {id: 'issuer_did_resolves', valid: true},
+      {id: 'revocation_status', valid: true}
+    ]);
+  });
+
+  it('should verify a 2018 signed VC', async () => {
+    const result = await vc.verifyCredential({
+      credential: mockVC2018,
+      suite: [new Ed25519Signature2020(), new Ed25519Signature2018()],
+      documentLoader: securityLoader().build()
+    });
+
+    if(result.error) {
+      console.log(result.error);
       throw result.error;
     }
     result.verified.should.be.true;
