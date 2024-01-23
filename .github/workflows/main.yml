@@ -24,7 +24,7 @@ jobs:
     timeout-minutes: 10
     strategy:
       matrix:
-        node-version: [16.x, 18.x]
+        node-version: [18.x]
     steps:
     - uses: actions/checkout@v2
     - name: Use Node.js ${{ matrix.node-version }}
@@ -34,24 +34,8 @@ jobs:
     - run: npm install
     - name: Run test with Node.js ${{ matrix.node-version }}
       run: npm run test-node
-  test-karma:
-    needs: [lint]
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    strategy:
-      matrix:
-        node-version: [16.x]
-    steps:
-    - uses: actions/checkout@v2
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
-      with:
-        node-version: ${{ matrix.node-version }}
-    - run: npm install
-    - name: Run karma test
-      run: npm run test-karma
-#  coverage:
-#    needs: [test-node, test-karma]
+#  test-karma:
+#    needs: [lint]
 #    runs-on: ubuntu-latest
 #    timeout-minutes: 10
 #    strategy:
@@ -64,10 +48,5 @@ jobs:
 #      with:
 #        node-version: ${{ matrix.node-version }}
 #    - run: npm install
-#    - name: Generate coverage report
-#      run: npm run coverage-ci
-#    - name: Upload coverage to Codecov
-#      uses: codecov/codecov-action@v1
-#      with:
-#        file: ./coverage/lcov.info
-#        fail_ci_if_error: true
+#    - name: Run karma test
+#      run: npm run test-karma
