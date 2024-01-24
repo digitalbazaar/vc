@@ -1,5 +1,10 @@
 # @digitalcredentials/vc ChangeLog
 
+## v7.x
+- "@digitalcredentials/ed25519-signature-2020": "digitalcredentials/ed25519-signature-2020#v4.x",
+- "@digitalcredentials/jsonld": "digitalcredentials/jsonld.js#update",
+- "@digitalcredentials/jsonld-signatures": "digitalcredentials/jsonld-signatures#v10.x",
+
 ## 6.0.1 - 2024-01-23
 ### Changed
 - Update to use latest OBv3 context in tests

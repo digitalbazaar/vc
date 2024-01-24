@@ -7,7 +7,7 @@ const should = chai.should();
 const {Ed25519VerificationKey2018} =
   require('@digitalbazaar/ed25519-verification-key-2018');
 const jsigs = require('@digitalcredentials/jsonld-signatures');
-const jsonld = require('@digitalcredentials/jsonld');
+const jsonld = require('jsonld');
 const {Ed25519Signature2018} = require('@digitalbazaar/ed25519-signature-2018');
 const {Ed25519Signature2020} =
   require('@digitalcredentials/ed25519-signature-2020');
