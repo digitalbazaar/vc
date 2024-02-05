@@ -12,6 +12,7 @@ import {
 } from './testDocumentLoader.js';
 import {assertionController} from './mocks/assertionController.js';
 import chai from 'chai';
+import {createSkewedTimeStamp} from './helpers.js';
 import {CredentialIssuancePurpose} from '../lib/CredentialIssuancePurpose.js';
 import {DataIntegrityProof} from '@digitalbazaar/data-integrity';
 import {Ed25519Signature2018} from '@digitalbazaar/ed25519-signature-2018';
@@ -20,8 +21,6 @@ import {
 } from '@digitalbazaar/ed25519-verification-key-2018';
 import {invalidContexts} from './contexts/index.js';
 import jsigs from 'jsonld-signatures';
-import {klona} from 'klona';
-import {mock as mockData} from './mocks/mock.data.js';
 import {v4 as uuid} from 'uuid';
 import {VeresOneDriver} from 'did-veres-one';
 import {versionedCredentials} from './mocks/credential.js';
@@ -100,6 +99,26 @@ for(const [version, mockCredential] of versionedCredentials) {
         verifiableCredential.should.have.property('proof');
         verifiableCredential.proof.should.be.an('object');
       });
+      it('should throw an error on missing verificationMethod', async () => {
+        const suite = new Ed25519Signature2018({
+          // Note no key id or verificationMethod passed to suite
+          key: await Ed25519VerificationKey2018.generate()
+        });
+        let error;
+        try {
+          await vc.issue({
+            credential: mockCredential(),
+            suite
+          });
+        } catch(e) {
+          error = e;
+        }
+        should.exist(error,
+          'Should throw error when "verificationMethod" property is missing');
+        error.should.be.instanceof(TypeError);
+        error.message.should
+          .contain('"suite.verificationMethod" property is required.');
+      });
       if(version === 1.0) {
         it('should issue an expired verifiable credential', async () => {
           const keyPair = await Ed25519VerificationKey2018.generate();
@@ -149,26 +168,154 @@ for(const [version, mockCredential] of versionedCredentials) {
           );
         });
       }
-      it('should throw an error on missing verificationMethod', async () => {
-        const suite = new Ed25519Signature2018({
-          // Note no key id or verificationMethod passed to suite
-          key: await Ed25519VerificationKey2018.generate()
+      if(version === 2.0) {
+        it('should issue "validUntil" in the future', async () => {
+          const credential = mockCredential();
+          credential.issuer = 'did:example:12345';
+          // set validUntil one year in the future
+          credential.validUntil = createSkewedTimeStamp({skewYear: 1});
+          let error;
+          let verifiableCredential;
+          try {
+            verifiableCredential = await vc.issue({
+              credential,
+              suite,
+              documentLoader
+            });
+          } catch(e) {
+            error = e;
+          }
+          should.not.exist(error,
+            'Should not throw error when issuing "validUntil" in future');
+          verifiableCredential.should.exist;
+          verifiableCredential.should.be.an('object');
+          verifiableCredential.should.have.property('proof');
+          verifiableCredential.proof.should.be.an('object');
+          // ensure validUntil is present and has correct timestamp
+          verifiableCredential.should.have.property(
+            'validUntil',
+            credential.validUntil
+          );
         });
-        let error;
-        try {
-          await vc.issue({
-            credential: mockCredential(),
-            suite
-          });
-        } catch(e) {
-          error = e;
-        }
-        should.exist(error,
-          'Should throw error when "verificationMethod" property missing');
-        error.should.be.instanceof(TypeError);
-        error.message.should
-          .contain('"suite.verificationMethod" property is required.');
-      });
+        it('should issue "validUntil" in the past', async () => {
+          const credential = mockCredential();
+          credential.issuer = 'did:example:12345';
+          // set validUntil one year in the past
+          credential.validUntil = createSkewedTimeStamp({skewYear: -1});
+          let error;
+          let verifiableCredential;
+          try {
+            verifiableCredential = await vc.issue({
+              credential,
+              suite,
+              documentLoader
+            });
+          } catch(e) {
+            error = e;
+          }
+          should.not.exist(error,
+            'Should not throw error when issuing with "validUntil" in past');
+          verifiableCredential.should.exist;
+          verifiableCredential.should.be.an('object');
+          verifiableCredential.should.have.property('proof');
+          verifiableCredential.proof.should.be.an('object');
+          // ensure validUntil is present and has correct timestamp
+          verifiableCredential.should.have.property(
+            'validUntil',
+            credential.validUntil
+          );
+        });
+        it('should issue "validFrom" in the past', async () => {
+          const credential = mockCredential();
+          credential.issuer = 'did:example:12345';
+          credential.validFrom = createSkewedTimeStamp({skewYear: -1});
+          let error;
+          let verifiableCredential;
+          try {
+            verifiableCredential = await vc.issue({
+              credential,
+              suite,
+              documentLoader
+            });
+          } catch(e) {
+            error = e;
+          }
+          should.not.exist(error,
+            'Should not throw error when issuing "validFrom" in past');
+          verifiableCredential.should.exist;
+          verifiableCredential.should.be.an('object');
+          verifiableCredential.should.have.property('proof');
+          verifiableCredential.proof.should.be.an('object');
+          // ensure validFrom is present and has correct timestamp
+          verifiableCredential.should.have.property(
+            'validFrom',
+            credential.validFrom
+          );
+        });
+        it('should issue "validFrom" in the future', async () => {
+          const credential = mockCredential();
+          credential.issuer = 'did:example:12345';
+          credential.validFrom = createSkewedTimeStamp({skewYear: 1});
+          let error;
+          let verifiableCredential;
+          try {
+            verifiableCredential = await vc.issue({
+              credential,
+              suite,
+              documentLoader
+            });
+          } catch(e) {
+            error = e;
+          }
+          should.not.exist(error,
+            'Should not throw error when issuing "validFrom" in future');
+          verifiableCredential.should.exist;
+          verifiableCredential.should.be.an('object');
+          verifiableCredential.should.have.property('proof');
+          verifiableCredential.proof.should.be.an('object');
+          // ensure validFrom is present and has correct timestamp
+          verifiableCredential.should.have.property(
+            'validFrom',
+            credential.validFrom
+          );
+        });
+        it('should issue both "validFrom" and "validUntil"', async () => {
+          const credential = mockCredential();
+          credential.issuer = 'did:example:12345';
+          credential.validFrom = createSkewedTimeStamp({skewYear: -1});
+          credential.validUntil = createSkewedTimeStamp({skewYear: 1});
+          let error;
+          let verifiableCredential;
+          try {
+            verifiableCredential = await vc.issue({
+              credential,
+              suite,
+              documentLoader
+            });
+          } catch(e) {
+            error = e;
+          }
+          should.not.exist(
+            error,
+            'Should not throw when issuing VC with both "validFrom" and' +
+              '"validUntil"'
+          );
+          verifiableCredential.should.exist;
+          verifiableCredential.should.be.an('object');
+          verifiableCredential.should.have.property('proof');
+          verifiableCredential.proof.should.be.an('object');
+          // ensure validFrom & validUntil are present
+          // and have correct timestamps
+          verifiableCredential.should.have.property(
+            'validFrom',
+            credential.validFrom
+          );
+          verifiableCredential.should.have.property(
+            'validUntil',
+            credential.validUntil
+          );
+        });
+      }
     });
 
     describe('vc.createPresentation()', () => {
@@ -629,7 +776,7 @@ for(const [version, mockCredential] of versionedCredentials) {
 
     describe('_checkCredential', () => {
       it('should reject a credentialSubject.id that is not a URI', () => {
-        const credential = klona(mockData.credentials.alpha);
+        const credential = mockCredential();
         credential.issuer = 'http://example.edu/credentials/58473';
         credential.credentialSubject.id = '12345';
         let error;
@@ -646,7 +793,7 @@ for(const [version, mockCredential] of versionedCredentials) {
       });
 
       it('should reject an issuer that is not a URI', () => {
-        const credential = klona(mockData.credentials.alpha);
+        const credential = mockCredential();
         credential.issuer = '12345';
         let error;
         try {
@@ -661,8 +808,42 @@ for(const [version, mockCredential] of versionedCredentials) {
           .contain('"issuer" must be a URI');
       });
 
+      it('should reject credentialStatus id that is not a URI', () => {
+        const credential = mockCredential();
+        credential.credentialStatus = {
+          id: 'not-a-url',
+          type: 'urn:type'
+        };
+        let error;
+        try {
+          vc._checkCredential({credential});
+        } catch(e) {
+          error = e;
+        }
+        should.exist(error,
+          'Should throw error when "credentialStatus.id" is not a URI');
+        error.should.be.instanceof(TypeError);
+        error.message.should
+          .contain('"credentialStatus.id" must be a URI');
+      });
+
+      it('should accept "credentialStatus" with no "id"', () => {
+        const credential = mockCredential();
+        credential.credentialStatus = {
+          type: 'urn:type'
+        };
+        let error;
+        try {
+          vc._checkCredential({credential});
+        } catch(e) {
+          error = e;
+        }
+        should.not.exist(error,
+          'Should not throw error when "credentialStatus.id" is absent');
+      });
+
       it('should reject an evidence id that is not a URI', () => {
-        const credential = klona(mockData.credentials.alpha);
+        const credential = mockCredential();
         credential.issuer = 'did:example:12345';
         credential.evidence = '12345';
         let error;
@@ -678,28 +859,28 @@ for(const [version, mockCredential] of versionedCredentials) {
           .contain('"evidence" must be a URI');
       });
 
-      it('should reject if "expirationDate" has passed', () => {
-        const credential = klona(mockData.credentials.alpha);
-        credential.issuer = 'did:example:12345';
-        // set expirationDate to an expired date.
-        credential.expirationDate = '2020-05-31T19:21:25Z';
-        let error;
-        try {
-          vc._checkCredential({credential});
-        } catch(e) {
-          error = e;
-        }
-        should.exist(error,
-          'Should throw error when "expirationDate" has passed');
-        error.message.should
-          .contain('Credential has expired.');
-      });
       if(version === 1.0) {
+        it('should reject if "expirationDate" has passed', () => {
+          const credential = mockCredential();
+          credential.issuer = 'did:example:12345';
+          // set expirationDate to an expired date.
+          credential.expirationDate = '2020-05-31T19:21:25Z';
+          let error;
+          try {
+            vc._checkCredential({credential, mode: 'verify'});
+          } catch(e) {
+            error = e;
+          }
+          should.exist(error,
+            'Should throw error when "expirationDate" has passed');
+          error.message.should
+            .contain('Credential has expired.');
+        });
         it('should reject if "now" is before "issuanceDate"', () => {
           const credential = mockCredential();
           credential.issuer = 'did:example:12345';
-          credential.issuanceDate = '2022-10-31T19:21:25Z';
-          const now = '2022-06-30T19:21:25Z';
+          credential.issuanceDate = createSkewedTimeStamp({skewYear: 1});
+          const now = new Date();
           let error;
           try {
             vc._checkCredential({credential, now});
@@ -709,10 +890,138 @@ for(const [version, mockCredential] of versionedCredentials) {
           should.exist(error,
             'Should throw error when "now" is before "issuanceDate"');
           error.message.should.contain(
-            'The current date time (2022-06-30T19:21:25.000Z) is before the ' +
-            '"issuanceDate" (2022-10-31T19:21:25.000Z).');
+            `The current date time (${now.toISOString()}) is before the ` +
+            `"issuanceDate" (${credential.issuanceDate}).`);
         });
-
+      }
+      if(version === 2.0) {
+        it('should reject "validFrom" in the future', () => {
+          const credential = mockCredential();
+          credential.issuer = 'did:example:12345';
+          credential.validFrom = createSkewedTimeStamp({skewYear: 1});
+          const now = new Date();
+          let error;
+          try {
+            vc._checkCredential({credential, now});
+          } catch(e) {
+            error = e;
+          }
+          should.exist(error,
+            'Should throw error when "validFrom" in future');
+          error.message.should.contain(
+            `The current date time (${now.toISOString()}) is before ` +
+            `"validFrom" (${credential.validFrom})`);
+        });
+        it('should accept "validFrom" in the past', () => {
+          const credential = mockCredential();
+          credential.issuer = 'did:example:12345';
+          credential.validFrom = createSkewedTimeStamp({skewYear: -1});
+          let error;
+          try {
+            vc._checkCredential({credential});
+          } catch(e) {
+            error = e;
+          }
+          should.not.exist(error,
+            'Should not throw error when "validFrom" in past');
+        });
+        it('should reject "validUntil" in the past', () => {
+          const credential = mockCredential();
+          credential.issuer = 'did:example:12345';
+          credential.validUntil = createSkewedTimeStamp({skewYear: -1});
+          const now = new Date();
+          let error;
+          try {
+            vc._checkCredential({credential, now});
+          } catch(e) {
+            error = e;
+          }
+          should.exist(error,
+            'Should throw error when "validUntil" in the past');
+          error.message.should.contain(
+            `The current date time (${now.toISOString()}) is after ` +
+            `"validUntil" (${credential.validUntil})`);
+        });
+        it('should accept "validUntil" in the future', () => {
+          const credential = mockCredential();
+          credential.issuer = 'did:example:12345';
+          credential.validUntil = createSkewedTimeStamp({skewYear: 1});
+          let error;
+          try {
+            vc._checkCredential({credential});
+          } catch(e) {
+            error = e;
+          }
+          should.not.exist(error,
+            'Should not throw error when "validUntil" in the future');
+        });
+        it('should accept if now is between "validFrom" & "validUntil"', () => {
+          const credential = mockCredential();
+          credential.issuer = 'did:example:12345';
+          credential.validFrom = createSkewedTimeStamp({skewYear: -1});
+          credential.validUntil = createSkewedTimeStamp({skewYear: 1});
+          let error;
+          try {
+            vc._checkCredential({credential});
+          } catch(e) {
+            error = e;
+          }
+          should.not.exist(error,
+            'Should NOT throw when now is between "validFrom" & "validUntil"');
+        });
+        it('should accept if "validFrom" & "validUntil" are the same time',
+          () => {
+            const credential = mockCredential();
+            credential.issuer = 'did:example:12345';
+            const now = createSkewedTimeStamp({skewYear: 0});
+            credential.validFrom = now;
+            credential.validUntil = now;
+            let error;
+            try {
+              vc._checkCredential({credential, now});
+            } catch(e) {
+              error = e;
+            }
+            should.not.exist(error, 'Should NOT throw when now equals' +
+            '"validFrom" & "validUntil"');
+          });
+        it('should reject if now is after "validFrom" & "validUntil"', () => {
+          const credential = mockCredential();
+          credential.issuer = 'did:example:12345';
+          credential.validFrom = createSkewedTimeStamp({skewYear: -2});
+          credential.validUntil = createSkewedTimeStamp({skewYear: -1});
+          const now = new Date();
+          let error;
+          try {
+            vc._checkCredential({credential, now});
+          } catch(e) {
+            error = e;
+          }
+          should.exist(error,
+            'Should throw when now is after "validFrom" & "validUntil"');
+          error.message.should.contain(
+            `The current date time (${now.toISOString()}) is after ` +
+            `"validUntil" (${credential.validUntil}).`);
+        });
+        it('should reject if now is before "validFrom" & "validUntil"', () => {
+          const credential = mockCredential();
+          credential.issuer = 'did:example:12345';
+          credential.validFrom = createSkewedTimeStamp({skewYear: 1});
+          credential.validUntil = createSkewedTimeStamp({skewYear: 2});
+          const now = new Date();
+          let error;
+          try {
+            vc._checkCredential({credential});
+          } catch(e) {
+            error = e;
+          }
+          should.exist(error,
+            'Should throw when now is before "validFrom" & "validUntil"');
+          error.message.should.contain(
+            `The current date time (${now.toISOString()}) is before ` +
+            `"validFrom" (${credential.validFrom}).`
+          );
+        });
       }
       it('should reject if "credentialSubject" is empty', () => {
         const credential = mockCredential();
