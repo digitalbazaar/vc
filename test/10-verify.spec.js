@@ -685,116 +685,111 @@ for(const [version, mockCredential] of versionedCredentials) {
       });
     });
 
-    describe('test for multiple credentials', async () => {
-      const credentialsCount = [5, 25, 50, 100];
-
-      for(const count of credentialsCount) {
-        it(`cause error when credentials are tampered [${count}]`, async () => {
-          const challenge = uuid();
-          const {presentation, suite: vcSuite, documentLoader} =
-            await _generatePresentation({
-              challenge,
-              credentialsCount: count,
-              mockCredential,
-              version
-            });
-
-          // tampering with the first two credentials id
-          presentation.verifiableCredential[0].id = 'test:some_fake_id';
-          presentation.verifiableCredential[1].id = 'test:some_other_fake_id';
-
-          const result = await vc.verify({
-            documentLoader,
-            presentation,
-            suite: vcSuite,
-            unsignedPresentation: true
-          });
-          const credentialResults = result.credentialResults;
-          const credentialOne = result.credentialResults[0];
-          const credentialTwo = result.credentialResults[1];
-          const firstErrorMsg = result.credentialResults[0].error.errors[0]
-            .message;
-
-          result.verified.should.be.a('boolean');
-          result.verified.should.be.false;
-
-          credentialOne.verified.should.be.a('boolean');
-          credentialOne.verified.should.be.false;
-          credentialOne.credentialId.should.be.a('string');
-          credentialOne.credentialId.should.equal('test:some_fake_id');
-
-          credentialTwo.verified.should.be.a('boolean');
-          credentialTwo.verified.should.be.false;
-          credentialTwo.credentialId.should.be.a('string');
-          credentialTwo.credentialId.should.equal('test:some_other_fake_id');
-
-          for(let i = 2; i < credentialResults.length; ++i) {
-            const credential = credentialResults[i];
-            credential.verified.should.be.a('boolean');
-            credential.verified.should.be.true;
-            should.exist(credential.credentialId);
-            credential.credentialId.should.be.a('string');
-          }
-
-          firstErrorMsg.should.contain('Invalid signature.');
-        });
-        it('should not cause error when credentials are correct', async () => {
-          const challenge = uuid();
-          const {presentation, suite: vcSuite, documentLoader} =
-            await _generatePresentation({
-              challenge,
-              credentialsCount: count,
-              mockCredential,
-              version
-            });
-          const result = await vc.verify({
-            documentLoader,
-            presentation,
-            suite: vcSuite,
-            unsignedPresentation: true
-          });
-          const credentialResults = result.credentialResults;
-
-          result.verified.should.be.a('boolean');
-          result.verified.should.be.true;
-
-          for(const credential of credentialResults) {
-            credential.verified.should.be.a('boolean');
-            credential.verified.should.be.true;
-            should.exist(credential.credentialId);
-            credential.credentialId.should.be.a('string');
-          }
-        });
-        it.only('should not cause error when credentials have mixed contexts',
-          async () => {
-            const challenge = uuid();
-            const {presentation, suite: vcSuite, documentLoader} =
-              await _generatePresentation({
-                challenge,
-                credentialsCount: count,
-                mockCredential: mockData.credentials.mixed,
-                version
+    describe(`VerifiablePresentations Version ${version} w/ multiple VCs`,
+      async () => {
+        const credentialsCount = [5, 25, 50, 100];
+        for(const count of credentialsCount) {
+          it(`should error when credentials are tampered [${count}]`,
+            async () => {
+              const challenge = uuid();
+              const {presentation, suite: vcSuite, documentLoader} =
+                await _generatePresentation({
+                  challenge,
+                  credentialsCount: count,
+                  mockCredential,
+                  version
+                });
+              // tampering with the first two credentials id
+              presentation.verifiableCredential[0].id = 'test:some_fake_id';
+              presentation.verifiableCredential[1].id =
+                'test:some_other_fake_id';
+              const result = await vc.verify({
+                documentLoader,
+                presentation,
+                suite: vcSuite,
+                unsignedPresentation: true
               });
-            const result = await vc.verify({
-              documentLoader,
-              presentation,
-              suite: vcSuite,
-              unsignedPresentation: true
+              const credentialResults = result.credentialResults;
+              const credentialOne = result.credentialResults[0];
+              const credentialTwo = result.credentialResults[1];
+              const firstErrorMsg = result.credentialResults[0].error.errors[0]
+                .message;
+              result.verified.should.be.a('boolean');
+              result.verified.should.be.false;
+              credentialOne.verified.should.be.a('boolean');
+              credentialOne.verified.should.be.false;
+              credentialOne.credentialId.should.be.a('string');
+              credentialOne.credentialId.should.equal('test:some_fake_id');
+              credentialTwo.verified.should.be.a('boolean');
+              credentialTwo.verified.should.be.false;
+              credentialTwo.credentialId.should.be.a('string');
+              credentialTwo.credentialId.should.equal(
+                'test:some_other_fake_id');
+              for(let i = 2; i < credentialResults.length; ++i) {
+                const credential = credentialResults[i];
+                credential.verified.should.be.a('boolean');
+                credential.verified.should.be.true;
+                should.exist(credential.credentialId);
+                credential.credentialId.should.be.a('string');
+              }
+              firstErrorMsg.should.contain('Invalid signature.');
             });
-            const credentialResults = result.credentialResults;
-
-            result.verified.should.be.a('boolean');
-            result.verified.should.be.true;
-
-            for(const credential of credentialResults) {
-              credential.verified.should.be.a('boolean');
-              credential.verified.should.be.true;
-              should.exist(credential.credentialId);
-              credential.credentialId.should.be.a('string');
-            }
-          });
-      }
-    });
+          it(`should not error when credentials are correct [${count}]`,
+            async () => {
+              const challenge = uuid();
+              const {presentation, suite: vcSuite, documentLoader} =
+                await _generatePresentation({
+                  challenge,
+                  credentialsCount: count,
+                  mockCredential,
+                  version
+                });
+              const result = await vc.verify({
+                documentLoader,
+                presentation,
+                suite: vcSuite,
+                unsignedPresentation: true
+              });
+              const credentialResults = result.credentialResults;
+              result.verified.should.be.a('boolean');
+              result.verified.should.be.true;
+              for(const credential of credentialResults) {
+                credential.verified.should.be.a('boolean');
+                credential.verified.should.be.true;
+                should.exist(credential.credentialId);
+                credential.credentialId.should.be.a('string');
+              }
+            });
+          if(version === 2.0) {
+            it(`should not error when credentials have mixed contexts ` +
+              `[${count}]`, async () => {
+              const challenge = uuid();
+              const {presentation, suite: vcSuite, documentLoader} =
+                await _generatePresentation({
+                  challenge,
+                  credentialsCount: count,
+                  mockCredential: mockData.credentials.mixed,
+                  version
+                });
+              const result = await vc.verify({
+                documentLoader,
+                presentation,
+                suite: vcSuite,
+                unsignedPresentation: true
+              });
+              const credentialResults = result.credentialResults;
+              result.verified.should.be.a('boolean');
+              result.verified.should.be.true;
+              for(const credential of credentialResults) {
+                credential.verified.should.be.a('boolean');
+                credential.verified.should.be.true;
+                should.exist(credential.credentialId);
+                credential.credentialId.should.be.a('string');
+              }
+            });
+          }
+        }
+      });
 
     describe('_checkCredential', () => {
       it('should reject a credentialSubject.id that is not a URI', () => {
