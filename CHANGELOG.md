@@ -1,9 +1,9 @@
 # @digitalcredentials/vc ChangeLog
 
-## v7.x
-- "@digitalcredentials/ed25519-signature-2020": "digitalcredentials/ed25519-signature-2020#v4.x",
-- "@digitalcredentials/jsonld": "digitalcredentials/jsonld.js#update",
-- "@digitalcredentials/jsonld-signatures": "digitalcredentials/jsonld-signatures#v10.x",
+## 7.0.0 - 2024-02-07
+### Changed
+* Switch to DigitalBazaar's `jsonld`, `http-client` and `rdf-canonize` libs
+* Switch to Sphereon's fork of `isomorphic-webcrypto`
 
 ## 6.0.1 - 2024-01-23
 ### Changed
