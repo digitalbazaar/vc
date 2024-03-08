@@ -8,8 +8,7 @@
     "url": "https://github.com/digitalcredentials/vc"
   },
   "license": "BSD-3-Clause",
-  "type": "module",
-  "exports": "./lib/index.js",
+  "main": "lib/index.js",
   "files": [
     "lib/**/*.js"
   ],
@@ -74,6 +73,8 @@
     "Credential"
   ],
   "scripts": {
+    "posttest": "node post-test.js",
+    "pretest": "node pre-test.js",
     "test": "npm run test-node",
     "test-node": "cross-env NODE_ENV=test mocha -b --preserve-symlinks -t 10000 test/*.spec.js",
     "test-karma": "karma start karma.conf.js",
