@@ -1,7 +1,36 @@
 /*!
  * Copyright (c) 2019-2023 Digital Bazaar, Inc. All rights reserved.
  */
-const chai = require('chai');
+import * as EcdsaMultikey from '@digitalbazaar/ecdsa-multikey';
+import * as ecdsaSd2023Cryptosuite from
+  '@digitalbazaar/ecdsa-sd-2023-cryptosuite';
+import * as vc from '../lib/index.js';
+import {
+  documentLoader,
+  remoteDocuments,
+  testLoader
+} from './testDocumentLoader.js';
+import {assertionController} from './mocks/assertionController.js';
+import chai from 'chai';
+import {createSkewedTimeStamp} from './helpers.js';
+import {CredentialIssuancePurpose} from '../lib/CredentialIssuancePurpose.js';
+import {DataIntegrityProof} from '@digitalbazaar/data-integrity';
+import {Ed25519Signature2018} from '@digitalbazaar/ed25519-signature-2018';
+import {
+  Ed25519VerificationKey2018
+} from '@digitalbazaar/ed25519-verification-key-2018';
+import {invalidContexts} from './contexts/index.js';
+import jsigs from '@digitalcredentials/jsonld-signatures';
+import {v4 as uuid} from 'uuid';
+import {VeresOneDriver} from 'did-veres-one';
+import {versionedCredentials} from './mocks/credential.js';
+
+const {
+  createDiscloseCryptosuite,
+  createSignCryptosuite,
+  createVerifyCryptosuite
+} = ecdsaSd2023Cryptosuite;
+
 const should = chai.should();
 
 const {Ed25519VerificationKey2018} =

@@ -26,12 +26,12 @@
     "LICENSE"
   ],
   "dependencies": {
-    "@digitalcredentials/ed25519-signature-2020": "~5.0.0",
+    "@digitalbazaar/credentials-v2-context": "github:digitalbazaar/credentials-v2-context",
     "@digitalcredentials/jsonld": "~9.0.0",
     "@digitalcredentials/jsonld-signatures": "~11.0.0",
     "@digitalcredentials/open-badges-context": "^2.1.0",
     "credentials-context": "^2.0.0",
-    "fix-esm": "^1.0.1"
+    "ed25519-signature-2018-context": "^1.1.0",
   },
   "devDependencies": {
     "@babel/core": "^7.13.8",
@@ -39,10 +39,11 @@
     "@babel/plugin-transform-runtime": "^7.13.9",
     "@babel/preset-env": "^7.13.9",
     "@babel/runtime": "^7.13.9",
-    "@digitalbazaar/ed25519-signature-2018": "^4.0.0",
-    "@digitalbazaar/ed25519-verification-key-2018": "^4.0.0",
-    "@digitalcredentials/security-document-loader": "^5.0.1",
-    "@digitalcredentials/vc-status-list": "^8.0.0",
+    "@digitalbazaar/ed25519-signature-2018": "^2.0.1",
+    "@digitalcredentials/ed25519-signature-2020": "^5.0.0",
+    "@digitalbazaar/ed25519-verification-key-2018": "^3.0.0",
+    "@digitalcredentials/security-document-loader": "^3.2.0",
+    "@digitalcredentials/vc-status-list": "^5.0.2",
     "babel-loader": "^8.2.2",
     "chai": "^5.1.1",
     "cross-env": "^7.0.3",

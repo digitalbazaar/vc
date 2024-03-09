@@ -7,7 +7,7 @@ import {
   validContexts
 } from './contexts/index.js';
 import dataIntegrityContext from '@digitalbazaar/data-integrity-context';
-import jsigs from 'jsonld-signatures';
+import jsigs from '@digitalcredentials/jsonld-signatures';
 import {klona} from 'klona';
 import multikeyContext from '@digitalbazaar/multikey-context';
 import {MultiLoader} from './MultiLoader.js';
