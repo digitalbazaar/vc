@@ -326,7 +326,7 @@ for(const [version, mockCredential] of versionedCredentials) {
           cryptosuite: createVerifyCryptosuite()
         });
 
-        const credential = {...mockCredential};
+        const credential = mockCredential();
         delete credential.id;
         delete credential.credentialSubject.id;
         const verifiableCredential = await vc.issue({
@@ -532,7 +532,8 @@ for(const [version, mockCredential] of versionedCredentials) {
             ['/issuer', '/issuanceDate'] : ['/issuer'];
           // setup ecdsa-sd-2023 suite for signing selective disclosure VCs
           const ecdsaSdSignSuite = new DataIntegrityProof({
-            signer: ecdsaKeyPair.signer(), cryptosuite: createSignCryptosuite({
+            signer: ecdsaKeyPair.signer(),
+            cryptosuite: createSignCryptosuite({
               mandatoryPointers
             })
           });
@@ -600,7 +601,7 @@ for(const [version, mockCredential] of versionedCredentials) {
           });
 
           const verifiableCredential = await vc.issue({
-            credential: {...mockCredential},
+            credential: mockCredential(),
             suite: bbsSignSuite,
             documentLoader
           });
