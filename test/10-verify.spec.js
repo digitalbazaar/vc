@@ -114,6 +114,20 @@ for(const [version, mockCredential] of versionedCredentials) {
         verifiableCredential.should.have.property('proof');
         verifiableCredential.proof.should.be.an('object');
       });
+      it('should issue a verifiable credential with out id', async () => {
+        const credential = mockCredential();
+        delete credential.id;
+        const verifiableCredential = await vc.issue({
+          credential,
+          suite,
+          documentLoader
+        });
+        verifiableCredential.should.exist;
+        verifiableCredential.should.be.an('object');
+        verifiableCredential.should.have.property('proof');
+        verifiableCredential.proof.should.be.an('object');
+        should.not.exist(verifiableCredential.id, 'Expected no "vc.id".');
+      });
       if(version === 1.0) {
         it('should issue an expired verifiable credential', async () => {
           const keyPair = await Ed25519VerificationKey2018.generate();
@@ -898,7 +912,6 @@ for(const [version, mockCredential] of versionedCredentials) {
           'Should not throw error when multiple credentialSubjects.');
       });
     });
-
   });
 }
 
