@@ -29,7 +29,7 @@ const _mixedCredential = () => {
   };
 };
 
-const credentials = mock.credentials = {};
+export const credentials = mock.credentials = {};
 credentials.mixed = _mixedCredential();
 
 credentials.alpha = {
