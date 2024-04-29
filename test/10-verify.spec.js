@@ -6,6 +6,7 @@ import * as Bls12381Multikey from '@digitalbazaar/bls12-381-multikey';
 import * as EcdsaMultikey from '@digitalbazaar/ecdsa-multikey';
 import * as ecdsaSd2023Cryptosuite from
   '@digitalbazaar/ecdsa-sd-2023-cryptosuite';
+import * as mockData from './mocks/mock.data.js';
 import * as vc from '../lib/index.js';
 import {
   documentLoader,
