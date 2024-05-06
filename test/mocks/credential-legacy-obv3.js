@@ -1,5 +1,4 @@
-/* eslint-disable */
-const credential = {
+export default {
   "@context": ["https://www.w3.org/2018/credentials/v1", "https://purl.imsglobal.org/spec/ob/v3p0/context.json", "https://w3id.org/security/suites/ed25519-2020/v1"],
   "id": "urn:uuid:e7af51df-d51f-4ac3-bb57-c229c0e61679",
   "type": ["VerifiableCredential", "OpenBadgeCredential"],
@@ -37,6 +36,4 @@ const credential = {
     "proofPurpose": "assertionMethod",
     "proofValue": "z5pBsZaMcEv76AvDtsWpNrCB2ZXp3ZVXSxdQovH8AVV5E8k8jUTpnZ8fFSDHHEdewq544Cdi2shH8gJdj6xidcxCz"
   }
-}
-
-module.exports = credential
+};
