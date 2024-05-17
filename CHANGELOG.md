@@ -3,7 +3,7 @@
 ## 6.3.1 -
 
 ### Fixed
-- Required parameter error for `vc.derive` match name of parameters.
+- Required parameter error for "verifiableCredential" in `vc.derive` matches name of parameter.
 
 ## 6.3.0 - 2023-xx-xx
 
