@@ -7,6 +7,7 @@
 - Add support for VC 2.0 Verifiable Presentations issuance and verification.
 - Add support for VC 2.0 `validFrom` and `validUntil`.
 - Add Test vectors for VC 2.0 VCs & VPs.
+- Example roundtrip issue/verify script.
 
 ### Changed
 - **BREAKING**: Default issuance now uses VC 2.0 context.
