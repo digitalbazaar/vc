@@ -1,6 +1,6 @@
 # @digitalbazaar/vc ChangeLog
 
-## 6.3.0 - 2023-xx-xx
+## 6.3.0 - 2024-05-17
 
 ### Added
 - Documentation in the README and tests for `bbs-2023`.
