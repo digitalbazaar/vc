@@ -1,15 +1,17 @@
 # @digitalbazaar/vc ChangeLog
 
-## 6.3.1 -
+## 6.3.0 - 2023-xx-xx
+
+### Added
+- Support for `bbs-2023` via `@digitalbazaar/@digitalbazaar/bbs-2023-cryptosuite`.
+- Support for `@digitalbazaar/bls12-381-multikey`.
+
+### Changed
+- Change `engines.node` to `>=18` to support newer keys & suites.
 
 ### Fixed
 - Required parameter error for "verifiableCredential" in `vc.derive`
   matches name of parameter.
-
-## 6.3.0 - 2023-xx-xx
-
-### Changed
-- Change `engines.node` to `>=18` to support newer keys & suites.
 
 ## 6.2.0 - 2023-11-14
 
