@@ -1,5 +1,10 @@
 # @digitalbazaar/vc ChangeLog
 
+## 6.3.1 -
+
+### Fixed
+- Required parameter error for `vc.derive` match name of parameters.
+
 ## 6.3.0 - 2023-xx-xx
 
 ### Changed
