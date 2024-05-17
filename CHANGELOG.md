@@ -3,7 +3,7 @@
 ## 6.3.0 - 2023-xx-xx
 
 ### Added
-- Documentation in the README and tests for `bbs-2023` were added.
+- Documentation in the README and tests for `bbs-2023`.
 
 ### Changed
 - Change `engines.node` to `>=18` to support newer keys & suites.
