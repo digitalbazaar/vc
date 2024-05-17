@@ -1,5 +1,17 @@
 # @digitalbazaar/vc ChangeLog
 
+## 7.0.0 -
+
+### Added
+- Add support for VC 2.0 Verifiable Credentials issuance and verification.
+- Add support for VC 2.0 Verifiable Presentations issuance and verification.
+- Add support for VC 2.0 `validFrom` and `validUntil`.
+- Add Test vectors for VC 2.0 VCs & VPs.
+
+### Changed
+- **BREAKING**: Default issuance now uses VC 2.0 context.
+- **BREAKING**: DateTime validator is now an xml schema DateTime validator.
+
 ## 6.3.0 - 2024-05-17
 
 ### Added

@@ -1,5 +1,6 @@
 /* eslint-disable quotes, quote-props, max-len */
 import constants from '../constants.js';
+import {versionedCredentials} from './credential.js';
 
 export const mock = {};
 
@@ -8,7 +9,28 @@ const didContexts = [
   constants.VERES_ONE_CONTEXT_URL
 ];
 
-const credentials = mock.credentials = {};
+/**
+ * @private
+ * stores an initial count used to toggle between VC versions.
+ *
+ *
+ * @returns {Function} - A VC generator function.
+ */
+const _mixedCredential = () => {
+  let count = 0;
+  // return a generator function.
+  return () => {
+    if((count % 2) === 0) {
+      count++;
+      return versionedCredentials.get(1.0)();
+    }
+    count ++;
+    return versionedCredentials.get(2.0)();
+  };
+};
+
+export const credentials = mock.credentials = {};
+credentials.mixed = _mixedCredential();
 
 credentials.alpha = {
   "@context": [
@@ -19,7 +41,6 @@ credentials.alpha = {
     }
   ],
   "id": "http://example.edu/credentials/58473",
-  "issuanceDate": "2010-01-01T19:23:24Z",
   "type": ["VerifiableCredential", "AlumniCredential"],
   "credentialSubject": {
     "id": "did:example:ebfeb1f712ebc6f1c276e12ec21",
