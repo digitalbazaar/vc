@@ -3,8 +3,7 @@
 ## 6.3.0 - 2023-xx-xx
 
 ### Added
-- Support for `bbs-2023` via `@digitalbazaar/@digitalbazaar/bbs-2023-cryptosuite`.
-- Support for `@digitalbazaar/bls12-381-multikey`.
+- Documentation in the README and tests for `bbs-2023` were added.
 
 ### Changed
 - Change `engines.node` to `>=18` to support newer keys & suites.
