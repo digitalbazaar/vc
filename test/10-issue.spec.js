@@ -1,8 +1,6 @@
 /*!
  * Copyright (c) 2019-2024 Digital Bazaar, Inc. All rights reserved.
  */
-import * as Bls12381Multikey from '@digitalbazaar/bls12-381-multikey';
-import * as EcdsaMultikey from '@digitalbazaar/ecdsa-multikey';
 import * as vc from '../lib/index.js';
 import {
   documentLoader,
@@ -51,42 +49,6 @@ before(async () => {
     verificationMethod: 'https://example.edu/issuers/keys/1',
     key: keyPair
   });
-});
-
-// do ecdsa setup...
-let ecdsaKeyPair;
-before(async () => {
-  // set up the ECDSA key pair that will be signing and verifying
-  ecdsaKeyPair = await EcdsaMultikey.generate({
-    curve: 'P-256',
-    id: 'https://example.edu/issuers/keys/2',
-    controller: 'https://example.edu/issuers/565049'
-  });
-
-  // add the key to the controller doc (authorizes its use for assertion)
-  assertionController.assertionMethod.push(ecdsaKeyPair.id);
-  // register the key document with documentLoader
-  remoteDocuments.set(
-    'https://example.edu/issuers/keys/2',
-    await ecdsaKeyPair.export({publicKey: true}));
-});
-
-// do BBS setup...
-let bbsKeyPair;
-before(async () => {
-  // set up the BBS key pair that will be signing and verifying
-  bbsKeyPair = await Bls12381Multikey.generateBbsKeyPair({
-    algorithm: 'BBS-BLS12-381-SHA-256',
-    id: 'https://example.edu/issuers/keys/3',
-    controller: 'https://example.edu/issuers/565049'
-  });
-
-  // add the key to the controller doc (authorizes its use for assertion)
-  assertionController.assertionMethod.push(bbsKeyPair.id);
-  // register the key document with documentLoader
-  remoteDocuments.set(
-    'https://example.edu/issuers/keys/3',
-    await bbsKeyPair.export({publicKey: true}));
 });
 
 // run tests on each version of VCs
