@@ -336,7 +336,8 @@ for(const [version, mockCredential] of versionedCredentials) {
           );
         });
         it('should issue a VC with multiple languages', async function() {
-          const credential = structuredClone(credentials.language.multiple);
+          const credential = structuredClone(
+            credentials.features.multiple.languages);
           const verifiableCredential = await vc.issue({
             credential,
             suite,
@@ -348,7 +349,8 @@ for(const [version, mockCredential] of versionedCredentials) {
           verifiableCredential.proof.should.be.an('object');
         });
         it('should issue a VC with a single language', async function() {
-          const credential = structuredClone(credentials.language.single);
+          const credential = structuredClone(
+            credentials.features.single.language);
           const verifiableCredential = await vc.issue({
             credential,
             suite,
@@ -359,6 +361,20 @@ for(const [version, mockCredential] of versionedCredentials) {
           verifiableCredential.should.have.property('proof');
           verifiableCredential.proof.should.be.an('object');
         });
+        it('should issue a VC with a single language & direction',
+          async function() {
+            const credential = structuredClone(
+              credentials.features.single.direction);
+            const verifiableCredential = await vc.issue({
+              credential,
+              suite,
+              documentLoader
+            });
+            verifiableCredential.should.exist;
+            verifiableCredential.should.be.an('object');
+            verifiableCredential.should.have.property('proof');
+            verifiableCredential.proof.should.be.an('object');
+          });
       }
     });
     describe('vc.signPresentation()', () => {

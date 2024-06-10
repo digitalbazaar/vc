@@ -34,9 +34,15 @@ const _mixedCredential = () => {
 
 export const credentials = mock.credentials = {};
 credentials.mixed = _mixedCredential();
-credentials.language = {
-  multiple: require('./credential-issuer-multi-language-description-ok.json'),
-  single: require('./credential-issuer-name-language-en-ok.json')
+credentials.features = {
+  multiple: {
+    languages: require('./credential-issuer-multi-language-description-ok.json'),
+    directions: null
+  },
+  single: {
+    language: require('./credential-issuer-name-language-en-ok.json'),
+    direction: require('./credential-issuer-name-language-direction-en-ok.json')
+  }
 };
 credentials.alpha = {
   "@context": [
