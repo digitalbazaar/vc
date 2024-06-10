@@ -14,9 +14,13 @@ import {
   contexts as didContexts
 } from 'did-context';
 import {
-  constants as ed25519Constants,
-  contexts as ed25519Contexts,
+  constants as ed25519Constants2018,
+  contexts as ed25519Contexts2018,
 } from 'ed25519-signature-2018-context';
+import {
+  constants as ed25519Constants2020,
+  contexts as ed25519Contexts2020,
+} from 'ed25519-signature-2020-context';
 import {
   CONTEXT_V1 as odrlCtx,
   CONTEXT_URL_V1 as odrlCtxUrl
@@ -38,7 +42,8 @@ import {nullId} from './null_id.js';
 import {nullType} from './null_type.js';
 import {nullVersion} from './null_version.js';
 
-const {CONTEXT_URL: ED25519_CONTEXT_URL} = ed25519Constants;
+const {CONTEXT_URL: ED25519_2018_CONTEXT_URL} = ed25519Constants2018;
+const {CONTEXT_URL: ED25519_2020_CONTEXT_URL} = ed25519Constants2020;
 const {CREDENTIALS_CONTEXT_V1_URL} = credentialsConstants;
 const {CONTEXT_URL: CREDENTIALS_CONTEXT_V2_URL} = credentialsV2Constants;
 const {CREDENTIALS_V2_EXAMPLE_CONTEXT_URL} = vcExamplesV2Constants;
@@ -62,9 +67,13 @@ export const validContexts = {
     url: CREDENTIALS_CONTEXT_V2_URL,
     value: credentialsV2Contexts.get(CREDENTIALS_CONTEXT_V2_URL)
   },
-  ed25519Context: {
-    url: ED25519_CONTEXT_URL,
-    value: ed25519Contexts.get(ED25519_CONTEXT_URL)
+  ed25519Suite2018Context: {
+    url: ED25519_2018_CONTEXT_URL,
+    value: ed25519Contexts2018.get(ED25519_2018_CONTEXT_URL)
+  },
+  ed25519Suite2020Context: {
+    url: ED25519_2020_CONTEXT_URL,
+    value: ed25519Contexts2020.get(ED25519_2020_CONTEXT_URL)
   },
   odrl: {
     url: odrlCtxUrl,
