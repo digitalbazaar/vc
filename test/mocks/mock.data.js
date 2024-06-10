@@ -37,7 +37,7 @@ credentials.mixed = _mixedCredential();
 credentials.features = {
   multiple: {
     languages: require('./credential-issuer-multi-language-description-ok.json'),
-    directions: null
+    directions: require('./credential-issuer-multi-direction-name-ok.json')
   },
   single: {
     language: require('./credential-issuer-name-language-en-ok.json'),
