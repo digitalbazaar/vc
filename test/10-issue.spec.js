@@ -11,6 +11,7 @@ import {
 import {assertionController} from './mocks/assertionController.js';
 import chai from 'chai';
 import {createSkewedTimeStamp} from './helpers.js';
+import {credentials} from './mocks/mock.data.js';
 import {Ed25519Signature2018} from '@digitalbazaar/ed25519-signature-2018';
 import {
   Ed25519VerificationKey2018
@@ -333,6 +334,30 @@ for(const [version, mockCredential] of versionedCredentials) {
             'validUntil',
             credential.validUntil
           );
+        });
+        it('should issue a VC with multiple languages', async function() {
+          const credential = structuredClone(credentials.language.multiple);
+          const verifiableCredential = await vc.issue({
+            credential,
+            suite,
+            documentLoader
+          });
+          verifiableCredential.should.exist;
+          verifiableCredential.should.be.an('object');
+          verifiableCredential.should.have.property('proof');
+          verifiableCredential.proof.should.be.an('object');
+        });
+        it('should issue a VC with a single language', async function() {
+          const credential = structuredClone(credentials.language.single);
+          const verifiableCredential = await vc.issue({
+            credential,
+            suite,
+            documentLoader
+          });
+          verifiableCredential.should.exist;
+          verifiableCredential.should.be.an('object');
+          verifiableCredential.should.have.property('proof');
+          verifiableCredential.proof.should.be.an('object');
         });
       }
     });
