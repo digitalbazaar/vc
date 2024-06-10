@@ -107,10 +107,7 @@ for(const [version, mockCredential] of versionedCredentials) {
       if(version === 1.0) {
         it('should issue an expired verifiable credential', async () => {
           const keyPair = await Ed25519VerificationKey2020.generate();
-          const fp = Ed25519VerificationKey2020
-            .fingerprintFromPublicKey({
-              publicKeyBase58: keyPair.publicKeyBase58
-            });
+          const fp = keyPair.fingerprint();
           keyPair.id = `did:key:${fp}#${fp}`;
           const credential = mockCredential();
           credential.id = `urn:uuid:${uuid()}`;
@@ -377,7 +374,7 @@ for(const [version, mockCredential] of versionedCredentials) {
           'https://example.edu/issuers/keys/1');
         vp.proof.should.have.property('challenge', '12ec21');
         vp.proof.should.have.property('created');
-        vp.proof.should.have.property('jws');
+        vp.proof.should.not.have.property('jws');
       });
     });
   });
