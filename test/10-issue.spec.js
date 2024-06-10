@@ -10,10 +10,10 @@ import {assertionController} from './mocks/assertionController.js';
 import chai from 'chai';
 import {createSkewedTimeStamp} from './helpers.js';
 import {credentials} from './mocks/mock.data.js';
-import {Ed25519Signature2018} from '@digitalbazaar/ed25519-signature-2018';
+import {Ed25519Signature2020} from '@digitalbazaar/ed25519-signature-2020';
 import {
-  Ed25519VerificationKey2018
-} from '@digitalbazaar/ed25519-verification-key-2018';
+  Ed25519VerificationKey2020
+} from '@digitalbazaar/ed25519-verification-key-2020';
 import {v4 as uuid} from 'uuid';
 import {versionedCredentials} from './mocks/credential.js';
 
@@ -24,7 +24,7 @@ let suite;
 let keyPair;
 before(async () => {
   // set up the Ed25519 key pair that will be signing and verifying
-  keyPair = await Ed25519VerificationKey2018.generate({
+  keyPair = await Ed25519VerificationKey2020.generate({
     id: 'https://example.edu/issuers/keys/1',
     controller: 'https://example.edu/issuers/565049'
   });
@@ -45,9 +45,12 @@ before(async () => {
     await keyPair.export({publicKey: true}));
 
   // set up the signature suite, using the generated key
-  suite = new Ed25519Signature2018({
+  suite = new Ed25519Signature2020({
     verificationMethod: 'https://example.edu/issuers/keys/1',
-    key: keyPair
+    key: keyPair,
+    canonizeOptions: {
+      rdfDirection: 'i18n-datatype',
+    }
   });
 });
 
@@ -82,9 +85,9 @@ for(const [version, mockCredential] of versionedCredentials) {
         should.not.exist(verifiableCredential.id, 'Expected no "vc.id".');
       });
       it('should throw an error on missing verificationMethod', async () => {
-        const suite = new Ed25519Signature2018({
+        const suite = new Ed25519Signature2020({
           // Note no key id or verificationMethod passed to suite
-          key: await Ed25519VerificationKey2018.generate()
+          key: await Ed25519VerificationKey2020.generate()
         });
         let error;
         try {
@@ -103,8 +106,8 @@ for(const [version, mockCredential] of versionedCredentials) {
       });
       if(version === 1.0) {
         it('should issue an expired verifiable credential', async () => {
-          const keyPair = await Ed25519VerificationKey2018.generate();
-          const fp = Ed25519VerificationKey2018
+          const keyPair = await Ed25519VerificationKey2020.generate();
+          const fp = Ed25519VerificationKey2020
             .fingerprintFromPublicKey({
               publicKeyBase58: keyPair.publicKeyBase58
             });
@@ -115,7 +118,7 @@ for(const [version, mockCredential] of versionedCredentials) {
           credential.expirationDate = '2020-05-31T19:21:25Z';
           const verifiableCredential = await vc.issue({
             credential,
-            suite: new Ed25519Signature2018({
+            suite: new Ed25519Signature2020({
               key: keyPair
             }),
             // set `now` to expiration date, allowing the credential
@@ -368,7 +371,7 @@ for(const [version, mockCredential] of versionedCredentials) {
           documentLoader
         });
         vp.should.have.property('proof');
-        vp.proof.should.have.property('type', 'Ed25519Signature2018');
+        vp.proof.should.have.property('type', 'Ed25519Signature2020');
         vp.proof.should.have.property('proofPurpose', 'authentication');
         vp.proof.should.have.property('verificationMethod',
           'https://example.edu/issuers/keys/1');
