@@ -1,11 +1,50 @@
 # @digitalcredentials/vc ChangeLog
 
-## 8.0.0 - 2024-08-03
+## 8.0.0 - 2024-xx-xx
+
+### Added
+- Add support for VC 2.0 Verifiable Credentials issuance and verification.
+- Add support for VC 2.0 Verifiable Presentations issuance and verification.
+- Add support for VC 2.0 `validFrom` and `validUntil`.
+- Add Test vectors for VC 2.0 VCs & VPs.
+- Allow `credentialStatus` arrays in credential status check.
+- Add `derive()` API for deriving new verifiable credentials from
+  existing ones, for the purpose of selective disclosure or
+  unlinkable presentation.
+- Add optional param `now` to `verifyCredential()`, `createPresentation()`,
+  `verify()`, and `issue()`.
+
 ### Changed
- - **BREAKING**: Switch dependencies to:
-   - `@digitalcredentials/jsonld`
-   - `@digitalcredentials/jsonld-signatures`
-   - `@digitalcredentials/http-client`
+- **BREAKING**: Switch dependencies to:
+  - `@digitalcredentials/jsonld`
+  - `@digitalcredentials/jsonld-signatures`
+  - `@digitalcredentials/http-client`
+- **BREAKING**: Default issuance now uses VC 2.0 context.
+- **BREAKING**: DateTime validator is now an xml schema DateTime validator.
+- Change `engines.node` to `>=18` to support newer keys & suites.
+- Update dependencies.
+  - **BREAKING**: Remove support for `expansionMap`. (Removed in dependencies.)
+- **BREAKING**: Use `jsonld-signatures@11` and `jsonld@8` to get new `safe`
+  mode (and on by default when using `canonize`) feature.
+- **BREAKING**: Check if credential has expired when `expirationDate` property
+  exists.
+- **BREAKING**: Convert to module (ESM).
+- **BREAKING**: Require Node.js >=14.
+- Update dependencies.
+  - **BREAKING**: `did-veres-one@15.0.0` used in tests.
+- Lint module.
+
+### Fixed
+- Ensure that `issuanceDate` is only checked on verification,
+  not issuance.
+- Fix bug with option overrides for verifying presentations.
+
+### Removed
+- **BREAKING**: Remove ODRL and VC examples contexts from `./lib/contexts/` and
+  from the default document loader. The contexts are now available in
+  [`@digitalbazaar/odrl-context`](https://github.com/digitalbazaar/odrl-context)
+  and
+  [`@digitalbazaar/credentials-examples-context`](https://github.com/digitalbazaar/credentials-examples-context).
 
 ## 7.0.0 - 2024-02-07
 ### Changed
@@ -62,85 +101,7 @@
 
 Version skipped to match upstream.
 
-## 7.0.0 -
-
-### Added
-- Add support for VC 2.0 Verifiable Credentials issuance and verification.
-- Add support for VC 2.0 Verifiable Presentations issuance and verification.
-- Add support for VC 2.0 `validFrom` and `validUntil`.
-- Add Test vectors for VC 2.0 VCs & VPs.
-
-### Changed
-- **BREAKING**: Default issuance now uses VC 2.0 context.
-- **BREAKING**: DateTime validator is now an xml schema DateTime validator.
-
-## 6.3.0 - 2023-xx-xx
-
-### Changed
-- Change `engines.node` to `>=18` to support newer keys & suites.
-
-## 6.2.0 - 2023-11-14
-
-### Added
-- Allow `credentialStatus` arrays in credential status check.
-
-## 6.1.0 - 2023-11-13
-
-### Added
-- Add `derive()` API for deriving new verifiable credentials from
-  existing ones, for the purpose of selective disclosure or
-  unlinkable presentation.
-
-## 6.0.2 - 2023-08-04
-
-### Fixed
-- Ensure that `issuanceDate` is only checked on verification,
-  not issuance.
-
-## 6.0.1 - 2023-03-17
-
-### Fixed
-- Fix bug with option overrides for verifying presentations.
-
-## 6.0.0 - 2023-01-17
-
-### Removed
-- **BREAKING**: Remove ODRL and VC examples contexts from `./lib/contexts/` and
-  from the default document loader. The contexts are now available in
-  [`@digitalbazaar/odrl-context`](https://github.com/digitalbazaar/odrl-context)
-  and
-  [`@digitalbazaar/credentials-examples-context`](https://github.com/digitalbazaar/credentials-examples-context).
-
-### Changed
-- Update dependencies.
-  - **BREAKING**: Remove support for `expansionMap`. (Removed in dependencies.)
-
-## 5.0.0 - 2022-08-24
-
-### Changed
-- **BREAKING**: Use `jsonld-signatures@11` and `jsonld@8` to get new `safe`
-  mode (and on by default when using `canonize`) feature.
-
-## 4.0.0 - 2022-06-23
-
-### Changed
-- **BREAKING**: Check if credential has expired when `expirationDate` property
-  exists.
-
-### Added
-- Add optional param `now` to `verifyCredential()`, `createPresentation()`,
-  `verify()`, and `issue()`.
-
-## 3.0.0 - 2022-06-15
-
-### Changed
-- **BREAKING**: Convert to module (ESM).
-- **BREAKING**: Require Node.js >=14.
-- Update dependencies.
-  - **BREAKING**: `did-veres-one@15.0.0` used in tests.
-- Lint module.
-
-## 2.1.0 - 2021-12-20
+## 2.1.0 - 2021-xx-xx
 
 ### Changed
 - Sync VC example context from vc-data-model spec source.

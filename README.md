@@ -61,8 +61,8 @@ npm install @digitalbazaar/vc
 To install locally (for development):
 
 ```
-git clone https://github.com/digitalcredentials/vc-js.git
-cd vc-js
+git clone https://github.com/digitalcredentials/vc.git
+cd vc
 npm install
 ```
 

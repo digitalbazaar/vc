@@ -27,7 +27,14 @@ module.exports = function(config) {
 
     webpack: {
       mode: 'development',
-      devtool: 'inline-source-map'
+      devtool: 'inline-source-map',
+      resolve: {
+        fallback: {
+          crypto: false,
+          url: false,
+          util: false
+        }
+      }
     },
 
     // test results reporter to use
