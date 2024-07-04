@@ -34,7 +34,7 @@ credentials.mixed = _mixedCredential();
 
 credentials.alpha = {
   "@context": [
-    constants.CREDENTIALS_CONTEXT_URL, {
+    constants.CREDENTIALS_CONTEXT_V2_URL, {
       "ex1": "https://example.com/examples/v1",
       "AlumniCredential": "ex1:AlumniCredential",
       "alumniOf": "ex1:alumniOf"
@@ -51,7 +51,7 @@ credentials.alpha = {
 const presentations = mock.presentations = {};
 
 presentations.alpha = {
-  "@context": [constants.CREDENTIALS_CONTEXT_URL],
+  "@context": [constants.CREDENTIALS_CONTEXT_V2_URL],
   "type": ["VerifiablePresentation"],
   "verifiableCredential": [],
 };
