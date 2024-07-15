@@ -1,6 +1,9 @@
 /* eslint-disable quotes, quote-props, max-len */
 import constants from '../constants.js';
+import {createRequire} from 'node:module';
 import {versionedCredentials} from './credential.js';
+
+const require = createRequire(import.meta.url);
 
 export const mock = {};
 
@@ -31,7 +34,16 @@ const _mixedCredential = () => {
 
 export const credentials = mock.credentials = {};
 credentials.mixed = _mixedCredential();
-
+credentials.features = {
+  multiple: {
+    languages: require('./credential-issuer-multi-language-description-ok.json'),
+    directions: require('./credential-issuer-multi-direction-name-ok.json')
+  },
+  single: {
+    language: require('./credential-issuer-name-language-en-ok.json'),
+    direction: require('./credential-issuer-name-language-direction-en-ok.json')
+  }
+};
 credentials.alpha = {
   "@context": [
     constants.CREDENTIALS_CONTEXT_V2_URL, {
