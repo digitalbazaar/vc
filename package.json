@@ -40,6 +40,7 @@
     "@digitalbazaar/data-integrity": "^2.2.0",
     "@digitalbazaar/data-integrity-context": "^2.0.1",
     "@digitalbazaar/ecdsa-multikey": "^1.7.0",
+    "@digitalbazaar/ecdsa-rdfc-2019-cryptosuite": "^1.0.1",
     "@digitalbazaar/ecdsa-sd-2023-cryptosuite": "^3.2.1",
     "@digitalbazaar/ed25519-signature-2018": "^4.0.0",
     "@digitalbazaar/ed25519-verification-key-2018": "^4.0.0",

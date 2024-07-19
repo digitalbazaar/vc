@@ -4,6 +4,8 @@
 import * as bbs2023Cryptosuite from '@digitalbazaar/bbs-2023-cryptosuite';
 import * as Bls12381Multikey from '@digitalbazaar/bls12-381-multikey';
 import * as EcdsaMultikey from '@digitalbazaar/ecdsa-multikey';
+import * as ecdsaRdfc2019Cryptosuite from
+  '@digitalbazaar/ecdsa-rdfc-2019-cryptosuite';
 import * as ecdsaSd2023Cryptosuite from
   '@digitalbazaar/ecdsa-sd-2023-cryptosuite';
 import {assertionController} from './mocks/assertionController.js';
@@ -17,9 +19,32 @@ import {remoteDocuments} from '../testDocumentLoader.js';
 export async function setupKeyPairs() {
   return new Map([
     ['Ed25519VerificationKey2018', await ed25519KeyPair()],
-    ['EcdsaP256KeyPair', await ecdsaP256KeyPair()],
-    ['bbs-2023', await bbsKeyPair()]
+    ['ecdsa-rdfc-2019', await ecdsaRdfc2019()],
+    ['ecdsa-sd-2023', await ecdsaP256KeyPair()],
+    ['bbs-2023', await bbs2023()]
   ]);
+}
+
+async function ecdsaRdfc2019() {
+  // set up the ECDSA key pair that will be signing and verifying
+  const keyPair = await EcdsaMultikey.generate({
+    curve: 'P-256',
+    id: 'https://example.edu/issuers/keys/2',
+    controller: 'https://example.edu/issuers/565049'
+  });
+
+  // add the key to the controller doc (authorizes its use for assertion)
+  assertionController.assertionMethod.push(keyPair.id);
+  // register the key document with documentLoader
+  remoteDocuments.set(
+    'https://example.edu/issuers/keys/2',
+    await keyPair.export({publicKey: true}));
+  return {
+    keyPair,
+    cryptosuite: ecdsaRdfc2019Cryptosuite,
+    Suite: DataIntegrityProof,
+    derived: false
+  };
 }
 
 async function ed25519KeyPair() {
@@ -52,6 +77,8 @@ async function ed25519KeyPair() {
   return {
     keyPair,
     suite,
+    cryptosuite: Ed25519Signature2018,
+    Suite: Ed25519Signature2018,
     derived: false
   };
 }
@@ -72,23 +99,32 @@ async function ecdsaP256KeyPair() {
     'https://example.edu/issuers/keys/2',
     await keyPair.export({publicKey: true}));
   return {
-    keyPair
+    keyPair,
+    cryptosuite: ecdsaSd2023Cryptosuite,
+    Suite: DataIntegrityProof,
+    derived: false
   };
 }
 
 // do BBS setup...
-async function bbsKeyPair() {
+async function bbs2023() {
   // set up the BBS key pair that will be signing and verifying
-  bbsKeyPair = await Bls12381Multikey.generateBbsKeyPair({
+  const keyPair = await Bls12381Multikey.generateBbsKeyPair({
     algorithm: 'BBS-BLS12-381-SHA-256',
     id: 'https://example.edu/issuers/keys/3',
     controller: 'https://example.edu/issuers/565049'
   });
 
   // add the key to the controller doc (authorizes its use for assertion)
-  assertionController.assertionMethod.push(bbsKeyPair.id);
+  assertionController.assertionMethod.push(keyPair.id);
   // register the key document with documentLoader
   remoteDocuments.set(
     'https://example.edu/issuers/keys/3',
-    await bbsKeyPair.export({publicKey: true}));
+    await keyPair.export({publicKey: true}));
+  return {
+    keyPair,
+    cryptosuite: bbs2023Cryptosuite,
+    derived: true,
+    Suite: DataIntegrityProof
+  };
 }
