@@ -11,6 +11,7 @@ import jsigs from 'jsonld-signatures';
 import {klona} from 'klona';
 import multikeyContext from '@digitalbazaar/multikey-context';
 import {MultiLoader} from './MultiLoader.js';
+import {VeresOneDriver} from 'did-veres-one';
 
 export const remoteDocuments = new Map();
 remoteDocuments.set(

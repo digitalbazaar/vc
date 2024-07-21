@@ -13,26 +13,34 @@ import {invalidContexts} from './contexts/index.js';
 import jsigs from 'jsonld-signatures';
 import {setupKeyPairs} from './mocks/keyPairs.js';
 import {v4 as uuid} from 'uuid';
-import {VeresOneDriver} from 'did-veres-one';
 import {versionedCredentials} from './mocks/credential.js';
 
 chai.should();
 const keyPairs = await setupKeyPairs();
 
 // run tests for each keyPair type
-for(const [keyType, {suite, keyPair}] of keyPairs) {
+for(const [keyType, {suite, keyPair, cryptosuite}] of keyPairs) {
   // run tests on each version of VCs
-  for(const [version, mockCredential] of versionedCredentials) {
-    _runSuite({keyType, suite, keyPair, version, mockCredential});
+  for(const [version, credentialFactory] of versionedCredentials) {
+    _runSuite({
+      keyType, suite,
+      keyPair, version,
+      credentialFactory, cryptosuite
+    });
   }
 }
 
-function _runSuite({keyType, suite, version, mockCredential}) {
+function _runSuite({
+  cryptosuite, keyType,
+  suite, version,
+  keyPair, credentialFactory
+}) {
+  const issuer = keyPair.id;
   describe(`VC ${version} keyType ${keyType}`, async function() {
     describe('verify API (credentials)', () => {
       it('should verify a vc', async () => {
         const verifiableCredential = await vc.issue({
-          credential: mockCredential(),
+          credential: credentialFactory(),
           suite,
           documentLoader
         });
@@ -80,7 +88,7 @@ function _runSuite({keyType, suite, version, mockCredential}) {
         });
 
         const verifiableCredential = await vc.issue({
-          credential: mockCredential(),
+          credential: credentialFactory(),
           suite: ecdsaSdSignSuite,
           documentLoader
         });
@@ -130,7 +138,7 @@ function _runSuite({keyType, suite, version, mockCredential}) {
           cryptosuite: createVerifyCryptosuite()
         });
 
-        const credential = mockCredential();
+        const credential = credentialFactory();
         delete credential.id;
         delete credential.credentialSubject.id;
         const verifiableCredential = await vc.issue({
@@ -157,7 +165,7 @@ function _runSuite({keyType, suite, version, mockCredential}) {
       });
 
       it('should verify a vc with a positive status check', async () => {
-        const credential = mockCredential();
+        const credential = credentialFactory();
         credential['@context'].push({
           '@context': {
             id: '@id',
@@ -193,7 +201,11 @@ function _runSuite({keyType, suite, version, mockCredential}) {
 
       describe('negative test', async () => {
         it('fails to verify if a context resolves to null', async () => {
-          const {credential, suite} = await _generateCredential(mockCredential);
+          const {credential} = await _generateCredential({
+            credentialFactory,
+            suite,
+            issuer
+          });
           credential['@context'].push(invalidContexts.nullDoc.url);
           const results = await vc.verifyCredential({
             suite,
@@ -204,7 +216,7 @@ function _runSuite({keyType, suite, version, mockCredential}) {
           results.verified.should.be.false;
         });
         it('fails to verify if a context contains an invalid id', async () => {
-          const {credential, suite} = await _generateCredential(mockCredential);
+          const {credential} = await _generateCredential(credentialFactory);
           credential['@context'].push(invalidContexts.invalidId.url);
           const results = await vc.verifyCredential({
             suite,
@@ -215,7 +227,7 @@ function _runSuite({keyType, suite, version, mockCredential}) {
           results.verified.should.be.false;
         });
         it('fails to verify if a context has a null version', async () => {
-          const {credential, suite} = await _generateCredential(mockCredential);
+          const {credential, suite} = await _generateCredential(credentialFactory);
           credential['@context'].push(invalidContexts.nullVersion.url);
           const results = await vc.verifyCredential({
             suite,
@@ -226,7 +238,7 @@ function _runSuite({keyType, suite, version, mockCredential}) {
           results.verified.should.be.false;
         });
         it('fails to verify if a context has a null @id', async () => {
-          const {credential, suite} = await _generateCredential(mockCredential);
+          const {credential, suite} = await _generateCredential(credentialFactory);
           credential['@context'].push(invalidContexts.nullId.url);
           const results = await vc.verifyCredential({
             suite,
@@ -237,7 +249,7 @@ function _runSuite({keyType, suite, version, mockCredential}) {
           results.verified.should.be.false;
         });
         it('fails to verify if a context has a null @type', async () => {
-          const {credential, suite} = await _generateCredential(mockCredential);
+          const {credential, suite} = await _generateCredential(credentialFactory);
           credential['@context'].push(invalidContexts.nullType.url);
           const results = await vc.verifyCredential({
             suite,
@@ -248,7 +260,7 @@ function _runSuite({keyType, suite, version, mockCredential}) {
           results.verified.should.be.false;
         });
         it('fails to verify if a context links to a missing doc', async () => {
-          const {credential, suite} = await _generateCredential(mockCredential);
+          const {credential, suite} = await _generateCredential(credentialFactory);
           credential['@context'].push('https://fsad.digitalbazaar.com');
           const results = await vc.verifyCredential({
             suite,
@@ -259,7 +271,7 @@ function _runSuite({keyType, suite, version, mockCredential}) {
           results.verified.should.be.false;
         });
         it('fails to verify if a context has an invalid url', async () => {
-          const {credential, suite} = await _generateCredential(mockCredential);
+          const {credential, suite} = await _generateCredential(credentialFactory);
           credential['@context'].push('htps://fsad.digitalbazaar.');
           const results = await vc.verifyCredential({
             suite,
@@ -271,7 +283,7 @@ function _runSuite({keyType, suite, version, mockCredential}) {
         });
         it('should fail to verify a vc with a negative status check',
           async () => {
-            const credential = mockCredential();
+            const credential = credentialFactory();
             credential['@context'].push({
               '@context': {
                 id: '@id',
@@ -306,7 +318,7 @@ function _runSuite({keyType, suite, version, mockCredential}) {
           });
         it('should not run "checkStatus" on a vc without a ' +
           '"credentialStatus" property', async () => {
-          const credential = mockCredential();
+          const credential = credentialFactory();
           const verifiableCredential = await vc.issue({
             credential,
             suite,
@@ -357,7 +369,7 @@ function _runSuite({keyType, suite, version, mockCredential}) {
           });
 
           const verifiableCredential = await vc.issue({
-            credential: mockCredential(),
+            credential: credentialFactory(),
             suite: ecdsaSdSignSuite,
             documentLoader
           });
@@ -376,12 +388,12 @@ function _runSuite({keyType, suite, version, mockCredential}) {
           result.verified.should.be.a('boolean');
           result.verified.should.be.false;
         });
-        it('should fail to verify a changed BBS derived vc', async () => {
+        it('should fail to verify a changed derived vc', async () => {
           const {
             createDiscloseCryptosuite,
             createSignCryptosuite,
             createVerifyCryptosuite
-          } = bbs2023Cryptosuite;
+          } = cryptosuite;
           const mandatoryPointers = (version === 1.0) ?
             ['/issuer', '/issuanceDate'] : ['/issuer'];
 
@@ -405,7 +417,7 @@ function _runSuite({keyType, suite, version, mockCredential}) {
           });
 
           const verifiableCredential = await vc.issue({
-            credential: mockCredential(),
+            credential: credentialFactory(),
             suite: bbsSignSuite,
             documentLoader
           });
@@ -429,46 +441,15 @@ function _runSuite({keyType, suite, version, mockCredential}) {
   });
 }
 
-async function _generateCredential(_mockCredential) {
-  const mockCredential = _mockCredential();
-  const {didDocument, documentLoader} = await _loadDid();
-  mockCredential.issuer = didDocument.didDocument.id;
+async function _generateCredential({credentialFactory, suite, issuer}) {
+  const credentialFactory = credentialFactory();
+  mockCredential.issuer = issuer;
   mockCredential.id = `http://example.edu/credentials/${uuid()}`;
-  testLoader.addLoader(documentLoader);
-
-  const assertionKey = didDocument.methodFor({purpose: 'assertionMethod'});
-
-  const suite = new Ed25519Signature2018({key: assertionKey});
   const credential = await jsigs.sign(mockCredential, {
     compactProof: false,
     documentLoader: testLoader.documentLoader.bind(testLoader),
     suite,
     purpose: new CredentialIssuancePurpose()
   });
-
-  return {credential, documentLoader, suite};
-}
-
-async function _loadDid() {
-  const driver = new VeresOneDriver({mode: 'test'});
-  const didDocument = await driver.generate({
-    seed: new Uint8Array(32)
-  });
-  const documentLoader = url => {
-    let document;
-    if(url.includes('#')) {
-      // FIXME: code path not yet tested
-      throw new Error('FIXME');
-      document = didDocument.keyPairs.get(url);
-    } else if(url === didDocument.didDocument.id) {
-      document = didDocument.didDocument;
-    }
-    if(document) {
-      return {contextUrl: null, document, documentUrl: url};
-    }
-    throw new Error(`"${url}" not authorized to be resolved.`);
-  };
-  return {
-    didDocument, documentLoader
-  };
+  return {credential};
 }
