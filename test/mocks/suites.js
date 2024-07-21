@@ -19,7 +19,7 @@ import {
 } from '@digitalbazaar/ed25519-verification-key-2018';
 import {remoteDocuments} from '../testDocumentLoader.js';
 
-export async function setupKeyPairs() {
+export async function setupSuites() {
   return new Map([
     ['Ed25519VerificationKey2018', await ed25519KeyPair()],
     ['ecdsa-rdfc-2019', await ecdsaRdfc2019()],
@@ -40,6 +40,8 @@ async function eddsaRdfc2022() {
   registerKey({keyDoc});
   return {
     keyPair,
+    keyType: '',
+    issuer: keyPair.controller,
     cryptosuite: eddsaRdfc2020Cryptosuite,
     Suite: DataIntegrityProof,
     derived: false

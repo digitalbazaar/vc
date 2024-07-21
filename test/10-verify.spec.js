@@ -9,34 +9,35 @@ import {
 import {assertionController} from './mocks/assertionController.js';
 import chai from 'chai';
 import {CredentialIssuancePurpose} from '../lib/CredentialIssuancePurpose.js';
+import {DataIntegrityProof} from '@digitalbazaar/data-integrity';
 import {invalidContexts} from './contexts/index.js';
 import jsigs from 'jsonld-signatures';
-import {setupKeyPairs} from './mocks/keyPairs.js';
+import {setupSuites} from './mocks/keyPairs.js';
 import {v4 as uuid} from 'uuid';
 import {versionedCredentials} from './mocks/credential.js';
 
 chai.should();
-const keyPairs = await setupKeyPairs();
+const suites = await setupSuites();
 
 // run tests for each keyPair type
-for(const [keyType, {suite, keyPair, cryptosuite}] of keyPairs) {
+for(const [suiteName, suiteOptions] of suites) {
   // run tests on each version of VCs
   for(const [version, credentialFactory] of versionedCredentials) {
     _runSuite({
-      keyType, suite,
-      keyPair, version,
-      credentialFactory, cryptosuite
+      credentialFactory, suiteName, version, ...suiteOptions
     });
   }
 }
 
 function _runSuite({
-  cryptosuite, keyType,
+  derived,
+  suiteName, issuer,
+  keyPair, keyType,
   suite, version,
-  keyPair, credentialFactory
+  credentialFactory, cryptosuite
 }) {
-  const issuer = keyPair.id;
-  describe(`VC ${version} keyType ${keyType}`, async function() {
+  const title = `VC ${version} suite: ${suiteName} keyType ${keyType}`;
+  describe(title, async function() {
     describe('verify API (credentials)', () => {
       it('should verify a vc', async () => {
         const verifiableCredential = await vc.issue({
@@ -56,113 +57,60 @@ function _runSuite({
         }
         result.verified.should.be.true;
       });
+      if(derived === true) {
+        it('should verify a derived vc', async () => {
+          const {
+            createDiscloseCryptosuite,
+            createSignCryptosuite,
+            createVerifyCryptosuite
+          } = cryptosuite;
+          const proofId = `urn:uuid:${uuid()}`;
+          const mandatoryPointers = (version === 1.0) ?
+            ['/issuer', '/issuanceDate'] : ['/issuer'];
+          // setup ecdsa-sd-2023 suite for signing selective disclosure VCs
+          const ecdsaSdSignSuite = new DataIntegrityProof({
+            signer: keyPair.signer(), cryptosuite: createSignCryptosuite({
+              mandatoryPointers
+            })
+          });
+          ecdsaSdSignSuite.proof = {id: proofId};
+          // setup ecdsa-sd-2023 suite for deriving selective disclosure VCs
+          const ecdsaSdDeriveSuite = new DataIntegrityProof({
+            cryptosuite: createDiscloseCryptosuite({
+              proofId,
+              selectivePointers: [
+                '/credentialSubject'
+              ]
+            })
+          });
+          // setup ecdsa-sd-2023 suite for verifying selective disclosure VCs
+          const ecdsaSdVerifySuite = new DataIntegrityProof({
+            cryptosuite: createVerifyCryptosuite()
+          });
 
-      it('should verify an ECDSA-SD derived vc', async () => {
-        const {
-          createDiscloseCryptosuite,
-          createSignCryptosuite,
-          createVerifyCryptosuite
-        } = ecdsaSd2023Cryptosuite;
-        const proofId = `urn:uuid:${uuid()}`;
-        const mandatoryPointers = (version === 1.0) ?
-          ['/issuer', '/issuanceDate'] : ['/issuer'];
-        // setup ecdsa-sd-2023 suite for signing selective disclosure VCs
-        const ecdsaSdSignSuite = new DataIntegrityProof({
-          signer: ecdsaKeyPair.signer(), cryptosuite: createSignCryptosuite({
-            mandatoryPointers
-          })
-        });
-        ecdsaSdSignSuite.proof = {id: proofId};
-        // setup ecdsa-sd-2023 suite for deriving selective disclosure VCs
-        const ecdsaSdDeriveSuite = new DataIntegrityProof({
-          cryptosuite: createDiscloseCryptosuite({
-            proofId,
-            selectivePointers: [
-              '/credentialSubject'
-            ]
-          })
-        });
-        // setup ecdsa-sd-2023 suite for verifying selective disclosure VCs
-        const ecdsaSdVerifySuite = new DataIntegrityProof({
-          cryptosuite: createVerifyCryptosuite()
-        });
+          const verifiableCredential = await vc.issue({
+            credential: credentialFactory(),
+            suite: ecdsaSdSignSuite,
+            documentLoader
+          });
+          const derivedCredential = await vc.derive({
+            verifiableCredential,
+            suite: ecdsaSdDeriveSuite,
+            documentLoader
+          });
+          const result = await vc.verifyCredential({
+            credential: derivedCredential,
+            controller: assertionController,
+            suite: ecdsaSdVerifySuite,
+            documentLoader
+          });
 
-        const verifiableCredential = await vc.issue({
-          credential: credentialFactory(),
-          suite: ecdsaSdSignSuite,
-          documentLoader
+          if(result.error) {
+            throw result.error;
+          }
+          result.verified.should.be.true;
         });
-        const derivedCredential = await vc.derive({
-          verifiableCredential,
-          suite: ecdsaSdDeriveSuite,
-          documentLoader
-        });
-        const result = await vc.verifyCredential({
-          credential: derivedCredential,
-          controller: assertionController,
-          suite: ecdsaSdVerifySuite,
-          documentLoader
-        });
-
-        if(result.error) {
-          throw result.error;
-        }
-        result.verified.should.be.true;
-      });
-
-      it('should verify a BBS derived vc', async () => {
-        const {
-          createDiscloseCryptosuite,
-          createSignCryptosuite,
-          createVerifyCryptosuite
-        } = bbs2023Cryptosuite;
-        const mandatoryPointers = (version === 1.0) ?
-          ['/issuer', '/issuanceDate'] : ['/issuer'];
-
-        // setup bbs-2023 suite for signing unlinkable VCs
-        const bbsSignSuite = new DataIntegrityProof({
-          signer: bbsKeyPair.signer(), cryptosuite: createSignCryptosuite({
-            mandatoryPointers
-          })
-        });
-        // setup bbs-2023 suite for deriving unlinkable VC proofs
-        const bbsDeriveSuite = new DataIntegrityProof({
-          cryptosuite: createDiscloseCryptosuite({
-            selectivePointers: [
-              '/credentialSubject'
-            ]
-          })
-        });
-        // setup bbs-2023 suite for verifying unlinkable VC proofs
-        const bbsVerifySuite = new DataIntegrityProof({
-          cryptosuite: createVerifyCryptosuite()
-        });
-
-        const credential = credentialFactory();
-        delete credential.id;
-        delete credential.credentialSubject.id;
-        const verifiableCredential = await vc.issue({
-          credential,
-          suite: bbsSignSuite,
-          documentLoader
-        });
-        const derivedCredential = await vc.derive({
-          verifiableCredential,
-          suite: bbsDeriveSuite,
-          documentLoader
-        });
-        const result = await vc.verifyCredential({
-          credential: derivedCredential,
-          controller: assertionController,
-          suite: bbsVerifySuite,
-          documentLoader
-        });
-
-        if(result.error) {
-          throw result.error;
-        }
-        result.verified.should.be.true;
-      });
+      }
 
       it('should verify a vc with a positive status check', async () => {
         const credential = credentialFactory();
@@ -337,105 +285,60 @@ function _runSuite({
           }
           result.verified.should.be.true;
         });
-        it('should fail to verify a changed ECDSA-SD derived vc', async () => {
-          const {
-            createDiscloseCryptosuite,
-            createSignCryptosuite,
-            createVerifyCryptosuite
-          } = ecdsaSd2023Cryptosuite;
-          const proofId = `urn:uuid:${uuid()}`;
-          const mandatoryPointers = (version === 1.0) ?
-            ['/issuer', '/issuanceDate'] : ['/issuer'];
-          // setup ecdsa-sd-2023 suite for signing selective disclosure VCs
-          const ecdsaSdSignSuite = new DataIntegrityProof({
-            signer: ecdsaKeyPair.signer(),
-            cryptosuite: createSignCryptosuite({
-              mandatoryPointers
-            })
-          });
-          ecdsaSdSignSuite.proof = {id: proofId};
-          // setup ecdsa-sd-2023 suite for deriving selective disclosure VCs
-          const ecdsaSdDeriveSuite = new DataIntegrityProof({
-            cryptosuite: createDiscloseCryptosuite({
-              proofId,
-              selectivePointers: [
-                '/credentialSubject'
-              ]
-            })
-          });
-          // setup ecdsa-sd-2023 suite for verifying selective disclosure VCs
-          const ecdsaSdVerifySuite = new DataIntegrityProof({
-            cryptosuite: createVerifyCryptosuite()
+        if(derived === true) {
+          it('should fail to verify a changed derived vc', async () => {
+            const {
+              createDiscloseCryptosuite,
+              createSignCryptosuite,
+              createVerifyCryptosuite
+            } = cryptosuite;
+            const proofId = `urn:uuid:${uuid()}`;
+            const mandatoryPointers = (version === 1.0) ?
+              ['/issuer', '/issuanceDate'] : ['/issuer'];
+            // setup ecdsa-sd-2023 suite for signing selective disclosure VCs
+            const ecdsaSdSignSuite = new DataIntegrityProof({
+              signer: keyPair.signer(),
+              cryptosuite: createSignCryptosuite({
+                mandatoryPointers
+              })
+            });
+            ecdsaSdSignSuite.proof = {id: proofId};
+            // setup ecdsa-sd-2023 suite for deriving selective disclosure VCs
+            const ecdsaSdDeriveSuite = new DataIntegrityProof({
+              cryptosuite: createDiscloseCryptosuite({
+                proofId,
+                selectivePointers: [
+                  '/credentialSubject'
+                ]
+              })
+            });
+            // setup ecdsa-sd-2023 suite for verifying selective disclosure VCs
+            const ecdsaSdVerifySuite = new DataIntegrityProof({
+              cryptosuite: createVerifyCryptosuite()
+            });
+
+            const verifiableCredential = await vc.issue({
+              credential: credentialFactory(),
+              suite: ecdsaSdSignSuite,
+              documentLoader
+            });
+            const derivedCredential = await vc.derive({
+              verifiableCredential,
+              suite: ecdsaSdDeriveSuite,
+              documentLoader
+            });
+            derivedCredential.credentialSubject.id = `urn:uuid:${uuid()}`;
+            const result = await vc.verifyCredential({
+              credential: derivedCredential,
+              controller: assertionController,
+              suite: ecdsaSdVerifySuite,
+              documentLoader
+            });
+            result.verified.should.be.a('boolean');
+            result.verified.should.be.false;
           });
 
-          const verifiableCredential = await vc.issue({
-            credential: credentialFactory(),
-            suite: ecdsaSdSignSuite,
-            documentLoader
-          });
-          const derivedCredential = await vc.derive({
-            verifiableCredential,
-            suite: ecdsaSdDeriveSuite,
-            documentLoader
-          });
-          derivedCredential.credentialSubject.id = `urn:uuid:${uuid()}`;
-          const result = await vc.verifyCredential({
-            credential: derivedCredential,
-            controller: assertionController,
-            suite: ecdsaSdVerifySuite,
-            documentLoader
-          });
-          result.verified.should.be.a('boolean');
-          result.verified.should.be.false;
-        });
-        it('should fail to verify a changed derived vc', async () => {
-          const {
-            createDiscloseCryptosuite,
-            createSignCryptosuite,
-            createVerifyCryptosuite
-          } = cryptosuite;
-          const mandatoryPointers = (version === 1.0) ?
-            ['/issuer', '/issuanceDate'] : ['/issuer'];
-
-          // setup bbs-2023 suite for signing unlinkable VCs
-          const bbsSignSuite = new DataIntegrityProof({
-            signer: bbsKeyPair.signer(), cryptosuite: createSignCryptosuite({
-              mandatoryPointers
-            })
-          });
-          // setup bbs-2023 suite for deriving unlinkable VC proofs
-          const bbsDeriveSuite = new DataIntegrityProof({
-            cryptosuite: createDiscloseCryptosuite({
-              selectivePointers: [
-                '/credentialSubject'
-              ]
-            })
-          });
-          // setup bbs-2023 suite for verifying unlinkable VC proofs
-          const bbsVerifySuite = new DataIntegrityProof({
-            cryptosuite: createVerifyCryptosuite()
-          });
-
-          const verifiableCredential = await vc.issue({
-            credential: credentialFactory(),
-            suite: bbsSignSuite,
-            documentLoader
-          });
-          const derivedCredential = await vc.derive({
-            verifiableCredential,
-            suite: bbsDeriveSuite,
-            documentLoader
-          });
-          derivedCredential.credentialSubject.id = `urn:uuid:${uuid()}`;
-          const result = await vc.verifyCredential({
-            credential: derivedCredential,
-            controller: assertionController,
-            suite: bbsVerifySuite,
-            documentLoader
-          });
-          result.verified.should.be.a('boolean');
-          result.verified.should.be.false;
-        });
+        }
       });
     });
   });
