@@ -4,19 +4,19 @@
 import * as bbs2023Cryptosuite from '@digitalbazaar/bbs-2023-cryptosuite';
 import * as Bls12381Multikey from '@digitalbazaar/bls12-381-multikey';
 import * as EcdsaMultikey from '@digitalbazaar/ecdsa-multikey';
-import * as ecdsaRdfc2019Cryptosuite from
-  '@digitalbazaar/ecdsa-rdfc-2019-cryptosuite';
 import * as ecdsaSd2023Cryptosuite from
   '@digitalbazaar/ecdsa-sd-2023-cryptosuite';
 import * as EddsaMultikey from '@digitalbazaar/ed25519-multikey';
-import * as eddsaRdfc2020Cryptosuite from
-  '@digitalbazaar/eddsa-rdfc-2022-cryptosuite';
 import {assertionController} from './assertionController.js';
 import {DataIntegrityProof} from '@digitalbazaar/data-integrity';
+import {cryptosuite as ecdsaRdfc2019Cryptosuite} from
+  '@digitalbazaar/ecdsa-rdfc-2019-cryptosuite';
 import {Ed25519Signature2018} from '@digitalbazaar/ed25519-signature-2018';
 import {
   Ed25519VerificationKey2018
 } from '@digitalbazaar/ed25519-verification-key-2018';
+import {cryptosuite as eddsaRdfc2020Cryptosuite} from
+  '@digitalbazaar/eddsa-rdfc-2022-cryptosuite';
 import {remoteDocuments} from '../testDocumentLoader.js';
 
 export async function setupSuites() {
