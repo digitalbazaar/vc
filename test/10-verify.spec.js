@@ -12,10 +12,10 @@ import {setupSuites} from './mocks/suites.js';
 import {v4 as uuid} from 'uuid';
 import {versionedCredentials} from './mocks/credential.js';
 
-chai.should();
+const should = chai.should();
 const suites = await setupSuites();
 
-// run tests for each keyPair type
+// run tests for each suite type
 for(const [suiteName, suiteOptions] of suites) {
   // run tests on each version of VCs
   for(const [version, credentialFactory] of versionedCredentials) {
@@ -26,13 +26,14 @@ for(const [suiteName, suiteOptions] of suites) {
 }
 
 function _runSuite({
-  derived,
+  derived, Suite,
   suiteName, issuer,
   keyPair, keyType,
   suite, version,
   credentialFactory, cryptosuite
 }) {
-  const title = `VC ${version} suite: ${suiteName} keyType ${keyType}`;
+  const title = `VC ${version.toFixed(1)} Suite ${suiteName} ` +
+    `KeyType ${keyType}`;
   const generateDefaults = {
     credentialFactory,
     suite,
@@ -59,6 +60,32 @@ function _runSuite({
         result.verified.should.be.true;
       });
       if(derived === true) {
+        it('should not verify a base vc', async function() {
+          const verifiableCredential = await vc.issue({
+            credential: credentialFactory(),
+            suite: new Suite({
+              signer: keyPair.signer(),
+              cryptosuite: cryptosuite.createSignCryptosuite({
+                mandatoryPointers: ['/issuer']
+              })
+            }),
+            documentLoader
+          });
+          const result = await vc.verifyCredential({
+            credential: verifiableCredential,
+            controller: assertionController,
+            suite: new Suite({
+              cryptosuite: cryptosuite.createVerifyCryptosuite()
+            }),
+            documentLoader
+          });
+          should.exist(
+            result.error,
+            'Expected verification to fail for base proof.');
+          // it might be a bit much to expect every library to return a
+          // uniform error for this
+          result.verified.should.be.false;
+        });
         it('should verify a derived vc', async () => {
           const {
             createDiscloseCryptosuite,
