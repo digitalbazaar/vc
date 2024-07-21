@@ -89,19 +89,17 @@ function _runSuite({
           const {
             createDiscloseCryptosuite,
             createSignCryptosuite,
-            createVerifyCryptosuite
           } = cryptosuite;
           const proofId = `urn:uuid:${uuid()}`;
           const mandatoryPointers = (version === 1.0) ?
             ['/issuer', '/issuanceDate'] : ['/issuer'];
-          // setup ecdsa-sd-2023 suite for signing selective disclosure VCs
           const sdSignSuite = new DataIntegrityProof({
-            signer: keyPair.signer(), cryptosuite: createSignCryptosuite({
+            signer: keyPair.signer(),
+            cryptosuite: createSignCryptosuite({
               mandatoryPointers
             })
           });
           sdSignSuite.proof = {id: proofId};
-          // setup ecdsa-sd-2023 suite for deriving selective disclosure VCs
           const sdDeriveSuite = new DataIntegrityProof({
             cryptosuite: createDiscloseCryptosuite({
               proofId,
@@ -127,7 +125,6 @@ function _runSuite({
             suite: verifySuite,
             documentLoader
           });
-
           if(result.error) {
             throw result.error;
           }
