@@ -39,6 +39,7 @@ function _runSuite({
     suite,
     issuer
   };
+  const verifySuite = createVerifySuite({Suite, cryptosuite, derived});
   describe(title, async function() {
     describe('verify API (credentials)', () => {
       it('should verify a vc', async () => {
@@ -50,7 +51,7 @@ function _runSuite({
         const result = await vc.verifyCredential({
           credential: verifiableCredential,
           controller: assertionController,
-          suite,
+          suite: verifySuite,
           documentLoader
         });
 
@@ -74,9 +75,7 @@ function _runSuite({
           const result = await vc.verifyCredential({
             credential: verifiableCredential,
             controller: assertionController,
-            suite: new Suite({
-              cryptosuite: cryptosuite.createVerifyCryptosuite()
-            }),
+            suite: verifySuite,
             documentLoader
           });
           should.exist(
@@ -111,10 +110,6 @@ function _runSuite({
               ]
             })
           });
-          // setup ecdsa-sd-2023 suite for verifying selective disclosure VCs
-          const sdVerifySuite = new DataIntegrityProof({
-            cryptosuite: createVerifyCryptosuite()
-          });
 
           const verifiableCredential = await vc.issue({
             credential: credentialFactory(),
@@ -129,7 +124,7 @@ function _runSuite({
           const result = await vc.verifyCredential({
             credential: derivedCredential,
             controller: assertionController,
-            suite: sdVerifySuite,
+            suite: verifySuite,
             documentLoader
           });
 
@@ -164,7 +159,7 @@ function _runSuite({
         const result = await vc.verifyCredential({
           credential: verifiableCredential,
           controller: assertionController,
-          suite,
+          suite: verifySuite,
           documentLoader,
           checkStatus: async () => ({verified: true})
         });
@@ -180,7 +175,7 @@ function _runSuite({
           const {credential} = await generateCredential(generateDefaults);
           credential['@context'].push(invalidContexts.nullDoc.url);
           const results = await vc.verifyCredential({
-            suite,
+            suite: verifySuite,
             credential,
             documentLoader
           });
@@ -191,7 +186,7 @@ function _runSuite({
           const {credential} = await generateCredential(generateDefaults);
           credential['@context'].push(invalidContexts.invalidId.url);
           const results = await vc.verifyCredential({
-            suite,
+            suite: verifySuite,
             credential,
             documentLoader
           });
@@ -202,7 +197,7 @@ function _runSuite({
           const {credential} = await generateCredential(generateDefaults);
           credential['@context'].push(invalidContexts.nullVersion.url);
           const results = await vc.verifyCredential({
-            suite,
+            suite: verifySuite,
             credential,
             documentLoader
           });
@@ -213,7 +208,7 @@ function _runSuite({
           const {credential} = await generateCredential(generateDefaults);
           credential['@context'].push(invalidContexts.nullId.url);
           const results = await vc.verifyCredential({
-            suite,
+            suite: verifySuite,
             credential,
             documentLoader
           });
@@ -224,7 +219,7 @@ function _runSuite({
           const {credential} = await generateCredential(generateDefaults);
           credential['@context'].push(invalidContexts.nullType.url);
           const results = await vc.verifyCredential({
-            suite,
+            suite: verifySuite,
             credential,
             documentLoader
           });
@@ -235,7 +230,7 @@ function _runSuite({
           const {credential} = await generateCredential(generateDefaults);
           credential['@context'].push('https://fsad.digitalbazaar.com');
           const results = await vc.verifyCredential({
-            suite,
+            suite: verifySuite,
             credential,
             documentLoader
           });
@@ -246,7 +241,7 @@ function _runSuite({
           const {credential} = await generateCredential(generateDefaults);
           credential['@context'].push('htps://fsad.digitalbazaar.');
           const results = await vc.verifyCredential({
-            suite,
+            suite: verifySuite,
             credential,
             documentLoader
           });
@@ -278,7 +273,7 @@ function _runSuite({
             const result = await vc.verifyCredential({
               credential: verifiableCredential,
               controller: assertionController,
-              suite,
+              suite: verifySuite,
               documentLoader,
               checkStatus: async () => ({verified: false})
             });
@@ -299,7 +294,7 @@ function _runSuite({
           const result = await vc.verifyCredential({
             credential: verifiableCredential,
             controller: assertionController,
-            suite,
+            suite: verifySuite,
             documentLoader,
             // ensure any checkStatus call will fail verification
             checkStatus: async () => ({verified: false})
@@ -336,11 +331,6 @@ function _runSuite({
                 ]
               })
             });
-            // setup ecdsa-sd-2023 suite for verifying selective disclosure VCs
-            const sdVerifySuite = new DataIntegrityProof({
-              cryptosuite: createVerifyCryptosuite()
-            });
-
             const verifiableCredential = await vc.issue({
               credential: credentialFactory(),
               suite: sdSignSuite,
@@ -355,7 +345,7 @@ function _runSuite({
             const result = await vc.verifyCredential({
               credential: derivedCredential,
               controller: assertionController,
-              suite: sdVerifySuite,
+              suite: verifySuite,
               documentLoader
             });
             result.verified.should.be.a('boolean');
@@ -365,5 +355,14 @@ function _runSuite({
         }
       });
     });
+  });
+}
+
+function createVerifySuite({Suite, cryptosuite, derived}) {
+  if(!derived) {
+    return new Suite({cryptosuite});
+  }
+  return new Suite({
+    cryptosuite: cryptosuite.createVerifyCryptosuite()
   });
 }
