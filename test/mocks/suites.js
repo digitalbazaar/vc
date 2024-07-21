@@ -96,7 +96,7 @@ async function bbs2023() {
     id: 'https://example.edu/issuers/keys/2',
     controller: 'https://example.edu/issuers/565049'
   });
-  const keyDoc = keyPair.export({publicKey: true});
+  const keyDoc = await keyPair.export({publicKey: true});
   registerKey({keyDoc});
   return {
     keyDoc,
