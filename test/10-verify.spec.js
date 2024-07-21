@@ -442,7 +442,7 @@ function _runSuite({
 }
 
 async function _generateCredential({credentialFactory, suite, issuer}) {
-  const credentialFactory = credentialFactory();
+  const mockCredential = credentialFactory();
   mockCredential.issuer = issuer;
   mockCredential.id = `http://example.edu/credentials/${uuid()}`;
   const credential = await jsigs.sign(mockCredential, {
