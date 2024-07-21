@@ -14,17 +14,17 @@ chai.should();
 // run tests for each keyPair type
 for(const [keyType, {suite, keyPair}] of keyPairs) {
   // run tests on each version of VCs
-  for(const [version, mockCredential] of versionedCredentials) {
-    _runSuite({keyType, suite, keyPair, version, mockCredential});
+  for(const [version, credentialFactory] of versionedCredentials) {
+    _runSuite({keyType, suite, keyPair, version, credentialFactory});
   }
 }
 
-for(const [version, mockCredential] of versionedCredentials) {
+for(const [version, credentialFactory] of versionedCredentials) {
   describe(`VC ${version}`, function() {
     describe('vc.createPresentation()', () => {
       it('should create an unsigned presentation', () => {
         const presentation = vc.createPresentation({
-          verifiableCredential: mockCredential(),
+          verifiableCredential: credentialFactory(),
           id: 'test:ebc6f1c2',
           holder: 'did:ex:holder123'
         });
@@ -38,12 +38,12 @@ for(const [version, mockCredential] of versionedCredentials) {
   });
 }
 
-function _runSuite({keyType, suite, version, mockCredential}) {
+function _runSuite({keyType, suite, version, credentialFactory}) {
   describe(`VC ${version} keyType ${keyType}`, function() {
     describe('vc.signPresentation()', () => {
       it('should create a signed VP', async () => {
         const presentation = vc.createPresentation({
-          verifiableCredential: mockCredential(),
+          verifiableCredential: credentialFactory(),
           id: 'test:ebc6f1c2',
           holder: 'did:ex:holder123',
           version
@@ -70,7 +70,7 @@ function _runSuite({keyType, suite, version, mockCredential}) {
         const challenge = uuid();
 
         const {presentation, suite, documentLoader} =
-              await _generatePresentation({challenge, mockCredential, version});
+              await _generatePresentation({challenge, credentialFactory, version});
 
         const result = await vc.verify({
           challenge,
@@ -93,7 +93,7 @@ function _runSuite({keyType, suite, version, mockCredential}) {
           documentLoader
         } = await _generatePresentation({
           unsigned: true,
-          mockCredential,
+          credentialFactory,
           version
         });
 
@@ -124,7 +124,7 @@ function _runSuite({keyType, suite, version, mockCredential}) {
                     await _generatePresentation({
                       challenge,
                       credentialsCount: count,
-                      mockCredential,
+                      credentialFactory,
                       version
                     });
               // tampering with the first two credentials id
@@ -169,7 +169,7 @@ function _runSuite({keyType, suite, version, mockCredential}) {
                     await _generatePresentation({
                       challenge,
                       credentialsCount: count,
-                      mockCredential,
+                      credentialFactory,
                       version
                     });
               const result = await vc.verify({
@@ -196,7 +196,7 @@ function _runSuite({keyType, suite, version, mockCredential}) {
                     await _generatePresentation({
                       challenge,
                       credentialsCount: count,
-                      mockCredential: mockData.credentials.mixed,
+                      credentialFactory: mockData.credentials.mixed,
                       version
                     });
               const result = await vc.verify({
@@ -225,7 +225,7 @@ async function _generatePresentation({
   challenge,
   unsigned = false,
   credentialsCount = 1,
-  mockCredential,
+  credentialFactory,
   version
 }) {
   const {didDocument, documentLoader: didLoader} = await _loadDid();
@@ -234,13 +234,13 @@ async function _generatePresentation({
 
   // generate multiple credentials
   for(let i = 0; i < credentialsCount; i++) {
-    const {credential} = await _generateCredential(mockCredential);
+    const {credential} = await _generateCredential(credentialFactory);
     credentials.push(credential);
   }
 
   const {
     documentLoader: dlc,
-    suite: vcSuite} = await _generateCredential(mockCredential);
+    suite: vcSuite} = await _generateCredential(credentialFactory);
   testLoader.addLoader(dlc);
 
   const presentation = vc.createPresentation({
