@@ -4,14 +4,14 @@
 import * as vc from '../lib/index.js';
 import {createSkewedTimeStamp} from './helpers.js';
 import {documentLoader} from './testDocumentLoader.js';
-import {setupKeyPairs} from './mocks/keyPairs.js';
+import {setupSuites} from './mocks/suites.js';
 import {v4 as uuid} from 'uuid';
 import {versionedCredentials} from './mocks/credential.js';
 
-const keyPairs = await setupKeyPairs();
+const suites = await setupSuites();
 
 // run tests for each keyPair type
-for(const [keyType, {suite, keyPair}] of keyPairs) {
+for(const [keyType, {suite, keyPair}] of suites) {
   // run tests on each version of VCs
   for(const [version, mockCredential] of versionedCredentials) {
     _runSuite({keyType, suite, keyPair, version, mockCredential});

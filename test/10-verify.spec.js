@@ -12,7 +12,7 @@ import {CredentialIssuancePurpose} from '../lib/CredentialIssuancePurpose.js';
 import {DataIntegrityProof} from '@digitalbazaar/data-integrity';
 import {invalidContexts} from './contexts/index.js';
 import jsigs from 'jsonld-signatures';
-import {setupSuites} from './mocks/keyPairs.js';
+import {setupSuites} from './mocks/suites.js';
 import {v4 as uuid} from 'uuid';
 import {versionedCredentials} from './mocks/credential.js';
 

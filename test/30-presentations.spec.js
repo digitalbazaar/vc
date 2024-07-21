@@ -4,15 +4,15 @@
 import * as vc from '../lib/index.js';
 import chai from 'chai';
 import {documentLoader} from './testDocumentLoader.js';
-import {setupKeyPairs} from './mocks/keyPairs.js';
+import {setupSuites} from './mocks/suites.js';
 import {v4 as uuid} from 'uuid';
 import {versionedCredentials} from './mocks/credential.js';
 
-const keyPairs = await setupKeyPairs();
+const suites = await setupSuites();
 chai.should();
 
 // run tests for each keyPair type
-for(const [keyType, {suite, keyPair}] of keyPairs) {
+for(const [keyType, {suite, keyPair}] of suites) {
   // run tests on each version of VCs
   for(const [version, credentialFactory] of versionedCredentials) {
     _runSuite({keyType, suite, keyPair, version, credentialFactory});
@@ -228,8 +228,6 @@ async function _generatePresentation({
   credentialFactory,
   version
 }) {
-  const {didDocument, documentLoader: didLoader} = await _loadDid();
-  testLoader.addLoader(didLoader);
   const credentials = [];
 
   // generate multiple credentials
