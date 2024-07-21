@@ -21,7 +21,7 @@ import {remoteDocuments} from '../testDocumentLoader.js';
 
 export async function setupSuites() {
   return new Map([
-    ['Ed25519VerificationKey2018', await ed25519KeyPair()],
+    ['Ed25519Signature2018', await ed25519Sig2018()],
     ['ecdsa-rdfc-2019', await ecdsaRdfc2019()],
     ['ecdsa-sd-2023', await ecdsaSd2023()],
     ['eddsa-rdfc-2022', await eddsaRdfc2022()],
@@ -30,10 +30,9 @@ export async function setupSuites() {
 }
 
 async function eddsaRdfc2022() {
-  const keyId = 'https://example.edu/issuers/keys/5';
-  // set up the ECDSA key pair that will be signing and verifying
+  // set up the EDDSA key pair that will be signing and verifying
   const keyPair = await EddsaMultikey.generate({
-    id: keyId,
+    id: 'https://example.edu/issuers/keys/5',
     controller: 'https://example.edu/issuers/565049'
   });
   const keyDoc = await keyPair.export({publicKey: true});
@@ -110,7 +109,7 @@ async function bbs2023() {
   };
 }
 
-async function ed25519KeyPair() {
+async function ed25519Sig2018() {
   // set up the Ed25519 key pair that will be signing and verifying
   const keyPair = await Ed25519VerificationKey2018.generate({
     id: 'https://example.edu/issuers/keys/1',
