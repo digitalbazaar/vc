@@ -2,11 +2,15 @@
  * Copyright (c) 2019-2024 Digital Bazaar, Inc. All rights reserved.
  */
 import * as vc from '../lib/index.js';
+import {
+  createIssuerSuite,
+  createVerifySuite,
+  generateCredential
+} from './helpers.js';
 import {assertionController} from './mocks/assertionController.js';
 import chai from 'chai';
 import {DataIntegrityProof} from '@digitalbazaar/data-integrity';
 import {documentLoader} from './testDocumentLoader.js';
-import {generateCredential} from './helpers.js';
 import {invalidContexts} from './contexts/index.js';
 import {setupSuites} from './mocks/suites.js';
 import {v4 as uuid} from 'uuid';
@@ -32,20 +36,20 @@ function _runSuite({
   suite, version,
   credentialFactory, cryptosuite
 }) {
-  const title = `VC ${version.toFixed(1)} Suite ${suiteName} ` +
-    `KeyType ${keyType}`;
+  const title = `VC ${version} Suite ${suiteName} KeyType ${keyType}`;
   const generateDefaults = {
     credentialFactory,
     suite,
     issuer
   };
   const verifySuite = createVerifySuite({Suite, cryptosuite, derived});
+  const issuerSuite = createIssuerSuite({Suite, cryptosuite, derived, signer: keyPair.signer()});
   describe(title, async function() {
     describe('verify API (credentials)', () => {
       it('should verify a vc', async () => {
         const verifiableCredential = await vc.issue({
           credential: credentialFactory(),
-          suite,
+          suite: issuerSuite,
           documentLoader
         });
         const result = await vc.verifyCredential({
@@ -91,7 +95,7 @@ function _runSuite({
             createSignCryptosuite,
           } = cryptosuite;
           const proofId = `urn:uuid:${uuid()}`;
-          const mandatoryPointers = (version === 1.0) ?
+          const mandatoryPointers = (version === '1.0') ?
             ['/issuer', '/issuanceDate'] : ['/issuer'];
           const sdSignSuite = new DataIntegrityProof({
             signer: keyPair.signer(),
@@ -150,7 +154,7 @@ function _runSuite({
         };
         const verifiableCredential = await vc.issue({
           credential,
-          suite,
+          suite: issuerSuite,
           documentLoader
         });
         const result = await vc.verifyCredential({
@@ -264,7 +268,7 @@ function _runSuite({
             };
             const verifiableCredential = await vc.issue({
               credential,
-              suite,
+              suite: issuerSuite,
               documentLoader
             });
             const result = await vc.verifyCredential({
@@ -285,7 +289,7 @@ function _runSuite({
           const credential = credentialFactory();
           const verifiableCredential = await vc.issue({
             credential,
-            suite,
+            suite: issuerSuite,
             documentLoader
           });
           const result = await vc.verifyCredential({
@@ -306,10 +310,9 @@ function _runSuite({
             const {
               createDiscloseCryptosuite,
               createSignCryptosuite,
-              createVerifyCryptosuite
             } = cryptosuite;
             const proofId = `urn:uuid:${uuid()}`;
-            const mandatoryPointers = (version === 1.0) ?
+            const mandatoryPointers = (version === '1.0') ?
               ['/issuer', '/issuanceDate'] : ['/issuer'];
             // setup ecdsa-sd-2023 suite for signing selective disclosure VCs
             const sdSignSuite = new DataIntegrityProof({
@@ -352,14 +355,5 @@ function _runSuite({
         }
       });
     });
-  });
-}
-
-function createVerifySuite({Suite, cryptosuite, derived}) {
-  if(!derived) {
-    return new Suite({cryptosuite});
-  }
-  return new Suite({
-    cryptosuite: cryptosuite.createVerifyCryptosuite()
   });
 }

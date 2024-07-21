@@ -40,3 +40,24 @@ export async function generateCredential({
   });
   return {credential};
 }
+
+export function createVerifySuite({Suite, cryptosuite, derived}) {
+  if(!derived) {
+    return new Suite({cryptosuite});
+  }
+  return new Suite({
+    cryptosuite: cryptosuite.createVerifyCryptosuite()
+  });
+}
+export function createIssuerSuite({
+  Suite, cryptosuite, signer,
+  derived, mandatoryPointers = ['/issuer']
+}) {
+  if(!derived) {
+    return new Suite({signer, cryptosuite});
+  }
+  return new Suite({
+    signer,
+    cryptosuite: cryptosuite.createSignCryptosuite({mandatoryPointers})
+  });
+}
