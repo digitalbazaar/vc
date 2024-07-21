@@ -99,7 +99,7 @@ function _runSuite({mockCredential, version}) {
           .contain('"evidence" must be a URI');
       });
 
-      if(version === 1.0) {
+      if(version === '1.0') {
         it('should reject if "expirationDate" has passed', () => {
           const credential = mockCredential();
           credential.issuer = 'did:example:12345';
@@ -134,7 +134,7 @@ function _runSuite({mockCredential, version}) {
               `"issuanceDate" (${credential.issuanceDate}).`);
         });
       }
-      if(version === 2.0) {
+      if(version === '2.0') {
         it('should reject "validFrom" in the future', () => {
           const credential = mockCredential();
           credential.issuer = 'did:example:12345';
@@ -267,7 +267,7 @@ function _runSuite({mockCredential, version}) {
         const credential = mockCredential();
         credential.credentialSubject = {};
         credential.issuer = 'did:example:12345';
-        if(version === 1.0) {
+        if(version === '1.0') {
           credential.issuanceDate = '2022-10-31T19:21:25Z';
         }
         let error;
@@ -285,7 +285,7 @@ function _runSuite({mockCredential, version}) {
         const credential = mockCredential();
         credential.credentialSubject = [{}, {id: 'did:key:zFoo'}];
         credential.issuer = 'did:example:12345';
-        if(version === 1.0) {
+        if(version === '1.0') {
           credential.issuanceDate = '2022-10-31T19:21:25Z';
         }
         let error;
@@ -307,7 +307,7 @@ function _runSuite({mockCredential, version}) {
           {name: 'did key'}
         ];
         credential.issuer = 'did:example:12345';
-        if(version === 1.0) {
+        if(version === '1.0') {
           credential.issuanceDate = '2022-10-31T19:21:25Z';
         }
         let error;

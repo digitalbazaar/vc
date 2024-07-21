@@ -188,7 +188,7 @@ function _runSuite({keyType, suite, version, credentialFactory}) {
                 credential.credentialId.should.be.a('string');
               }
             });
-          if(version === 2.0) {
+          if(version === '2.0') {
             it(`should not error when credentials have mixed contexts ` +
                   `[${count}]`, async () => {
               const challenge = uuid();

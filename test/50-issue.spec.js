@@ -67,7 +67,7 @@ function _runSuite({version, keyType, suite, mockCredential}) {
         error.message.should
           .contain('"suite.verificationMethod" property is required.');
       });
-      if(version === 1.0) {
+      if(version === '1.0') {
         it('should issue an expired verifiable credential', async () => {
           const fp = Ed25519VerificationKey2018
             .fingerprintFromPublicKey({
@@ -113,7 +113,7 @@ function _runSuite({version, keyType, suite, mockCredential}) {
           );
         });
       }
-      if(version === 2.0) {
+      if(version === '2.0') {
         it('should issue "validUntil" in the future', async () => {
           const credential = mockCredential();
           credential.issuer = 'did:example:12345';

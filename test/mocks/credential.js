@@ -4,7 +4,7 @@
 import {klona} from 'klona';
 
 export const versionedCredentials = new Map([
-  [1.0, () => klona({
+  ['1.0', () => klona({
     '@context': [
       'https://www.w3.org/2018/credentials/v1',
       'https://www.w3.org/2018/credentials/examples/v1'
@@ -18,7 +18,7 @@ export const versionedCredentials = new Map([
       alumniOf: '<span lang="en">Example University</span>'
     }
   })],
-  [2.0, () => klona({
+  ['2.0', () => klona({
     '@context': [
       'https://www.w3.org/ns/credentials/v2',
       'https://www.w3.org/ns/credentials/examples/v2'

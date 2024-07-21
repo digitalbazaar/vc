@@ -22,10 +22,10 @@ const _mixedCredential = () => {
   return () => {
     if((count % 2) === 0) {
       count++;
-      return versionedCredentials.get(1.0)();
+      return versionedCredentials.get('1.0')();
     }
     count ++;
-    return versionedCredentials.get(2.0)();
+    return versionedCredentials.get('2.0')();
   };
 };
 
