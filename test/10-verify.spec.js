@@ -42,15 +42,23 @@ function _runSuite({
     suite,
     issuer
   };
+  const mandatoryPointers = (version === '1.0') ?
+    ['/issuer', '/issuanceDate'] : ['/issuer'];
   const verifySuite = createVerifySuite({Suite, cryptosuite, derived});
-  const issuerSuite = createIssuerSuite({Suite, cryptosuite, derived, signer: keyPair.signer()});
+  const issuerSuite = createIssuerSuite({
+    Suite, cryptosuite, mandatoryPointers,
+    derived, signer: keyPair.signer()
+  });
   describe(title, async function() {
     describe('verify API (credentials)', () => {
       it('should verify a vc', async () => {
-        const verifiableCredential = await vc.issue({
-          credential: credentialFactory(),
-          suite: issuerSuite,
-          documentLoader
+        const credential = credentialFactory();
+        const verifiableCredential = await _issueVc({
+          credential,
+          cryptosuite,
+          issuerSuite,
+          Suite,
+          derived
         });
         const result = await vc.verifyCredential({
           credential: verifiableCredential,
@@ -58,7 +66,6 @@ function _runSuite({
           suite: verifySuite,
           documentLoader
         });
-
         if(result.error) {
           throw result.error;
         }
@@ -71,7 +78,7 @@ function _runSuite({
             suite: new Suite({
               signer: keyPair.signer(),
               cryptosuite: cryptosuite.createSignCryptosuite({
-                mandatoryPointers: ['/issuer']
+                mandatoryPointers
               })
             }),
             documentLoader
@@ -88,51 +95,6 @@ function _runSuite({
           // it might be a bit much to expect every library to return a
           // uniform error for this
           result.verified.should.be.false;
-        });
-        it('should verify a derived vc', async () => {
-          const {
-            createDiscloseCryptosuite,
-            createSignCryptosuite,
-          } = cryptosuite;
-          const proofId = `urn:uuid:${uuid()}`;
-          const mandatoryPointers = (version === '1.0') ?
-            ['/issuer', '/issuanceDate'] : ['/issuer'];
-          const sdSignSuite = new DataIntegrityProof({
-            signer: keyPair.signer(),
-            cryptosuite: createSignCryptosuite({
-              mandatoryPointers
-            })
-          });
-          sdSignSuite.proof = {id: proofId};
-          const sdDeriveSuite = new DataIntegrityProof({
-            cryptosuite: createDiscloseCryptosuite({
-              proofId,
-              selectivePointers: [
-                '/credentialSubject'
-              ]
-            })
-          });
-
-          const verifiableCredential = await vc.issue({
-            credential: credentialFactory(),
-            suite: sdSignSuite,
-            documentLoader
-          });
-          const derivedCredential = await vc.derive({
-            verifiableCredential,
-            suite: sdDeriveSuite,
-            documentLoader
-          });
-          const result = await vc.verifyCredential({
-            credential: derivedCredential,
-            controller: assertionController,
-            suite: verifySuite,
-            documentLoader
-          });
-          if(result.error) {
-            throw result.error;
-          }
-          result.verified.should.be.true;
         });
       }
 
@@ -312,8 +274,6 @@ function _runSuite({
               createSignCryptosuite,
             } = cryptosuite;
             const proofId = `urn:uuid:${uuid()}`;
-            const mandatoryPointers = (version === '1.0') ?
-              ['/issuer', '/issuanceDate'] : ['/issuer'];
             // setup ecdsa-sd-2023 suite for signing selective disclosure VCs
             const sdSignSuite = new DataIntegrityProof({
               signer: keyPair.signer(),
@@ -355,5 +315,32 @@ function _runSuite({
         }
       });
     });
+  });
+}
+
+async function _issueVc({
+  credential,
+  cryptosuite,
+  issuerSuite,
+  Suite,
+  derived
+}) {
+  const verifiableCredential = await vc.issue({
+    credential,
+    suite: issuerSuite,
+    documentLoader
+  });
+  if(!derived) {
+    return verifiableCredential;
+  }
+  const sdDeriveSuite = new Suite({
+    cryptosuite: cryptosuite.createDiscloseCryptosuite({
+      selectivePointers: ['/credentialSubject']
+    })
+  });
+  return vc.derive({
+    verifiableCredential,
+    suite: sdDeriveSuite,
+    documentLoader
   });
 }
