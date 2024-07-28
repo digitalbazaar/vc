@@ -24,19 +24,18 @@ export function createSkewedTimeStamp({date = new Date(), skewYear}) {
 }
 
 export async function signCredential({
-  credentialFactory,
+  credential,
   suites,
   mandatoryPointers,
-  selectivePointers,
+  selectivePointers = [],
   issuer,
   derived,
   documentLoader = defaultLoader,
   purpose = new CredentialIssuancePurpose()
 }) {
-  const mockCredential = credentialFactory();
-  mockCredential.issuer = issuer;
-  mockCredential.id = `http://example.edu/credentials/${uuid()}`;
-  const verifiableCredential = await jsigs.sign(mockCredential, {
+  credential.issuer = issuer;
+  credential.id = `http://example.edu/credentials/${uuid()}`;
+  const verifiableCredential = await jsigs.sign(credential, {
     compactProof: false,
     documentLoader,
     suite: suites.issue({mandatoryPointers}),
@@ -45,7 +44,16 @@ export async function signCredential({
   if(!derived) {
     return {verifiableCredential};
   }
-
+  const derivedCredential = await jsigs.derive(verifiableCredential, {
+    compactProof: false,
+    documentLoader,
+    suite: suites.derive({selectivePointers}),
+    purpose
+  });
+  return {
+    verifiableCredential: derivedCredential,
+    baseCredential: verifiableCredential
+  };
 }
 
 export function createVerifySuite({Suite, cryptosuite, derived}) {
