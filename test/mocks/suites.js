@@ -42,8 +42,10 @@ async function eddsaRdfc2022() {
     keyType: 'Ed25519',
     suiteName: 'eddsa-rdfc-2022',
     issuer: keyPair.controller,
-    cryptosuite: eddsaRdfc2020Cryptosuite,
-    Suite: DataIntegrityProof,
+    suites: createDiSuites({
+      signer: keyPair.signer(),
+      cryptosuite: eddsaRdfc2020Cryptosuite
+    }),
     derived: false
   };
 }
@@ -61,8 +63,10 @@ async function ecdsaRdfc2019() {
     keyPair,
     keyType: 'P-256',
     suiteName: 'ecdsa-rdfc-2019',
-    cryptosuite: ecdsaRdfc2019Cryptosuite,
-    Suite: DataIntegrityProof,
+    suites: createDiSuites({
+      signer: keyPair.signer(),
+      cryptosuite: ecdsaRdfc2019Cryptosuite
+    }),
     derived: false
   };
 }
@@ -83,7 +87,10 @@ async function ecdsaSd2023() {
     suiteName: 'ecdsa-sd-2023',
     keyType: 'P-256',
     cryptosuite: ecdsaSd2023Cryptosuite,
-    Suite: DataIntegrityProof,
+    suites: createSdSuites({
+      signer: keyPair.signer(),
+      cryptosuite: ecdsaSd2023Cryptosuite
+    }),
     derived: true
   };
 }
@@ -103,9 +110,11 @@ async function bbs2023() {
     keyPair,
     suiteName: 'bbs-2023',
     keyType: 'Bls12381G2',
-    cryptosuite: bbs2023Cryptosuite,
     derived: true,
-    Suite: DataIntegrityProof
+    suites: createSdSuites({
+      signer: keyPair.signer(),
+      cryptosuite: bbs2023Cryptosuite
+    })
   };
 }
 
@@ -136,8 +145,20 @@ async function ed25519Sig2018() {
     suite,
     suiteName: 'Ed25519Signature2018',
     keyType: 'Ed25519',
-    cryptosuite: Ed25519Signature2018,
-    Suite: Ed25519Signature2018,
+    suites: {
+      issue() {
+        return new Ed25519Signature2018({
+          verificationMethod: 'https://example.edu/issuers/keys/1',
+          key: keyPair
+        });
+      },
+      verify() {
+        return new Ed25519Signature2018();
+      },
+      derive() {
+        throw new Error('Ed25519Signature2018 does not have a derive proof.');
+      }
+    },
     derived: false
   };
 }
@@ -147,4 +168,45 @@ function registerKey({keyDoc}) {
   assertionController.assertionMethod.push(keyDoc.id);
   // register the key document with documentLoader
   remoteDocuments.set(keyDoc.id, keyDoc);
+}
+
+function createDiSuites({signer, cryptosuite}) {
+  return {
+    issue() {
+      return new DataIntegrityProof({
+        signer,
+        cryptosuite
+      });
+    },
+    verify() {
+      return new DataIntegrityProof({
+        cryptosuite
+      });
+    },
+    derive() {
+      throw new Error(
+        `cryptosuite ${cryptosuite.name} should have not derive proof`);
+    }
+  };
+}
+
+function createSdSuites({signer, cryptosuite}) {
+  return {
+    issue({mandatoryPointers}) {
+      return new DataIntegrityProof({
+        signer,
+        cryptosuite: cryptosuite.createSignCryptosuite({mandatoryPointers})
+      });
+    },
+    verify() {
+      return new DataIntegrityProof({
+        cryptosuite: cryptosuite.createVerifyCryptosuite()
+      });
+    },
+    derive({selectivePointers}) {
+      return new DataIntegrityProof({
+        cryptosuite: cryptosuite.createDiscloseCryptosuite({selectivePointers})
+      });
+    }
+  };
 }

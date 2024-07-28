@@ -2,15 +2,10 @@
  * Copyright (c) 2019-2024 Digital Bazaar, Inc. All rights reserved.
  */
 import * as vc from '../lib/index.js';
-import {
-  createIssuerSuite,
-  createVerifySuite,
-  generateCredential
-} from './helpers.js';
 import {assertionController} from './mocks/assertionController.js';
 import chai from 'chai';
-import {DataIntegrityProof} from '@digitalbazaar/data-integrity';
 import {documentLoader} from './testDocumentLoader.js';
+import {generateCredential} from './helpers.js';
 import {invalidContexts} from './contexts/index.js';
 import {setupSuites} from './mocks/suites.js';
 import {v4 as uuid} from 'uuid';
@@ -30,34 +25,29 @@ for(const [suiteName, suiteOptions] of suites) {
 }
 
 function _runSuite({
-  derived, Suite,
+  derived, suites,
   suiteName, issuer,
-  keyPair, keyType,
-  suite, version,
-  credentialFactory, cryptosuite
+  keyType, version,
+  credentialFactory
 }) {
   const title = `VC ${version} Suite ${suiteName} KeyType ${keyType}`;
   const generateDefaults = {
     credentialFactory,
-    suite,
-    issuer
+    suites,
+    issuer,
+    derived
   };
   const mandatoryPointers = (version === '1.0') ?
     ['/issuer', '/issuanceDate'] : ['/issuer'];
-  const verifySuite = createVerifySuite({Suite, cryptosuite, derived});
-  const issuerSuite = createIssuerSuite({
-    Suite, cryptosuite, mandatoryPointers,
-    derived, signer: keyPair.signer()
-  });
+  const verifySuite = suites.verify();
+  const issuerSuite = suites.issue({mandatoryPointers});
   describe(title, async function() {
     describe('verify API (credentials)', () => {
       it('should verify a vc', async () => {
         const credential = credentialFactory();
         const verifiableCredential = await _issueVc({
           credential,
-          cryptosuite,
           issuerSuite,
-          Suite,
           derived
         });
         const result = await vc.verifyCredential({
@@ -75,12 +65,7 @@ function _runSuite({
         it('should not verify a base vc', async function() {
           const verifiableCredential = await vc.issue({
             credential: credentialFactory(),
-            suite: new Suite({
-              signer: keyPair.signer(),
-              cryptosuite: cryptosuite.createSignCryptosuite({
-                mandatoryPointers
-              })
-            }),
+            suite: issuerSuite,
             documentLoader
           });
           const result = await vc.verifyCredential({
@@ -114,10 +99,10 @@ function _runSuite({
           id: 'https://example.edu/status/24',
           type: 'TestStatusList'
         };
-        const verifiableCredential = await vc.issue({
+        const verifiableCredential = await _issueVc({
           credential,
-          suite: issuerSuite,
-          documentLoader
+          issuerSuite,
+          derived
         });
         const result = await vc.verifyCredential({
           credential: verifiableCredential,
@@ -269,28 +254,13 @@ function _runSuite({
         });
         if(derived === true) {
           it('should fail to verify a changed derived vc', async () => {
-            const {
-              createDiscloseCryptosuite,
-              createSignCryptosuite,
-            } = cryptosuite;
             const proofId = `urn:uuid:${uuid()}`;
             // setup ecdsa-sd-2023 suite for signing selective disclosure VCs
-            const sdSignSuite = new DataIntegrityProof({
-              signer: keyPair.signer(),
-              cryptosuite: createSignCryptosuite({
-                mandatoryPointers
-              })
-            });
+            const sdSignSuite = suites.issue({mandatoryPointers});
             sdSignSuite.proof = {id: proofId};
             // setup ecdsa-sd-2023 suite for deriving selective disclosure VCs
-            const sdDeriveSuite = new DataIntegrityProof({
-              cryptosuite: createDiscloseCryptosuite({
-                proofId,
-                selectivePointers: [
-                  '/credentialSubject'
-                ]
-              })
-            });
+            const sdDeriveSuite = suites.derive(
+              {selectivePointers: ['/credentialSubject']});
             const verifiableCredential = await vc.issue({
               credential: credentialFactory(),
               suite: sdSignSuite,
