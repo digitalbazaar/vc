@@ -44,10 +44,11 @@ function _runSuite({
   describe(title, async function() {
     describe('verify API (credentials)', () => {
       it('should verify a vc', async () => {
-        const credential = credentialFactory();
-        const verifiableCredential = await _issueVc({
-          credential,
-          issuerSuite,
+        const {verifiableCredential} = await signCredential({
+          credential: credentialFactory(),
+          suites,
+          issuer,
+          mandatoryPointers,
           derived
         });
         const result = await vc.verifyCredential({
@@ -99,9 +100,11 @@ function _runSuite({
           id: 'https://example.edu/status/24',
           type: 'TestStatusList'
         };
-        const verifiableCredential = await _issueVc({
+        const verifiableCredential = await signCredential({
           credential,
-          issuerSuite,
+          suites,
+          issuer,
+          mandatoryPointers,
           derived
         });
         const result = await vc.verifyCredential({
@@ -285,32 +288,5 @@ function _runSuite({
         }
       });
     });
-  });
-}
-
-async function _issueVc({
-  credential,
-  cryptosuite,
-  issuerSuite,
-  Suite,
-  derived
-}) {
-  const verifiableCredential = await vc.issue({
-    credential,
-    suite: issuerSuite,
-    documentLoader
-  });
-  if(!derived) {
-    return verifiableCredential;
-  }
-  const sdDeriveSuite = new Suite({
-    cryptosuite: cryptosuite.createDiscloseCryptosuite({
-      selectivePointers: ['/credentialSubject']
-    })
-  });
-  return vc.derive({
-    verifiableCredential,
-    suite: sdDeriveSuite,
-    documentLoader
   });
 }
