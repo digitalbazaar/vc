@@ -23,7 +23,7 @@ export function createSkewedTimeStamp({date = new Date(), skewYear}) {
   return `${isoString.substring(0, isoString.length - 5)}Z`;
 }
 
-export async function generateCredential({
+export async function signCredential({
   credentialFactory,
   suites,
   mandatoryPointers,

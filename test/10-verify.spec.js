@@ -5,9 +5,9 @@ import * as vc from '../lib/index.js';
 import {assertionController} from './mocks/assertionController.js';
 import chai from 'chai';
 import {documentLoader} from './testDocumentLoader.js';
-import {generateCredential} from './helpers.js';
 import {invalidContexts} from './contexts/index.js';
 import {setupSuites} from './mocks/suites.js';
+import {signCredential} from './helpers.js';
 import {v4 as uuid} from 'uuid';
 import {versionedCredentials} from './mocks/credential.js';
 
@@ -120,7 +120,7 @@ function _runSuite({
 
       describe('negative test', async () => {
         it('fails to verify if a context resolves to null', async () => {
-          const {credential} = await generateCredential(generateDefaults);
+          const {credential} = await signCredential(generateDefaults);
           credential['@context'].push(invalidContexts.nullDoc.url);
           const results = await vc.verifyCredential({
             suite: verifySuite,
@@ -131,7 +131,7 @@ function _runSuite({
           results.verified.should.be.false;
         });
         it('fails to verify if a context contains an invalid id', async () => {
-          const {credential} = await generateCredential(generateDefaults);
+          const {credential} = await signCredential(generateDefaults);
           credential['@context'].push(invalidContexts.invalidId.url);
           const results = await vc.verifyCredential({
             suite: verifySuite,
@@ -142,7 +142,7 @@ function _runSuite({
           results.verified.should.be.false;
         });
         it('fails to verify if a context has a null version', async () => {
-          const {credential} = await generateCredential(generateDefaults);
+          const {credential} = await signCredential(generateDefaults);
           credential['@context'].push(invalidContexts.nullVersion.url);
           const results = await vc.verifyCredential({
             suite: verifySuite,
@@ -153,7 +153,7 @@ function _runSuite({
           results.verified.should.be.false;
         });
         it('fails to verify if a context has a null @id', async () => {
-          const {credential} = await generateCredential(generateDefaults);
+          const {credential} = await signCredential(generateDefaults);
           credential['@context'].push(invalidContexts.nullId.url);
           const results = await vc.verifyCredential({
             suite: verifySuite,
@@ -164,7 +164,7 @@ function _runSuite({
           results.verified.should.be.false;
         });
         it('fails to verify if a context has a null @type', async () => {
-          const {credential} = await generateCredential(generateDefaults);
+          const {credential} = await signCredential(generateDefaults);
           credential['@context'].push(invalidContexts.nullType.url);
           const results = await vc.verifyCredential({
             suite: verifySuite,
@@ -175,7 +175,7 @@ function _runSuite({
           results.verified.should.be.false;
         });
         it('fails to verify if a context links to a missing doc', async () => {
-          const {credential} = await generateCredential(generateDefaults);
+          const {credential} = await signCredential(generateDefaults);
           credential['@context'].push('https://fsad.digitalbazaar.com');
           const results = await vc.verifyCredential({
             suite: verifySuite,
@@ -186,7 +186,7 @@ function _runSuite({
           results.verified.should.be.false;
         });
         it('fails to verify if a context has an invalid url', async () => {
-          const {credential} = await generateCredential(generateDefaults);
+          const {credential} = await signCredential(generateDefaults);
           credential['@context'].push('htps://fsad.digitalbazaar.');
           const results = await vc.verifyCredential({
             suite: verifySuite,
