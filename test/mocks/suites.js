@@ -38,10 +38,10 @@ async function eddsaRdfc2022() {
   const keyDoc = await keyPair.export({publicKey: true});
   registerKey({keyDoc});
   return {
+    keyDoc,
     keyPair,
     keyType: 'Ed25519',
     suiteName: 'eddsa-rdfc-2022',
-    issuer: keyPair.controller,
     suites: createDiSuites({
       signer: keyPair.signer(),
       cryptosuite: eddsaRdfc2020Cryptosuite
@@ -60,6 +60,7 @@ async function ecdsaRdfc2019() {
   const keyDoc = await keyPair.export({publicKey: true});
   registerKey({keyDoc});
   return {
+    keyDoc,
     keyPair,
     keyType: 'P-256',
     suiteName: 'ecdsa-rdfc-2019',
