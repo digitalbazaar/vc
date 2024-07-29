@@ -26,19 +26,22 @@ for(const [suiteName, suiteOptions] of suites) {
 
 function _runSuite({
   derived, suites,
-  suiteName, issuer,
+  suiteName, keyDoc,
   keyType, version,
   credentialFactory
 }) {
   const title = `VC ${version} Suite ${suiteName} KeyType ${keyType}`;
+  const mandatoryPointers = (version === '1.0') ?
+    ['/issuer', '/issuanceDate'] : ['/issuer'];
+  const selectivePointers = ['/credentialSubject'];
   const generateDefaults = {
     credentialFactory,
     suites,
-    issuer,
+    issuer: keyDoc.controller,
+    mandatoryPointers,
+    selectivePointers,
     derived
   };
-  const mandatoryPointers = (version === '1.0') ?
-    ['/issuer', '/issuanceDate'] : ['/issuer'];
   const verifySuite = suites.verify();
   const issuerSuite = suites.issue({mandatoryPointers});
   describe(title, async function() {
@@ -47,8 +50,9 @@ function _runSuite({
         const {verifiableCredential} = await signCredential({
           credential: credentialFactory(),
           suites,
-          issuer,
+          issuer: keyDoc.controller,
           mandatoryPointers,
+          selectivePointers,
           derived
         });
         const result = await vc.verifyCredential({
@@ -103,7 +107,7 @@ function _runSuite({
         const verifiableCredential = await signCredential({
           credential,
           suites,
-          issuer,
+          issuer: keyDoc.controller,
           mandatoryPointers,
           derived
         });
