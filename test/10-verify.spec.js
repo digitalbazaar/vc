@@ -35,7 +35,6 @@ function _runSuite({
     ['/issuer', '/issuanceDate'] : ['/issuer'];
   const selectivePointers = ['/credentialSubject'];
   const generateDefaults = {
-    credentialFactory,
     suites,
     issuer: keyDoc.controller,
     mandatoryPointers,
@@ -127,77 +126,107 @@ function _runSuite({
 
       describe('negative test', async () => {
         it('fails to verify if a context resolves to null', async () => {
-          const {credential} = await signCredential(generateDefaults);
-          credential['@context'].push(invalidContexts.nullDoc.url);
+          const {verifiableCredential} = await signCredential({
+            credential: credentialFactory(),
+            ...generateDefaults
+          });
+          //FIXME this should be handled with 2 different document loaders
+          //one with the context resolving to a valid context and the
+          //other with a context resolving to null
+          verifiableCredential['@context'].push(invalidContexts.nullDoc.url);
           const results = await vc.verifyCredential({
             suite: verifySuite,
-            credential,
+            credential: verifiableCredential,
             documentLoader
           });
           results.verified.should.be.a('boolean');
           results.verified.should.be.false;
         });
         it('fails to verify if a context contains an invalid id', async () => {
-          const {credential} = await signCredential(generateDefaults);
-          credential['@context'].push(invalidContexts.invalidId.url);
+          const {verifiableCredential} = await signCredential({
+            credential: credentialFactory(),
+            ...generateDefaults
+          });
+          //FIXME this should be handled with 2 different document loaders
+          verifiableCredential['@context'].push(invalidContexts.invalidId.url);
           const results = await vc.verifyCredential({
             suite: verifySuite,
-            credential,
+            credential: verifiableCredential,
             documentLoader
           });
           results.verified.should.be.a('boolean');
           results.verified.should.be.false;
         });
         it('fails to verify if a context has a null version', async () => {
-          const {credential} = await signCredential(generateDefaults);
-          credential['@context'].push(invalidContexts.nullVersion.url);
+          const {verifiableCredential} = await signCredential({
+            credential: credentialFactory(),
+            ...generateDefaults
+          });
+          //FIXME this should be handled with 2 different document loaders
+          verifiableCredential['@context'].push(
+            invalidContexts.nullVersion.url);
           const results = await vc.verifyCredential({
             suite: verifySuite,
-            credential,
+            credential: verifiableCredential,
             documentLoader
           });
           results.verified.should.be.a('boolean');
           results.verified.should.be.false;
         });
         it('fails to verify if a context has a null @id', async () => {
-          const {credential} = await signCredential(generateDefaults);
-          credential['@context'].push(invalidContexts.nullId.url);
+          const {verifiableCredential} = await signCredential({
+            credential: credentialFactory(),
+            ...generateDefaults
+          });
+          //FIXME this should be handled with 2 different document loaders
+          verifiableCredential['@context'].push(invalidContexts.nullId.url);
           const results = await vc.verifyCredential({
             suite: verifySuite,
-            credential,
+            credential: verifiableCredential,
             documentLoader
           });
           results.verified.should.be.a('boolean');
           results.verified.should.be.false;
         });
         it('fails to verify if a context has a null @type', async () => {
-          const {credential} = await signCredential(generateDefaults);
-          credential['@context'].push(invalidContexts.nullType.url);
+          const {verifiableCredential} = await signCredential({
+            credential: credentialFactory(),
+            ...generateDefaults
+          });
+          //FIXME this should be handled with 2 different document loaders
+          verifiableCredential['@context'].push(invalidContexts.nullType.url);
           const results = await vc.verifyCredential({
             suite: verifySuite,
-            credential,
+            credential: verifiableCredential,
             documentLoader
           });
           results.verified.should.be.a('boolean');
           results.verified.should.be.false;
         });
         it('fails to verify if a context links to a missing doc', async () => {
-          const {credential} = await signCredential(generateDefaults);
-          credential['@context'].push('https://fsad.digitalbazaar.com');
+          const {verifiableCredential} = await signCredential({
+            credential: credentialFactory(),
+            ...generateDefaults
+          });
+          //FIXME this should be handled with 2 different document loaders
+          verifiableCredential['@context'].push('https://fsad.digitalbazaar.com');
           const results = await vc.verifyCredential({
             suite: verifySuite,
-            credential,
+            credential: verifiableCredential,
             documentLoader
           });
           results.verified.should.be.a('boolean');
           results.verified.should.be.false;
         });
         it('fails to verify if a context has an invalid url', async () => {
-          const {credential} = await signCredential(generateDefaults);
-          credential['@context'].push('htps://fsad.digitalbazaar.');
+          const {verifiableCredential} = await signCredential({
+            credential: credentialFactory(),
+            ...generateDefaults
+          });
+          verifiableCredential['@context'].push('htps://fsad.digitalbazaar.');
           const results = await vc.verifyCredential({
             suite: verifySuite,
-            credential,
+            credential: verifiableCredential,
             documentLoader
           });
           results.verified.should.be.a('boolean');
