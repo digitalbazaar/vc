@@ -7,5 +7,4 @@ const context = {
     '@vocab': 'https://www.w3.org/ns/credentials/examples#'
   }
 };
-export const constants = {CREDENTIALS_V2_EXAMPLE_CONTEXT_URL: contextUrl};
 export const contexts = new Map([[contextUrl, context]]);

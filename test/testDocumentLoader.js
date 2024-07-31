@@ -28,9 +28,8 @@ for(const key in invalidContexts) {
   remoteDocuments.set(url, value);
 }
 // add the valid contexts to the loader
-for(const key in validContexts) {
-  const {url, value} = validContexts[key];
-  remoteDocuments.set(url, value);
+for(const [url, document] of validContexts) {
+  remoteDocuments.set(url, document);
 }
 const {extendContextLoader} = jsigs;
 const {defaultDocumentLoader} = vc;
