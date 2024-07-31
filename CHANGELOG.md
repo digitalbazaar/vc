@@ -11,6 +11,10 @@
 ### Changed
 - **BREAKING**: Default issuance now uses VC 2.0 context.
 - **BREAKING**: DateTime validator is now an xml schema DateTime validator.
+- Switch from `credentials-context` to `@digitalbazaar/credentials-context` for
+  v1 and v2 contexts.
+- Simplify context packages usage by using exported `contexts` directly.
+- Improve credentials context mapping to and from versions.
 
 ## 6.3.0 - 2024-05-17
 
