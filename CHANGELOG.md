@@ -1,6 +1,6 @@
 # @digitalbazaar/vc ChangeLog
 
-## 7.0.0 -
+## 7.0.0 - 2024-08-01
 
 ### Added
 - Add support for VC 2.0 Verifiable Credentials issuance and verification.
