@@ -1,6 +1,6 @@
 # @digitalcredentials/vc ChangeLog
 
-## 8.0.0 - 2024-xx-xx
+## 8.0.0 - 2024-08-04
 
 ### Added
 - Add support for VC 2.0 Verifiable Credentials issuance and verification.
