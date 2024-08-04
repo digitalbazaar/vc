@@ -31,7 +31,7 @@
     "@digitalcredentials/jsonld-signatures": "~11.0.0",
     "@digitalcredentials/open-badges-context": "^2.1.0",
     "credentials-context": "^2.0.0",
-    "ed25519-signature-2018-context": "^1.1.0",
+    "ed25519-signature-2018-context": "^1.1.0"
   },
   "devDependencies": {
     "@digitalbazaar/credentials-examples-context": "^1.0.0",
@@ -43,8 +43,6 @@
     "@digitalbazaar/ed25519-verification-key-2018": "^4.0.0",
     "@digitalbazaar/multikey-context": "^1.0.0",
     "@digitalbazaar/odrl-context": "^1.0.0",
-    "@digitalcredentials/ed25519-signature-2020": "^5.0.0",
-    "@digitalcredentials/security-document-loader": "digitalcredentials/security-document-loader#add-vc-2.0-context",
     "@npmcli/package-json": "^5.0.0",
     "chai": "^4.3.7",
     "cross-env": "^7.0.3",

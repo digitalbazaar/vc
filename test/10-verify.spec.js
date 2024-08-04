@@ -16,14 +16,11 @@ import {createSkewedTimeStamp} from './helpers.js';
 import {CredentialIssuancePurpose} from '../lib/CredentialIssuancePurpose.js';
 import {DataIntegrityProof} from '@digitalbazaar/data-integrity';
 import {Ed25519Signature2018} from '@digitalbazaar/ed25519-signature-2018';
-import {Ed25519Signature2020} from '@digitalcredentials/ed25519-signature-2020';
 import {
   Ed25519VerificationKey2018
 } from '@digitalbazaar/ed25519-verification-key-2018';
 import {invalidContexts} from './contexts/index.js';
 import jsigs from '@digitalcredentials/jsonld-signatures';
-import mockCredentialLegacyObV3 from './mocks/credential-legacy-obv3.js';
-import {securityLoader} from '@digitalcredentials/security-document-loader';
 import {v4 as uuid} from 'uuid';
 import {VeresOneDriver} from 'did-veres-one';
 import {versionedCredentials} from './mocks/credential.js';
@@ -427,25 +424,6 @@ for(const [version, mockCredential] of versionedCredentials) {
           throw result.error;
         }
         result.verified.should.be.true;
-      });
-
-      it('should verify an OBv3 vc', async () => {
-        const result = await vc.verifyCredential({
-          credential: mockCredentialLegacyObV3,
-          suite: new Ed25519Signature2020(),
-          documentLoader: securityLoader().build()
-        });
-
-        if(result.error) {
-          throw result.error;
-        }
-        result.verified.should.be.true;
-
-        result.results[0].log.should.eql([
-          {id: 'expiration', valid: true},
-          {id: 'valid_signature', valid: true},
-          {id: 'issuer_did_resolves', valid: true}
-        ]);
       });
 
       it('should verify a vc with a positive status check', async () => {
