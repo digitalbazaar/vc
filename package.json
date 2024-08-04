@@ -2,10 +2,10 @@
   "name": "@digitalcredentials/vc",
   "version": "8.0.0",
   "description": "Verifiable Credentials JavaScript library.",
-  "homepage": "https://github.com/digitalcredentials/vc-js",
+  "homepage": "https://github.com/digitalcredentials/vc",
   "repository": {
     "type": "git",
-    "url": "https://github.com/digitalcredentials/vc-js"
+    "url": "https://github.com/digitalcredentials/vc"
   },
   "license": "BSD-3-Clause",
   "main": "lib/index.js",
@@ -31,11 +31,11 @@
     "@digitalcredentials/security-document-loader": "^5.0.1",
     "@digitalcredentials/vc-status-list": "^8.0.0",
     "babel-loader": "^8.2.2",
-    "chai": "^4.3.3",
+    "chai": "^5.1.1",
     "cross-env": "^7.0.3",
     "did-context": "^3.1.1",
     "did-veres-one": "~16.0.0",
-    "eslint": "^8.57.0",
+    "eslint": "^9.8.0",
     "eslint-config-digitalbazaar": "^5.2.0",
     "eslint-plugin-jsdoc": ">=42.0.0",
     "karma": "^6.1.1",
