@@ -8,7 +8,7 @@ import {
 import {
   constants as credentialsV2Constants,
   contexts as credentialsV2Contexts,
-} from '@digitalbazaar/credentials-v2-context';
+} from '@digitalcredentials/credentials-v2-context';
 import {
   constants as didConstants,
   contexts as didContexts

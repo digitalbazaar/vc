@@ -26,9 +26,9 @@
     "LICENSE"
   ],
   "dependencies": {
-    "@digitalbazaar/credentials-v2-context": "digitalbazaar/credentials-v2-context#main",
-    "@digitalcredentials/jsonld": "~9.0.0",
-    "@digitalcredentials/jsonld-signatures": "~11.0.0",
+    "@digitalcredentials/credentials-v2-context": "~0.0.1-beta.0",
+    "@digitalcredentials/jsonld": "^9.0.0",
+    "@digitalcredentials/jsonld-signatures": "^11.0.0",
     "@digitalcredentials/open-badges-context": "^2.1.0",
     "credentials-context": "^2.0.0",
     "ed25519-signature-2018-context": "^1.1.0"
