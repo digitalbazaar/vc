@@ -1,5 +1,12 @@
 # @digitalcredentials/vc ChangeLog
 
+## 8.0.0 - 2024-08-03
+### Changed
++ **BREAKING**: Switch dependencies to:
+- `@digitalcredentials/jsonld`
+- `@digitalcredentials/jsonld-signatures`
+- `@digitalcredentials/http-client`
+
 ## 7.0.0 - 2024-02-07
 ### Changed
 * Switch to DigitalBazaar's `jsonld`, `http-client` and `rdf-canonize` libs
