@@ -21,15 +21,12 @@ import {driver} from '@digitalbazaar/did-method-key';
 import {CachedResolver} from '@digitalbazaar/did-io';
 import {securityLoader} from '@digitalbazaar/security-document-loader';
 
-//import secCtx from '@digitalbazaar/security-context';
-import diCtx from '@digitalbazaar/data-integrity-context';
+//import {contexts as secContexts} from '@digitalbazaar/security-context';
+import {contexts as diContexts} from '@digitalbazaar/data-integrity-context';
 
 const loader = securityLoader();
-//loader.addStatic(
-//  secCtx.SECURITY_CONTEXT_V2_URL,
-//  secCtx.contexts.get(secCtx.SECURITY_CONTEXT_V2_URL)
-//);
-loader.addStatic(diCtx.CONTEXT_URL, diCtx.CONTEXT);
+//loader.addDocuments({documents: secContexts});
+loader.addDocuments({documents: diContexts});
 // example static context
 loader.addStatic(
   'https://example.com/ex/v1',
