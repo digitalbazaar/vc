@@ -57,7 +57,7 @@ async function main({credential, documentLoader}) {
   const ecdsaKeyPair = await EcdsaMultikey.generate({curve: 'P-256'});
 
   const {
-    didDocument, keyPairs, methodFor
+    didDocument/*, keyPairs, methodFor*/
   } = await didKeyDriverMultikey.fromKeyPair({
     verificationKeyPair: ecdsaKeyPair
   });
