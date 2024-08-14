@@ -124,7 +124,7 @@ async function main({credential, documentLoader}) {
   }
 
   // setup example for did:web
-  //const VP_DID = 'did:web:example.org:issuer:123';
+  const VP_DID = 'did:web:example.org:issuer:123';
   const VP_DID_URL = 'https://example.org/issuer/123';
   //const VP_DID_DOC_URL = VP_DID_URL + '/did.json';
 
@@ -137,14 +137,18 @@ async function main({credential, documentLoader}) {
     verificationKeyPair: vpEcdsaKeyPair
   });
   const didWebKey = vpMethodFor({purpose: 'assertionMethod'});
-  vcEcdsaKeyPair.id = didWebKey.id;
-  vcEcdsaKeyPair.controller = vpDidDocument.id;
+  vpEcdsaKeyPair.id = didWebKey.id;
+  vpEcdsaKeyPair.controller = vpDidDocument.id;
   // setup VP ecdsa-rdfc-2019 signing suite
   const vpSigningSuite = new DataIntegrityProof({
     signer: vpEcdsaKeyPair.signer(),
     // date: '2023-01-01T01:01:01Z',
     cryptosuite: ecdsaRdfc2019Cryptosuite
   });
+
+  // add static resources
+  loader.addStatic(VP_DID, vpDidDocument);
+  //loader.addStatic(VP_DID_DOC_URL, vpDidDocument);
 
   // add static verification method result
   // FIXME
