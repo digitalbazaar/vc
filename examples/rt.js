@@ -141,7 +141,7 @@ async function main({credential, documentLoader}) {
   vcEcdsaKeyPair.controller = vpDidDocument.id;
   // setup VP ecdsa-rdfc-2019 signing suite
   const vpSigningSuite = new DataIntegrityProof({
-    signer: vcEcdsaKeyPair.signer(),
+    signer: vpEcdsaKeyPair.signer(),
     // date: '2023-01-01T01:01:01Z',
     cryptosuite: ecdsaRdfc2019Cryptosuite
   });
