@@ -41,6 +41,7 @@
     "@digitalbazaar/data-integrity-context": "^2.0.1",
     "@digitalbazaar/did-io": "^2.0.0",
     "@digitalbazaar/did-method-key": "^5.2.0",
+    "@digitalbazaar/did-method-web": "^1.0.1",
     "@digitalbazaar/ecdsa-multikey": "^1.7.0",
     "@digitalbazaar/ecdsa-rdfc-2019-cryptosuite": "^1.1.0",
     "@digitalbazaar/ecdsa-sd-2023-cryptosuite": "^3.2.1",
