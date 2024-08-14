@@ -170,11 +170,12 @@ async function main({credential, documentLoader}) {
   vpDidVm['@context'] = 'https://w3id.org/security/multikey/v1';
   loader.addStatic(vpDidVm.id, vpDidVm);
 
-  // presentation challenge
-  const challenge = 'abc123';
-
   // presentation holder
   const holder = 'did:web:example.com:holder:456';
+  // presentation challenge - required for authentication proof purpose
+  const challenge = 'abc123';
+  // preentation domain - optional in this use case
+  const domain = 'https://example.com/';
 
   const presentation = await vc.createPresentation({
     verifiableCredential,
@@ -187,7 +188,11 @@ async function main({credential, documentLoader}) {
   // sign presentation
   // note this adds the proof to the input presentation
   const vp = await vc.signPresentation({
-    presentation, suite: vpSigningSuite, challenge, documentLoader
+    presentation,
+    suite: vpSigningSuite,
+    challenge,
+    domain,
+    documentLoader
   });
 
   console.log('SIGNED PRESENTATION:');
