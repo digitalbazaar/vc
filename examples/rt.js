@@ -21,13 +21,11 @@ import {
 } from '@digitalbazaar/ecdsa-rdfc-2019-cryptosuite';
 //import * as vc from '@digitalbazaar/vc';
 import * as vc from '../lib/index.js';
+import {CachedResolver} from '@digitalbazaar/did-io';
 import {DataIntegrityProof} from '@digitalbazaar/data-integrity';
 //import {
 //  Ed25519VerificationKey2020
 //} from '@digitalbazaar/ed25519-verification-key-2020';
-
-// setup document loader
-import {CachedResolver} from '@digitalbazaar/did-io';
 import {securityLoader} from '@digitalbazaar/security-document-loader';
 
 //import {contexts as secContexts} from '@digitalbazaar/security-context';
