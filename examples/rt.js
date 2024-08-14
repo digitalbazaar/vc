@@ -3,12 +3,12 @@
  */
 
 // Example round trip.
-// - generate example ECDSA did:key for VC
+// - generate example ECDSA P-256 did:key for VC
 // - setup 'ecdsa-rdfc-2019 DataIntegrityProof
 // - setup document loader including did:key and did:web resolvers
 // - sign credential with did:key
 // - verify credential
-// - generate example ECDSA did:web doc for VP
+// - generate example ECDSA P-384 did:web doc for VP
 // - create presentation
 // - sign presentation with did:web
 // - verify presentation
@@ -55,13 +55,21 @@ didKeyDriverMultikey.use({
   multibaseMultikeyHeader: 'zDna',
   fromMultibase: EcdsaMultikey.from
 });
+//didWebDriver.use({
+//  name: 'Ed25519',
+//  handler: Ed25519VerificationKey2020,
+//  multibaseMultikeyHeader: 'z6Mk',
+//  fromMultibase: Ed25519VerificationKey2020.from
+//});
+// P-256
 didWebDriver.use({
   multibaseMultikeyHeader: 'zDna',
   fromMultibase: EcdsaMultikey.from
-  //name: 'Ed25519',
-  //handler: Ed25519VerificationKey2020,
-  //multibaseMultikeyHeader: 'z6Mk',
-  //fromMultibase: Ed25519VerificationKey2020.from
+});
+// P-384
+didWebDriver.use({
+  multibaseMultikeyHeader: 'z82L',
+  fromMultibase: EcdsaMultikey.from
 });
 resolver.use(didKeyDriverMultikey);
 resolver.use(didWebDriver);
@@ -73,7 +81,7 @@ async function main({credential, documentLoader}) {
   console.log('CREDENTIAL:');
   console.log(JSON.stringify(credential, null, 2));
 
-  // generate example ecdsa keypair for VC
+  // generate example keypair for VC signer
   const vcEcdsaKeyPair = await EcdsaMultikey.generate({curve: 'P-256'});
 
   const {
@@ -128,15 +136,15 @@ async function main({credential, documentLoader}) {
   const VP_DID_URL = 'https://example.org/issuer/123';
   //const VP_DID_DOC_URL = VP_DID_URL + '/did.json';
 
-  // generate example ed25519 keypair for VP signer
-  const vpEcdsaKeyPair = await EcdsaMultikey.generate({curve: 'P-256'});
+  // generate example keypair for VP signer
+  const vpEcdsaKeyPair = await EcdsaMultikey.generate({curve: 'P-384'});
   const {
     didDocument: vpDidDocument, methodFor: vpMethodFor
   } = await didWebDriver.fromKeyPair({
     url: VP_DID_URL,
     verificationKeyPair: vpEcdsaKeyPair
   });
-  const didWebKey = vpMethodFor({purpose: 'assertionMethod'});
+  const didWebKey = vpMethodFor({purpose: 'authentication'});
   vpEcdsaKeyPair.id = didWebKey.id;
   vpEcdsaKeyPair.controller = vpDidDocument.id;
   // setup VP ecdsa-rdfc-2019 signing suite
