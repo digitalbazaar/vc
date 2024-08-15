@@ -24,7 +24,7 @@
   "license": "BSD-3-Clause",
   "type": "module",
   "exports": "./lib/index.js",
-  "types": "./types/index.d.ts",
+  "types": "./dist/types/index.d.ts",
   "files": [
     "lib/**/*.js"
   ],
@@ -99,6 +99,6 @@
     "coverage-ci": "cross-env NODE_ENV=test c8 --reporter=lcovonly --reporter=text-summary --reporter=text npm run test-node",
     "coverage-report": "c8 report",
     "prepare": "npm run build-types",
-    "build-types": "tsc -p tsconfig.json"
+    "build-types": "tsc -p tsconfig.types.json"
   }
 }
