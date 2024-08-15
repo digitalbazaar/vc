@@ -1,5 +1,8 @@
 # @digitalbazaar/vc ChangeLog
 
+### Added
+- Generated TypeScript declarations on install and publish
+
 ## 7.0.0 - 2024-08-01
 
 ### Added
