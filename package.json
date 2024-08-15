@@ -98,7 +98,7 @@
     "coverage": "cross-env NODE_ENV=test c8 npm run test-node",
     "coverage-ci": "cross-env NODE_ENV=test c8 --reporter=lcovonly --reporter=text-summary --reporter=text npm run test-node",
     "coverage-report": "c8 report",
-    "prepare": "npm run build-types",
+    "prepack": "npm run build-types",
     "build-types": "tsc -p tsconfig.types.json"
   }
 }
