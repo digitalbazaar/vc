@@ -516,6 +516,8 @@ Once you've created the presentation (either via `createPresentation()` or
 manually), you can sign it using `signPresentation()`:
 
 ```js
+import * as vc from '@digitalbazaar/vc';
+
 const vp = await vc.signPresentation({
   presentation, suite, challenge, documentLoader
 });
@@ -578,6 +580,8 @@ Pre-requisites:
 To verify a verifiable presentation:
 
 ```js
+import * as vc from '@digitalbazaar/vc';
+
 // challenge has been received from the requesting party - see 'challenge'
 // section below
 
@@ -590,6 +594,8 @@ To verify an unsigned presentation, you must set the `unsignedPresentation`
 flag:
 
 ```js
+import * as vc from '@digitalbazaar/vc';
+
 const result = await vc.verify({
   presentation, suite, documentLoader, unsignedPresentation: true
 });
