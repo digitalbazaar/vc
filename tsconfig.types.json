@@ -3,7 +3,7 @@
     "allowJs": true,
     "declaration": true,
     "emitDeclarationOnly": true,
-    "outDir": "dist/types",
+    "outDir": "types",
     "declarationMap": true
   },
   "include": [

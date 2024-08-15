@@ -24,9 +24,11 @@
   "license": "BSD-3-Clause",
   "type": "module",
   "exports": "./lib/index.js",
-  "types": "./dist/types/index.d.ts",
+  "types": "./types/index.d.ts",
   "files": [
-    "lib/**/*.js"
+    "lib/**/*.js",
+    "types/**/*.d.ts",
+    "types/**/*.d.ts.map"
   ],
   "dependencies": {
     "@digitalbazaar/credentials-context": "^3.1.0",
