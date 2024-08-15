@@ -23,7 +23,7 @@
   },
   "license": "BSD-3-Clause",
   "type": "module",
-  "exports": "./lib/index.js",
+  "main": "./lib/index.js",
   "types": "./types/index.d.ts",
   "files": [
     "lib/**/*.js",
