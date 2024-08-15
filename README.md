@@ -72,7 +72,7 @@ For signing, when setting up a signature suite, you will need to pass in
 a key pair containing a private key.
 
 ```js
-import vc from '@digitalbazaar/vc';
+import * as vc from '@digitalbazaar/vc';
 
 // Required to set up a suite instance with private key
 import {Ed25519VerificationKey2020} from
