@@ -94,7 +94,7 @@ Pre-requisites:
   Document and Public Key
 
 ```js
-const vc = require('@digitalbazaar/vc');
+import * as vc from '@digitalbazaar/vc';
 
 // Sample unsigned credential
 const credential = {
@@ -477,8 +477,8 @@ Pre-requisites:
 // by requiring this first you ensure security
 // contexts are loaded from jsonld-signatures
 // and not an insecure source.
+import * as vc from '@digitalbazaar/vc';
 const {extendContextLoader} = require('jsonld-signatures');
-const vc = require('@digitalbazaar/vc');
 // @digitalbazaar/vc exports its own secure documentLoader.
 const {defaultDocumentLoader} = vc;
 // a valid json-ld @context.
