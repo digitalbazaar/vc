@@ -1,5 +1,10 @@
 # @digitalcredentials/vc ChangeLog
 
+## 8.0.1 -
+
+### Fixed
+- Fix stray Error object in `CredentialIssuancePurpose`.
+
 ## 8.0.0 - 2024-08-04
 
 ### Added
