@@ -1,6 +1,6 @@
 {
   "name": "@digitalcredentials/vc",
-  "version": "8.0.0",
+  "version": "8.0.1",
   "description": "Verifiable Credentials JavaScript library.",
   "homepage": "https://github.com/digitalcredentials/vc",
   "repository": {
