@@ -1,6 +1,7 @@
 /*!
  * Copyright (c) 2019-2024 Digital Bazaar, Inc. All rights reserved.
  */
+import * as vc from '../lib/index.js';
 import {CredentialIssuancePurpose} from '../lib/CredentialIssuancePurpose.js';
 import {
   documentLoader as defaultLoader
@@ -21,6 +22,36 @@ export function createSkewedTimeStamp({date = new Date(), skewYear}) {
   date.setFullYear(date.getFullYear() + skewYear);
   const isoString = date.toISOString();
   return `${isoString.substring(0, isoString.length - 5)}Z`;
+}
+
+export async function issueCredential({
+  credential,
+  suites,
+  mandatoryPointers,
+  selectivePointers = [],
+  issuer,
+  derived,
+  documentLoader = defaultLoader,
+}) {
+  credential.issuer = issuer;
+  credential.id = `http://example.edu/credentials/${uuid()}`;
+  const verifiableCredential = await vc.issue({
+    credential,
+    documentLoader,
+    suite: suites.issue({mandatoryPointers}),
+  });
+  if(!derived) {
+    return {verifiableCredential};
+  }
+  const derivedCredential = await vc.derive({
+    verifiableCredential,
+    documentLoader,
+    suite: suites.derive({selectivePointers}),
+  });
+  return {
+    verifiableCredential: derivedCredential,
+    baseCredential: verifiableCredential
+  };
 }
 
 export async function signCredential({
