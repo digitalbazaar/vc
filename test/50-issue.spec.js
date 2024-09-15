@@ -95,9 +95,13 @@ function _runSuite({
           const credential = mockCredential();
           credential.id = `urn:uuid:${uuid()}`;
           credential.expirationDate = '2020-05-31T19:21:25Z';
-          const verifiableCredential = await issueCredential({
+          const {verifiableCredential} = await issueCredential({
             credential,
             suites,
+            derived,
+            mandatoryPointers,
+            selectivePointers,
+            issuer: keyDoc.controller,
             // set `now` to expiration date, allowing the credential
             // to be issued
             // without failing the expired check
