@@ -2,30 +2,49 @@
  * Copyright (c) 2019-2024 Digital Bazaar, Inc. All rights reserved.
  */
 import * as vc from '../lib/index.js';
-import {createSkewedTimeStamp} from './helpers.js';
+import {createSkewedTimeStamp, issueCredential} from './helpers.js';
+import chai from 'chai';
 import {documentLoader} from './testDocumentLoader.js';
 import {setupSuites} from './mocks/suites.js';
 import {v4 as uuid} from 'uuid';
 import {versionedCredentials} from './mocks/credential.js';
 
+const should = chai.should();
 const suites = await setupSuites();
 
 // run tests for each keyPair type
-for(const [keyType, {suite, keyPair}] of suites) {
+for(const [suiteName, suiteOptions] of suites) {
   // run tests on each version of VCs
   for(const [version, mockCredential] of versionedCredentials) {
-    _runSuite({keyType, suite, keyPair, version, mockCredential});
+    _runSuite({...suiteOptions, suiteName, version, mockCredential});
   }
 }
 
-function _runSuite({version, keyType, suite, mockCredential}) {
-  describe(`VC ${version} keyType ${keyType}`, function() {
+function _runSuite({
+  version,
+  keyDoc,
+  keyType,
+  suiteName,
+  suites,
+  mockCredential,
+  derived
+}) {
+  const mandatoryPointers = (version === '1.0') ?
+    ['/issuer', '/issuanceDate'] : ['/issuer'];
+  const selectivePointers = ['/credentialSubject'];
+  const title = `VC ${version} Suite ${suiteName} KeyType ${keyType}`;
+
+  describe(title, function() {
     describe('vc.issue()', function() {
       it('should issue a verifiable credential with proof', async () => {
         const credential = mockCredential();
-        const verifiableCredential = await vc.issue({
+        const {verifiableCredential} = await issueCredential({
           credential,
-          suite,
+          derived,
+          suites,
+          mandatoryPointers,
+          selectivePointers,
+          issuer: keyDoc.controller,
           documentLoader
         });
         verifiableCredential.should.exist;
@@ -36,9 +55,13 @@ function _runSuite({version, keyType, suite, mockCredential}) {
       it('should issue a verifiable credential with out id', async () => {
         const credential = mockCredential();
         delete credential.id;
-        const verifiableCredential = await vc.issue({
+        const {verifiableCredential} = await issueCredential({
           credential,
-          suite,
+          derived,
+          suites,
+          mandatoryPointers,
+          selectivePointers,
+          issuer: keyDoc.controller,
           documentLoader
         });
         verifiableCredential.should.exist;
@@ -69,18 +92,12 @@ function _runSuite({version, keyType, suite, mockCredential}) {
       });
       if(version === '1.0') {
         it('should issue an expired verifiable credential', async () => {
-          const fp = Ed25519VerificationKey2018
-            .fingerprintFromPublicKey({
-              publicKeyBase58: keyPair.publicKeyBase58
-            });
-          keyPair.id = `did:key:${fp}#${fp}`;
           const credential = mockCredential();
           credential.id = `urn:uuid:${uuid()}`;
-          credential.issuer = `did:key:${fp}`;
           credential.expirationDate = '2020-05-31T19:21:25Z';
-          const verifiableCredential = await vc.issue({
+          const verifiableCredential = await issueCredential({
             credential,
-            suite,
+            suites,
             // set `now` to expiration date, allowing the credential
             // to be issued
             // without failing the expired check
@@ -97,11 +114,14 @@ function _runSuite({version, keyType, suite, mockCredential}) {
           delete credential.issuanceDate;
           const now = new Date();
           const expectedIssuanceDate = `${now.toISOString().slice(0, -5)}Z`;
-          const verifiableCredential = await vc.issue({
+          const {verifiableCredential} = await issueCredential({
             credential,
-            suite,
-            documentLoader,
-            now
+            derived,
+            suites,
+            mandatoryPointers,
+            selectivePointers,
+            issuer: keyDoc.controller,
+            documentLoader
           });
           verifiableCredential.should.exist;
           verifiableCredential.should.be.an('object');
@@ -122,11 +142,15 @@ function _runSuite({version, keyType, suite, mockCredential}) {
           let error;
           let verifiableCredential;
           try {
-            verifiableCredential = await vc.issue({
+            ({verifiableCredential} = await issueCredential({
               credential,
-              suite,
+              derived,
+              suites,
+              mandatoryPointers,
+              selectivePointers,
+              issuer: keyDoc.controller,
               documentLoader
-            });
+            }));
           } catch(e) {
             error = e;
           }
@@ -150,11 +174,15 @@ function _runSuite({version, keyType, suite, mockCredential}) {
           let error;
           let verifiableCredential;
           try {
-            verifiableCredential = await vc.issue({
+            ({verifiableCredential} = await issueCredential({
               credential,
-              suite,
+              derived,
+              suites,
+              mandatoryPointers,
+              selectivePointers,
+              issuer: keyDoc.controller,
               documentLoader
-            });
+            }));
           } catch(e) {
             error = e;
           }
@@ -177,11 +205,15 @@ function _runSuite({version, keyType, suite, mockCredential}) {
           let error;
           let verifiableCredential;
           try {
-            verifiableCredential = await vc.issue({
+            ({verifiableCredential} = await issueCredential({
               credential,
-              suite,
+              derived,
+              suites,
+              mandatoryPointers,
+              selectivePointers,
+              issuer: keyDoc.controller,
               documentLoader
-            });
+            }));
           } catch(e) {
             error = e;
           }
@@ -204,11 +236,15 @@ function _runSuite({version, keyType, suite, mockCredential}) {
           let error;
           let verifiableCredential;
           try {
-            verifiableCredential = await vc.issue({
+            ({verifiableCredential} = await issueCredential({
               credential,
-              suite,
+              derived,
+              suites,
+              mandatoryPointers,
+              selectivePointers,
+              issuer: keyDoc.controller,
               documentLoader
-            });
+            }));
           } catch(e) {
             error = e;
           }
@@ -232,11 +268,15 @@ function _runSuite({version, keyType, suite, mockCredential}) {
           let error;
           let verifiableCredential;
           try {
-            verifiableCredential = await vc.issue({
+            ({verifiableCredential} = await issueCredential({
               credential,
-              suite,
+              derived,
+              suites,
+              mandatoryPointers,
+              selectivePointers,
+              issuer: keyDoc.controller,
               documentLoader
-            });
+            }));
           } catch(e) {
             error = e;
           }

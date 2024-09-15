@@ -31,6 +31,7 @@ export async function issueCredential({
   selectivePointers = [],
   issuer,
   derived,
+  now,
   documentLoader = defaultLoader,
 }) {
   credential.issuer = issuer;
@@ -39,6 +40,7 @@ export async function issueCredential({
     credential,
     documentLoader,
     suite: suites.issue({mandatoryPointers}),
+    now
   });
   if(!derived) {
     return {verifiableCredential};
@@ -47,6 +49,7 @@ export async function issueCredential({
     verifiableCredential,
     documentLoader,
     suite: suites.derive({selectivePointers}),
+    now
   });
   return {
     verifiableCredential: derivedCredential,
