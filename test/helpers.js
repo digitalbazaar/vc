@@ -35,7 +35,6 @@ export async function issueCredential({
   documentLoader = defaultLoader,
 }) {
   credential.issuer = issuer;
-  credential.id = `http://example.edu/credentials/${uuid()}`;
   const verifiableCredential = await vc.issue({
     credential,
     documentLoader,
