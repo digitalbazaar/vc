@@ -47,8 +47,7 @@ export async function issueCredential({
   const derivedCredential = await vc.derive({
     verifiableCredential,
     documentLoader,
-    suite: suites.derive({selectivePointers}),
-    now
+    suite: suites.derive({selectivePointers})
   });
   return {
     verifiableCredential: derivedCredential,
