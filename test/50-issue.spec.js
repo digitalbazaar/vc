@@ -145,13 +145,15 @@ function _runSuite({
           credential.validUntil = createSkewedTimeStamp({skewYear: 1});
           let error;
           let verifiableCredential;
+          const testPointers = derived ?
+            [...selectivePointers, '/validUntil'] : [];
           try {
             ({verifiableCredential} = await issueCredential({
               credential,
               derived,
               suites,
               mandatoryPointers,
-              selectivePointers,
+              selectivePointers: testPointers,
               issuer: keyDoc.controller,
               documentLoader
             }));
@@ -177,13 +179,15 @@ function _runSuite({
           credential.validUntil = createSkewedTimeStamp({skewYear: -1});
           let error;
           let verifiableCredential;
+          const testPointers = derived ?
+            [...selectivePointers, '/validUntil'] : [];
           try {
             ({verifiableCredential} = await issueCredential({
               credential,
               derived,
               suites,
               mandatoryPointers,
-              selectivePointers,
+              selectivePointers: testPointers,
               issuer: keyDoc.controller,
               documentLoader
             }));
@@ -208,13 +212,15 @@ function _runSuite({
           credential.validFrom = createSkewedTimeStamp({skewYear: -1});
           let error;
           let verifiableCredential;
+          const testPointers = derived ?
+            [...selectivePointers, '/validFrom'] : [];
           try {
             ({verifiableCredential} = await issueCredential({
               credential,
               derived,
               suites,
               mandatoryPointers,
-              selectivePointers,
+              selectivePointers: testPointers,
               issuer: keyDoc.controller,
               documentLoader
             }));
@@ -239,13 +245,15 @@ function _runSuite({
           credential.validFrom = createSkewedTimeStamp({skewYear: 1});
           let error;
           let verifiableCredential;
+          const testPointers = derived ?
+            [...selectivePointers, '/validFrom'] : [];
           try {
             ({verifiableCredential} = await issueCredential({
               credential,
               derived,
               suites,
               mandatoryPointers,
-              selectivePointers,
+              selectivePointers: testPointers,
               issuer: keyDoc.controller,
               documentLoader
             }));
@@ -271,13 +279,15 @@ function _runSuite({
           credential.validUntil = createSkewedTimeStamp({skewYear: 1});
           let error;
           let verifiableCredential;
+          const testPointers = derived ?
+            [...selectivePointers, '/validFrom', '/validUntil'] : [];
           try {
             ({verifiableCredential} = await issueCredential({
               credential,
               derived,
               suites,
               mandatoryPointers,
-              selectivePointers,
+              selectivePointers: testPointers,
               issuer: keyDoc.controller,
               documentLoader
             }));
