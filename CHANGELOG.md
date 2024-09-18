@@ -1,6 +1,6 @@
 # @digitalcredentials/vc ChangeLog
 
-## 9.0.0 -
+## 9.0.0 - 2024-09-17
 
 ### Changed
 - **BREAKING**: The dependency `@digitalcredentials/jsonld-signatures@12.0.0` (via `@digitalcredentials/ed25519-signature-2020`)
