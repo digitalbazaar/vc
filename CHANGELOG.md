@@ -1,5 +1,14 @@
 # @digitalcredentials/vc ChangeLog
 
+## 9.0.0 -
+
+### Changed
+- **BREAKING**: The dependency `@digitalcredentials/jsonld-signatures@12.0.0` (via `@digitalcredentials/ed25519-signature-2020`)
+  now requires `expo-crypto` for React Native sha256 digest hashing, instead of
+  `@sphereon/isomorphic-webcrypto@2.5.0-unstable.0`.
+  - **IMPORTANT**: This means that IF you're using this library inside a React Native project, you MUST include `expo-crypto`
+    in your project's `dependencies`.
+
 ## 8.0.1 - 2024-09-04
 
 ### Fixed
