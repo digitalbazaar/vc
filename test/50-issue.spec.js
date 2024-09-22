@@ -2,6 +2,7 @@
  * Copyright (c) 2019-2024 Digital Bazaar, Inc. All rights reserved.
  */
 import * as vc from '../lib/index.js';
+import {createDiSuites, createSdSuites} from './helpers.js';
 import {createSkewedTimeStamp, issueCredential} from './helpers.js';
 import chai from 'chai';
 import {documentLoader} from './testDocumentLoader.js';
@@ -21,9 +22,11 @@ for(const [suiteName, suiteOptions] of suites) {
 }
 
 function _runSuite({
+  cryptosuite,
   version,
   keyDoc,
   keyType,
+  keyPair,
   suiteName,
   suites,
   mockCredential,
@@ -70,12 +73,27 @@ function _runSuite({
         verifiableCredential.proof.should.be.an('object');
         should.not.exist(verifiableCredential.id, 'Expected no "vc.id".');
       });
-      it.skip('should throw an error on missing verificationMethod', async () => {
+      it('should throw an error on missing verificationMethod', async () => {
+        const stubSignerId = {
+          get(target, prop) {
+            if(prop === 'id') {
+              return undefined;
+            }
+            return Reflect.get(...arguments);
+          }
+        };
+        const signer = new Proxy(keyPair.signer(), stubSignerId);
+        const suites = derived ? createSdSuites({signer, cryptosuite}) : createDiSuites({signer, cryptosuite});
         let error;
         try {
-          await vc.issue({
+          await issueCredential({
             credential: mockCredential(),
-            suite
+            derived,
+            suites,
+            mandatoryPointers,
+            selectivePointers,
+            issuer: keyDoc.controller,
+            documentLoader
           });
         } catch(e) {
           error = e;
