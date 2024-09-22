@@ -7,6 +7,7 @@ import {DataIntegrityProof} from '@digitalbazaar/data-integrity';
 import {
   documentLoader as defaultLoader
 } from './testDocumentLoader.js';
+import {Ed25519Signature2018} from '@digitalbazaar/ed25519-signature-2018';
 import jsigs from 'jsonld-signatures';
 import {v4 as uuid} from 'uuid';
 
@@ -149,4 +150,31 @@ export function createSdSuites({signer, cryptosuite}) {
       });
     }
   };
+}
+
+export function createEd25519SigSuites({keyPair}) {
+  return {
+    issue() {
+      return new Ed25519Signature2018({
+        verificationMethod: 'https://example.edu/issuers/keys/1',
+        key: keyPair
+      });
+    },
+    verify() {
+      return new Ed25519Signature2018();
+    },
+    derive() {
+      throw new Error('Ed25519Signature2018 does not have a derive proof.');
+    }
+  };
+}
+
+export function createSuites({derived, cryptosuite, keyPair, suiteName}) {
+  if(suiteName === 'Ed25519Signature2018') {
+    return createEd25519SigSuites({keyPair});
+  }
+  if(derived) {
+    return createSdSuites({cryptosuite, signer: keyPair.signer()});
+  }
+  return createDiSuites({cryptosuite, signer: keyPair.signer()});
 }

@@ -7,8 +7,8 @@ import * as EcdsaMultikey from '@digitalbazaar/ecdsa-multikey';
 import * as ecdsaSd2023Cryptosuite from
   '@digitalbazaar/ecdsa-sd-2023-cryptosuite';
 import * as EddsaMultikey from '@digitalbazaar/ed25519-multikey';
-import {createDiSuites, createSdSuites} from '../helpers.js';
 import {assertionController} from './assertionController.js';
+import {createSuites} from '../helpers.js';
 import {cryptosuite as ecdsaRdfc2019Cryptosuite} from
   '@digitalbazaar/ecdsa-rdfc-2019-cryptosuite';
 import {Ed25519Signature2018} from '@digitalbazaar/ed25519-signature-2018';
@@ -43,8 +43,10 @@ async function eddsaRdfc2022() {
     keyType: 'Ed25519',
     suiteName: 'eddsa-rdfc-2022',
     cryptosuite: eddsaRdfc2020Cryptosuite,
-    suites: createDiSuites({
-      signer: keyPair.signer(),
+    suites: createSuites({
+      keyPair,
+      suiteName: 'eddsa-rdfc-2022',
+      derived: false,
       cryptosuite: eddsaRdfc2020Cryptosuite
     }),
     derived: false
@@ -66,8 +68,10 @@ async function ecdsaRdfc2019() {
     keyPair,
     keyType: 'P-256',
     suiteName: 'ecdsa-rdfc-2019',
-    suites: createDiSuites({
-      signer: keyPair.signer(),
+    suites: createSuites({
+      keyPair,
+      suiteName: 'ecdsa-rdfc-2019',
+      derived: false,
       cryptosuite: ecdsaRdfc2019Cryptosuite
     }),
     derived: false
@@ -90,8 +94,10 @@ async function ecdsaSd2023() {
     suiteName: 'ecdsa-sd-2023',
     keyType: 'P-256',
     cryptosuite: ecdsaSd2023Cryptosuite,
-    suites: createSdSuites({
-      signer: keyPair.signer(),
+    suites: createSuites({
+      keyPair,
+      derived: true,
+      suiteName: 'ecdsa-sd-2023',
       cryptosuite: ecdsaSd2023Cryptosuite
     }),
     derived: true
@@ -115,8 +121,10 @@ async function bbs2023() {
     suiteName: 'bbs-2023',
     keyType: 'Bls12381G2',
     derived: true,
-    suites: createSdSuites({
-      signer: keyPair.signer(),
+    suites: createSuites({
+      keyPair,
+      derived: true,
+      suiteName: 'bbs-2023',
       cryptosuite: bbs2023Cryptosuite
     })
   };
