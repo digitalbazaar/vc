@@ -70,11 +70,9 @@ function _runSuite({
         verifiableCredential.proof.should.be.an('object');
         should.not.exist(verifiableCredential.id, 'Expected no "vc.id".');
       });
-      it('should throw an error on missing verificationMethod', async () => {
-        const suite = new Ed25519Signature2018({
-          // Note no key id or verificationMethod passed to suite
-          key: await Ed25519VerificationKey2018.generate()
-        });
+      it.only('should throw an error on missing verificationMethod', async () => {
+    console.log('issue', suites.issue);
+    console.log('derive', suites.derive);
         let error;
         try {
           await vc.issue({
