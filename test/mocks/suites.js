@@ -7,8 +7,8 @@ import * as EcdsaMultikey from '@digitalbazaar/ecdsa-multikey';
 import * as ecdsaSd2023Cryptosuite from
   '@digitalbazaar/ecdsa-sd-2023-cryptosuite';
 import * as EddsaMultikey from '@digitalbazaar/ed25519-multikey';
+import {createDiSuites, createSdSuites} from '../helpers.js';
 import {assertionController} from './assertionController.js';
-import {DataIntegrityProof} from '@digitalbazaar/data-integrity';
 import {cryptosuite as ecdsaRdfc2019Cryptosuite} from
   '@digitalbazaar/ecdsa-rdfc-2019-cryptosuite';
 import {Ed25519Signature2018} from '@digitalbazaar/ed25519-signature-2018';
@@ -173,45 +173,4 @@ function registerKey({keyDoc}) {
   assertionController.assertionMethod.push(keyDoc.id);
   // register the key document with documentLoader
   remoteDocuments.set(keyDoc.id, keyDoc);
-}
-
-function createDiSuites({signer, cryptosuite}) {
-  return {
-    issue() {
-      return new DataIntegrityProof({
-        signer,
-        cryptosuite
-      });
-    },
-    verify() {
-      return new DataIntegrityProof({
-        cryptosuite
-      });
-    },
-    derive() {
-      throw new Error(
-        `cryptosuite ${cryptosuite.name} should have not derive proof`);
-    }
-  };
-}
-
-function createSdSuites({signer, cryptosuite}) {
-  return {
-    issue({mandatoryPointers}) {
-      return new DataIntegrityProof({
-        signer,
-        cryptosuite: cryptosuite.createSignCryptosuite({mandatoryPointers})
-      });
-    },
-    verify() {
-      return new DataIntegrityProof({
-        cryptosuite: cryptosuite.createVerifyCryptosuite()
-      });
-    },
-    derive({selectivePointers}) {
-      return new DataIntegrityProof({
-        cryptosuite: cryptosuite.createDiscloseCryptosuite({selectivePointers})
-      });
-    }
-  };
 }

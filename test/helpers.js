@@ -3,6 +3,7 @@
  */
 import * as vc from '../lib/index.js';
 import {CredentialIssuancePurpose} from '../lib/CredentialIssuancePurpose.js';
+import {DataIntegrityProof} from '@digitalbazaar/data-integrity';
 import {
   documentLoader as defaultLoader
 } from './testDocumentLoader.js';
@@ -107,4 +108,45 @@ export function createIssuerSuite({
     signer,
     cryptosuite: cryptosuite.createSignCryptosuite({mandatoryPointers})
   });
+}
+
+export function createDiSuites({signer, cryptosuite}) {
+  return {
+    issue() {
+      return new DataIntegrityProof({
+        signer,
+        cryptosuite
+      });
+    },
+    verify() {
+      return new DataIntegrityProof({
+        cryptosuite
+      });
+    },
+    derive() {
+      throw new Error(
+        `cryptosuite ${cryptosuite.name} should have not derive proof`);
+    }
+  };
+}
+
+export function createSdSuites({signer, cryptosuite}) {
+  return {
+    issue({mandatoryPointers}) {
+      return new DataIntegrityProof({
+        signer,
+        cryptosuite: cryptosuite.createSignCryptosuite({mandatoryPointers})
+      });
+    },
+    verify() {
+      return new DataIntegrityProof({
+        cryptosuite: cryptosuite.createVerifyCryptosuite()
+      });
+    },
+    derive({selectivePointers}) {
+      return new DataIntegrityProof({
+        cryptosuite: cryptosuite.createDiscloseCryptosuite({selectivePointers})
+      });
+    }
+  };
 }
