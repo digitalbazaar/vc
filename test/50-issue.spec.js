@@ -1,11 +1,10 @@
 /*!
  * Copyright (c) 2019-2024 Digital Bazaar, Inc. All rights reserved.
  */
-import * as vc from '../lib/index.js';
-import {createDiSuites, createSdSuites} from './helpers.js';
 import {createSkewedTimeStamp, issueCredential} from './helpers.js';
 import chai from 'chai';
 import {documentLoader} from './testDocumentLoader.js';
+import {createSuites} from './helpers.js';
 import {setupSuites} from './mocks/suites.js';
 import {v4 as uuid} from 'uuid';
 import {versionedCredentials} from './mocks/credential.js';
@@ -82,8 +81,21 @@ function _runSuite({
             return Reflect.get(...arguments);
           }
         };
-        const signer = new Proxy(keyPair.signer(), stubSignerId);
-        const suites = derived ? createSdSuites({signer, cryptosuite}) : createDiSuites({signer, cryptosuite});
+        const stubSigner = {
+          get(target, prop) {
+            if(prop === 'signer') {
+              return () => new Proxy(target.signer(), stubSignerId);
+            }
+            return Reflect.get(...arguments);
+          }
+        };
+        const proxyKeyPair = new Proxy(keyPair, stubSigner);
+        const suites = createSuites({
+          keyPair: proxyKeyPair,
+          cryptosuite,
+          suiteName,
+          derived
+        });
         let error;
         try {
           await issueCredential({
