@@ -1,5 +1,10 @@
 # @digitalcredentials/vc ChangeLog
 
+## 9.0.0 - 2024-09-30
+
+### Fixed
+- add signature checks to the log before running other verification checks whose errors might prevent that logging
+
 ## 9.0.0 - 2024-09-17
 
 ### Changed
