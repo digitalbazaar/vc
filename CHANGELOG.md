@@ -1,9 +1,11 @@
 # @digitalbazaar/vc ChangeLog
 
-## 7.0.1 - 2024-10-xx
+## 7.1.0 - 2024-10-xx
 
 ### Added
-- Add maxClockSkew variable to time comparison functions.
+- Add `maxClockSkew` parameter to time comparison functions with a default
+  of 5 minutes. This also constitutes a fix for decentralized systems where
+  clocks are not expected to be perfectly in sync.
 
 ## 7.0.0 - 2024-08-01
 
