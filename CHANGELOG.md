@@ -1,6 +1,6 @@
 # @digitalbazaar/vc ChangeLog
 
-## 7.1.0 - 2024-10-xx
+## 7.1.0 - 2024-10-10
 
 ### Added
 - Add `maxClockSkew` parameter to time comparison functions with a default
