@@ -1,5 +1,10 @@
 # @digitalbazaar/vc ChangeLog
 
+## 7.0.1 - 2024-10-xx
+
+### Added
+- Add maxClockSkew variable to time comparison functions.
+
 ## 7.0.0 - 2024-08-01
 
 ### Added
