@@ -3,6 +3,13 @@
 ### Added
 - Generate TypeScript declarations for published packages.
 
+## 7.1.0 - 2024-10-10
+
+### Added
+- Add `maxClockSkew` parameter to time comparison functions with a default
+  of 5 minutes. This also constitutes a fix for decentralized systems where
+  clocks are not expected to be perfectly in sync.
+
 ## 7.0.0 - 2024-08-01
 
 ### Added

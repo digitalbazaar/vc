@@ -72,7 +72,7 @@ For signing, when setting up a signature suite, you will need to pass in
 a key pair containing a private key.
 
 ```js
-import vc from '@digitalbazaar/vc';
+import * as vc from '@digitalbazaar/vc';
 
 // Required to set up a suite instance with private key
 import {Ed25519VerificationKey2020} from
@@ -94,7 +94,7 @@ Pre-requisites:
   Document and Public Key
 
 ```js
-const vc = require('@digitalbazaar/vc');
+import * as vc from '@digitalbazaar/vc';
 
 // Sample unsigned credential
 const credential = {
@@ -477,8 +477,8 @@ Pre-requisites:
 // by requiring this first you ensure security
 // contexts are loaded from jsonld-signatures
 // and not an insecure source.
+import * as vc from '@digitalbazaar/vc';
 const {extendContextLoader} = require('jsonld-signatures');
-const vc = require('@digitalbazaar/vc');
 // @digitalbazaar/vc exports its own secure documentLoader.
 const {defaultDocumentLoader} = vc;
 // a valid json-ld @context.
@@ -516,6 +516,8 @@ Once you've created the presentation (either via `createPresentation()` or
 manually), you can sign it using `signPresentation()`:
 
 ```js
+import * as vc from '@digitalbazaar/vc';
+
 const vp = await vc.signPresentation({
   presentation, suite, challenge, documentLoader
 });
@@ -578,6 +580,8 @@ Pre-requisites:
 To verify a verifiable presentation:
 
 ```js
+import * as vc from '@digitalbazaar/vc';
+
 // challenge has been received from the requesting party - see 'challenge'
 // section below
 
@@ -590,6 +594,8 @@ To verify an unsigned presentation, you must set the `unsignedPresentation`
 flag:
 
 ```js
+import * as vc from '@digitalbazaar/vc';
+
 const result = await vc.verify({
   presentation, suite, documentLoader, unsignedPresentation: true
 });
