@@ -1,5 +1,11 @@
 # @digitalbazaar/vc ChangeLog
 
+## 7.1.1 - 2025-03-xx
+
+### Changed
+- Update dependencies.
+  - `@digitalbazaar/credentials-context@3.2.0`
+
 ## 7.1.0 - 2024-10-10
 
 ### Added
