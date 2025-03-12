@@ -1,9 +1,9 @@
 # @digitalcredentials/vc ChangeLog
 
-## 9.0.1 - TBD
+## 9.0.2 - TBD
 
 ### Fixed
-- run status check before running expiry check because expiry check throws error that had prevented the status check from running
+- run status check before expiry check because expiry check throws error that had prevented the status check from running
 
 ## 9.0.1 - 2024-09-30
 
