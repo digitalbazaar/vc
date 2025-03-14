@@ -33,20 +33,20 @@ jobs:
         node-version: ${{ matrix.node-version }}
     - run: npm install
     - name: Run test with Node.js ${{ matrix.node-version }}
-      run: npm run pretest; npm run test-node; npm run posttest
-#  test-karma:
-#    needs: [lint]
-#    runs-on: ubuntu-latest
-#    timeout-minutes: 10
-#    strategy:
-#      matrix:
-#        node-version: [16.x]
-#    steps:
-#    - uses: actions/checkout@v2
-#    - name: Use Node.js ${{ matrix.node-version }}
-#      uses: actions/setup-node@v1
-#      with:
-#        node-version: ${{ matrix.node-version }}
-#    - run: npm install
-#    - name: Run karma test
-#      run: npm run pretest; npm run test-karma; npm run posttest
+      run: npm run test-node
+  test-karma:
+    needs: [lint]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      matrix:
+        node-version: [18.x]
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - run: npm install
+    - name: Run karma test
+      run: npm run test-karma
