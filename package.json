@@ -1,6 +1,6 @@
 {
   "name": "@digitalcredentials/vc",
-  "version": "9.0.2-beta.3",
+  "version": "10.0.0-beta.1",
   "description": "Verifiable Credentials JavaScript library.",
   "homepage": "https://github.com/digitalcredentials/vc",
   "repository": {
@@ -16,9 +16,9 @@
     "LICENSE"
   ],
   "dependencies": {
-    "@digitalcredentials/credentials-v2-context": "~0.0.1-beta.0",
+    "@digitalcredentials/credentials-v2-context": "^0.0.1-beta.0",
     "@digitalcredentials/jsonld": "^9.0.0",
-    "@digitalcredentials/jsonld-signatures": "^12.0.0",
+    "@digitalcredentials/jsonld-signatures": "^12.0.1",
     "@digitalcredentials/open-badges-context": "^2.1.0",
     "credentials-context": "^2.0.0",
     "ed25519-signature-2018-context": "^1.1.0"
