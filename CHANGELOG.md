@@ -1,5 +1,13 @@
 # @digitalbazaar/vc ChangeLog
 
+## 7.1.2 - 2025-03-xx
+
+### Changed
+- Update minor dependencies.
+  - `jsonld@8.3.3`.
+  - `jsonld-signatures@11.5.0`.
+- Update dev dependencies.
+
 ## 7.1.1 - 2025-03-07
 
 ### Changed
