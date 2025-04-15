@@ -1,5 +1,5 @@
 /*!
- * Copyright (c) 2019-2024 Digital Bazaar, Inc. All rights reserved.
+ * Copyright (c) 2019-2025 Digital Bazaar, Inc. All rights reserved.
  */
 import * as bbs2023Cryptosuite from '@digitalbazaar/bbs-2023-cryptosuite';
 import * as Bls12381Multikey from '@digitalbazaar/bls12-381-multikey';
@@ -806,6 +806,30 @@ for(const [version, mockCredential] of versionedCredentials) {
         result.verified.should.be.a('boolean');
         result.verified.should.be.true;
       });
+      it('includes credentials in verification results', async () => {
+        const challenge = uuid();
+
+        const {presentation, suite, documentLoader} =
+          await _generatePresentation({challenge, mockCredential, version});
+
+        const result = await vc.verify({
+          challenge,
+          suite,
+          documentLoader,
+          presentation,
+          includeCredentials: true
+        });
+
+        if(result.error) {
+          const firstError = [].concat(result.error)[0];
+          throw firstError;
+        }
+        result.verified.should.be.a('boolean');
+        result.verified.should.be.true;
+        result.credentialResults.length.should.equal(1);
+        result.credentialResults[0].credential.should.deep.equal(
+          presentation.verifiableCredential[0]);
+      });
       it('verifies an unsigned presentation', async () => {
         const {
           presentation,
@@ -830,6 +854,35 @@ for(const [version, mockCredential] of versionedCredentials) {
         }
         result.verified.should.be.a('boolean');
         result.verified.should.be.true;
+      });
+      it('includes credentials in unsigned presentation results', async () => {
+        const {
+          presentation,
+          suite: vcSuite,
+          documentLoader,
+        } = await _generatePresentation({
+          unsigned: true,
+          mockCredential,
+          version
+        });
+
+        const result = await vc.verify({
+          documentLoader,
+          presentation,
+          suite: vcSuite,
+          unsignedPresentation: true,
+          includeCredentials: true
+        });
+
+        if(result.error) {
+          const firstError = [].concat(result.error)[0];
+          throw firstError;
+        }
+        result.verified.should.be.a('boolean');
+        result.verified.should.be.true;
+        result.credentialResults.length.should.equal(1);
+        result.credentialResults[0].credential.should.deep.equal(
+          presentation.verifiableCredential[0]);
       });
     });
 
