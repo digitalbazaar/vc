@@ -1,5 +1,11 @@
 # @digitalbazaar/vc ChangeLog
 
+## 7.2.0 - 2025-mm-dd
+
+### Added
+- Add `includeCredentials` option to be passed to `verify()` to include
+  each `credential` in `credentialResults` when verifying a presentation.
+
 ## 7.1.2 - 2025-03-17
 
 ### Changed
