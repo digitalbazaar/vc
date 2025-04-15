@@ -1,6 +1,6 @@
 # @digitalbazaar/vc ChangeLog
 
-## 7.2.0 - 2025-mm-dd
+## 7.2.0 - 2025-04-14
 
 ### Added
 - Add `includeCredentials` option to be passed to `verify()` to include
