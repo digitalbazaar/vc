@@ -1,9 +1,13 @@
 # @digitalcredentials/vc ChangeLog
 
-## 9.0.2 - TBD
+## 10.0.0 - 2025-04-30
+
+### Changed
+- **BREAKING**: Removes CJS build
 
 ### Fixed
-- run status check before expiry check because expiry check throws error that had prevented the status check from running
+- move status check before expiry check because expiry check throws error that had prevented the status check from running
+- attach the credential to the verification result for each credential submitted as part of a VP verification
 
 ## 9.0.1 - 2024-09-30
 
