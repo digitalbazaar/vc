@@ -1,6 +1,6 @@
 {
   "name": "@digitalbazaar/vc",
-  "version": "7.2.1-0",
+  "version": "7.3.0",
   "description": "Verifiable Credentials JavaScript library.",
   "homepage": "https://github.com/digitalbazaar/vc",
   "author": {
