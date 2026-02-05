@@ -1,6 +1,6 @@
 # @digitalbazaar/vc ChangeLog
 
-## 7.3.0 - 2026-02-xx
+## 7.3.0 - 2026-02-05
 
 ### Changed
 - Update dependencies:
