@@ -1,5 +1,18 @@
 # @digitalbazaar/vc ChangeLog
 
+## 7.3.0 - 2026-02-xx
+
+### Changed
+- Update dependencies:
+  - `jsonld@9`.
+  - `jsonld-signatures@11.6.0`.
+- **NOTE**: The `jsonld` updates may have rare edge case compatibility issues.
+  The important related indirect `rdf-canonize` issues were addressed with
+  other existing minor version updates.
+
+### Fixed
+- Move `ed25519-signature-2018-context` to `devDependencies`.
+
 ## 7.2.0 - 2025-04-14
 
 ### Added
